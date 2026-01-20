@@ -2,6 +2,8 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>Game Reviews | Pysh Games</title>
 
 <style>
@@ -193,6 +195,125 @@ footer { background-color:#111; padding:15px 50px; font-size:20px; }
 #f img { width:24px; height:24px; }
 #lf { height:100px; width:100px; margin-left:46.5%; }
 #c { display:flex; color:#ccc; }
+
+#pysh {
+  color: #e1282d; /* change to any color you want */
+}
+
+/* MOBILE VIEW --------------------------------------------------------------------------------------------- */
+@media (max-width: 600px) {
+
+  header {
+    padding: 15px 20px;
+	height:100px;
+	
+  }
+
+  nav a {
+    font-size: 18px;
+    padding: 10px;
+  }
+
+  #l {
+    width: 100px;
+    height: auto;
+  }
+
+  #left,
+  #right {
+    margin-left: 0;
+    margin-right: 0;
+  }
+
+
+  #titleRow {
+    flex-direction: column;   /* stack everything */
+    gap: 10px;
+    text-align: center;
+
+  }
+
+  .btnGroup {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* 3 buttons per row */
+    gap: 12px;
+    width: 100%;
+    max-width: 300px;
+
+  }
+
+  h1 {
+    order: -1;      /* move Pysh Index to top */
+    font-size: 24px;
+  }
+
+  .boxBtn {
+    font-size: 14px;
+    padding: 5px;
+}
+
+#reviews {
+    gap: 20px; /* less space between cards */
+  }
+
+  .card {
+    width: 33%;          /* 2 cards per row */
+    height: auto;        /* let height adjust */
+    padding: 12px;
+    border-radius: 20px;
+  }
+
+  .card img {
+    width: 100%;         /* fit inside smaller card */
+    max-height: 300px;
+  }
+
+  .card h3 {
+    font-size: 14px;
+    width: 100%;
+  }
+
+  .imgWrap {
+    border-radius: 15px;
+  }
+  
+    footer {
+    padding: 15px 20px;   /* smaller padding */
+    font-size: 14px;      /* smaller text */
+  }
+
+  #f {
+    gap: 20px;            /* less space between icons */
+    flex-wrap: wrap;     /* allow wrapping */
+  }
+
+  #f a {
+    font-size: 14px;
+  }
+
+  #f img {
+    width: 18px;         /* smaller social icons */
+    height: 18px;
+  }
+
+  #lf {
+    width: 70px;         /* smaller logo */
+    height: 70px;
+    margin-left: auto;  /* center logo */
+    margin-right: auto;
+    display: block;
+  }
+
+  #c {
+   
+    align-items: center;
+    gap: 1px;
+    font-size: 8px;
+  }
+
+}
+
+
 </style>
 </head>
 
