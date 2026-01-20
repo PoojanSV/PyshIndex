@@ -276,7 +276,41 @@ footer { background-color:#111; padding:15px 50px; font-size:20px; }
   .imgWrap {
     border-radius: 15px;
   }
-  
+ 
+ #reviewPage {
+    flex-direction: column;   /* image on top, text below */
+    align-items: center;
+    margin: 30px 0;
+    gap: 25px;
+  }
+
+  #reviewPage img {
+    max-width: 80%;           /* smaller image */
+    margin: 0;                /* remove huge side margins */
+  }
+
+  #reviewContent {
+    width: 100%;
+    text-align: center;
+  }
+
+  #reviewCategory {
+    font-size: 18px;
+  }
+
+  #reviewContent p {
+    width: 90%;               /* no fixed width */
+    font-size: 18px;
+    margin: auto;
+  }
+
+  #back {
+    margin: 30px auto 0;      /* center back button */
+    font-size: 16px;
+    padding: 10px 20px;
+  }
+
+ 
     footer {
     padding: 15px 20px;   /* smaller padding */
     font-size: 14px;      /* smaller text */
@@ -424,6 +458,7 @@ function renderReviews(list) {
     img.onclick = () => {
       reviewsDiv.style.display = "none";
       reviewPage.style.display = "flex";
+          document.getElementById("catBack").style.display = "none";
       reviewImg.src = r.imageUrl;
       reviewTitle.textContent = r.title;
       reviewCaption.textContent = r.caption;
@@ -457,6 +492,9 @@ catBack.onclick = () => {
 backBtn.onclick = () => {
   reviewPage.style.display = "none";
   reviewsDiv.style.display = "flex";
+  document.getElementById("catBack").style.display = "block";
+
+
 };
 
 reviewPage.style.display = "none";
