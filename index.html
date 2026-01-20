@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Game Reviews</title>
+
+<style>
+body {
+  font-family: Arial, sans-serif;
+  background:#0f0f0f;
+  color:white;
+  text-align:center;
+}
+.card {
+  background:#1b1b1b;
+  margin:20px auto;
+  padding:15px;
+  width:320px;
+  border-radius:10px;
+}
+.card img {
+  width:100%;
+  border-radius:8px;
+}
+</style>
+</head>
+
+<body>
+
+<h1>🎮 Game Reviews</h1>
+<div id="reviews"></div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getFirestore, collection, getDocs, query, orderBy }
+from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+/* 🔥 FIREBASE CONFIG */
+const firebaseConfig = {
+  apiKey: "AIzaSyBoylOskSQPe1LiDehqp1gmSXfzzNNtRmY",
+  authDomain: "pysh-index.firebaseapp.com",
+  projectId: "pysh-index",
+  appId: "1:263831699229:web:f514a3d8388868f6c9ebf4"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+const reviewsDiv = document.getElementById("reviews");
+
+const q = query(collection(db, "reviews"), orderBy("createdAt", "desc"));
+const snapshot = await getDocs(q);
+
+snapshot.forEach(doc => {
+  const r = doc.data();
+  reviewsDiv.innerHTML += `
+    <div class="card">
+      <img src="${r.imageUrl}">
+      <p>${r.caption}</p>
+    </div>
+  `;
+});
+</script>
+
+</body>
+</html>
