@@ -1,41 +1,267 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Game Reviews</title>
+<title>Game Reviews | Pysh Games</title>
 
 <style>
 body {
+  background: black;
   font-family: Arial, sans-serif;
-  background:#0f0f0f;
-  color:white;
-  text-align:center;
+  margin: 0;
+  color: white;
 }
+
+/* HEADER */
+header {
+  background-color: #111;
+  padding: 15px 50px;
+}
+
+nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+nav a {
+  color: white;
+  text-decoration: none;
+  font-size: 35px;
+  padding: 20px;
+}
+
+nav a:hover { color: #e1282d; }
+
+#l { width: 200px; height: 170px; }
+#left { display: flex; margin-left: 350px; }
+#right { display: flex; margin-right: 350px; }
+
+hr { background-color: #e1282d; height: 5px; border: solid #e1282d; }
+
+/* TITLE ROW */
+#titleRow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 40px;
+  margin: 40px 0;
+}
+
+.btnGroup { display: flex; gap: 15px; }
+.boxBtn {
+  background: #111;
+  border: 3px solid #e1282d;
+  color: white;
+  padding: 12px 22px;
+  font-size: 26px;
+  border-radius: 15px;
+  cursor: pointer;
+}
+.boxBtn:hover { background: #e1282d; }
+h1 { font-size: 60px; margin: 0 30px; white-space: nowrap; }
+
+/* REVIEWS GRID */
+#reviews {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 40px;
+  margin: 50px 0;
+  perspective: 1200px;
+}
+
+/* CARD */
 .card {
-  background:#1b1b1b;
-  margin:20px auto;
-  padding:15px;
-  width:320px;
-  border-radius:10px;
+  background: #111;
+  border: 3px solid #e1282d;
+  border-radius: 30px;
+  padding: 20px;
+  text-align: center;
+  transition: transform 0.35s ease;
+  overflow: visible;
+  height:570px;
 }
+
+.imgWrap {
+  position: relative;
+  overflow: hidden;
+  border-radius: 20px;
+}
+
 .card img {
-  width:100%;
-  border-radius:8px;
+  width: 350px;
+  height: auto;
+  max-height: 500px;
+  cursor: pointer;
+  transition: transform 0.35s ease, box-shadow 0.35s ease;
+  display: block;
+  margin: auto;
+  position: relative;
+  z-index: 1;
 }
+
+.imgWrap::before {
+  content: '';
+  position: absolute;
+  top: -120%;
+  left: -150%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    120deg,
+    transparent 30%,
+    rgba(255,255,255,0.35) 50%,
+    transparent 70%
+  );
+  transform: rotate(25deg);
+  transition: top 0.7s ease, left 0.7s ease;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.card h3 { margin-top: 15px; font-size: 26px; color: white; width:350px; text-align:center; }
+
+.card:hover img {
+  transform: scale(1.1) translateY(-15px);
+  box-shadow: 0 30px 60px rgba(225,40,45,0.35);
+}
+.card:hover .imgWrap::before {
+  top: -20%;
+  left: -20%;
+}
+
+/* FULL REVIEW PAGE */
+#reviewPage {
+  display: none;
+  margin: 60px 0;
+  display: flex;
+  gap: 40px;
+  align-items: flex-start;
+}
+
+#reviewPage img {
+  width: 100%;
+  max-width: 350px;
+  border-radius: 30px;
+  border: 3px solid #e1282d;
+  margin-right: 40px;
+  margin-left: 200px;
+}
+
+#reviewContent { flex:1; }
+
+#reviewCategory {
+  font-size: 22px;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+.cat-goated { color: limegreen; }
+.cat-Good { color: blue; }
+.cat-Skipped { color: yellow; }
+
+#reviewContent p {
+  color: grey;
+  font-size:26px;
+  line-height:1.5;
+  width:550px;
+}
+
+#back {
+  background:#e1282d;
+  color:white;
+  border:none;
+  padding:12px 25px;
+  font-size:18px;
+  border-radius:15px;
+  margin-top:30px;
+  cursor:pointer;
+  display:block;
+}
+
+/* CATEGORY BACK BUTTON */
+#catBack {
+  display:none;
+  margin:40px auto;
+}
+
+/* FOOTER */
+footer { background-color:#111; padding:15px 50px; font-size:20px; }
+#f { display:flex; justify-content:center; gap:50px; }
+#f a { display:flex; align-items:center; gap:8px; text-decoration:none; color:#ccc; }
+#f img { width:24px; height:24px; }
+#lf { height:100px; width:100px; margin-left:46.5%; }
+#c { display:flex; color:#ccc; }
 </style>
 </head>
 
 <body>
 
-<h1>🎮 Game Reviews</h1>
+<header>
+<nav>
+  <div id="left"><a href="index.html">Home</a></div>
+  <a href="about.html"><img id="l" src="logo.png"></a>
+  <div id="right"><a href="contact.html">Contact Us</a></div>
+</nav>
+</header>
+
+<hr>
+
+<main>
+<div id="titleRow">
+  <div class="btnGroup">
+    <button class="boxBtn" onclick="filterCategory('Skipped')">Skipped</button>
+    <button class="boxBtn" onclick="filterCategory('Good')">Good</button>
+    <button class="boxBtn" onclick="filterCategory('goated')">Goated</button>
+  </div>
+
+  <h1>Pysh Index</h1>
+
+  <div class="btnGroup">
+    <button class="boxBtn">Top 10</button>
+    <button class="boxBtn">Studios</button>
+    <button class="boxBtn">Wishlist</button>
+  </div>
+</div>
+
 <div id="reviews"></div>
+
+<!-- CATEGORY BACK BUTTON (ONLY NEW ELEMENT) -->
+<button id="catBack" class="boxBtn">Back</button>
+
+<div id="reviewPage">
+  <img id="reviewImg">
+  <div id="reviewContent">
+    <h2 id="reviewTitle"></h2>
+    <div id="reviewCategory"></div>
+    <p id="reviewCaption"></p>
+    <button id="back">Back</button>
+  </div>
+</div>
+
+<hr>
+</main>
+
+<footer>
+<img id="lf" src="logo.png">
+<div id="f">
+  <a href="#"><img src="youtube.jpg">YouTube</a>
+  <a href="#"><img src="instagram.jpg">Instagram</a>
+  <a href="#"><img src="x.jpg">X</a>
+</div>
+<br>
+<div id="c">
+  <div>&copy; 2008</div>
+  <div style="flex:1;text-align:center;"> &nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;Pysh Games&reg;</div>
+  <div style="text-align:right;">All Rights Reserved</div>
+</div>
+</footer>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getFirestore, collection, getDocs, query, orderBy }
-from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { getFirestore, collection, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-/* 🔥 FIREBASE CONFIG */
 const firebaseConfig = {
   apiKey: "AIzaSyBoylOskSQPe1LiDehqp1gmSXfzzNNtRmY",
   authDomain: "pysh-index.firebaseapp.com",
@@ -47,19 +273,74 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
 const reviewsDiv = document.getElementById("reviews");
+const reviewPage = document.getElementById("reviewPage");
+const reviewImg = document.getElementById("reviewImg");
+const reviewTitle = document.getElementById("reviewTitle");
+const reviewCaption = document.getElementById("reviewCaption");
+const reviewCategory = document.getElementById("reviewCategory");
+const backBtn = document.getElementById("back");
+const catBack = document.getElementById("catBack");
 
-const q = query(collection(db, "reviews"), orderBy("createdAt", "desc"));
-const snapshot = await getDocs(q);
+let allReviews = [];
 
-snapshot.forEach(doc => {
-  const r = doc.data();
-  reviewsDiv.innerHTML += `
-    <div class="card">
-      <img src="${r.imageUrl}">
-      <p>${r.caption}</p>
-    </div>
-  `;
-});
+async function loadReviews() {
+  const q = query(collection(db, "reviews"), orderBy("createdAt", "desc"));
+  const snapshot = await getDocs(q);
+
+  snapshot.forEach(doc => allReviews.push(doc.data()));
+  renderReviews(allReviews);
+}
+
+function renderReviews(list) {
+  reviewsDiv.innerHTML = "";
+  list.forEach(r => {
+    const img = document.createElement("img");
+    img.src = r.imageUrl;
+
+    const title = document.createElement("h3");
+    title.textContent = r.title;
+
+    img.onclick = () => {
+      reviewsDiv.style.display = "none";
+      reviewPage.style.display = "flex";
+      reviewImg.src = r.imageUrl;
+      reviewTitle.textContent = r.title;
+      reviewCaption.textContent = r.caption;
+      reviewCategory.textContent = r.category.toUpperCase();
+      reviewCategory.className = "cat-" + r.category;
+    };
+
+    const wrap = document.createElement("div");
+    wrap.className = "imgWrap";
+    wrap.appendChild(img);
+
+    const card = document.createElement("div");
+    card.className = "card";
+    card.appendChild(wrap);
+    card.appendChild(title);
+
+    reviewsDiv.appendChild(card);
+  });
+}
+
+window.filterCategory = (cat) => {
+  renderReviews(allReviews.filter(r => r.category === cat));
+  catBack.style.display = "block";
+};
+
+catBack.onclick = () => {
+  renderReviews(allReviews);
+  catBack.style.display = "none";
+};
+
+backBtn.onclick = () => {
+  reviewPage.style.display = "none";
+  reviewsDiv.style.display = "flex";
+};
+
+reviewPage.style.display = "none";
+catBack.style.display = "none";
+loadReviews();
 </script>
 
 </body>
