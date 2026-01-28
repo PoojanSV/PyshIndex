@@ -41,6 +41,32 @@ nav a:hover { color: #e1282d; }
 
 hr { background-color: #e1282d; height: 5px; border: solid #e1282d; }
 
+/* LOADER */
+#loader {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-bottom:60px;
+}
+
+.spinner-logo {
+  width: 60px;
+  height: 80px;
+  animation: spin 1.5s linear infinite;
+  transform-origin: center center;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.loader-text {
+  font-size: 24px;
+  color: #e1282d;
+}
+
 /* TITLE ROW */
 #titleRow {
   display: flex;
@@ -63,9 +89,19 @@ hr { background-color: #e1282d; height: 5px; border: solid #e1282d; }
 .boxBtn:hover { background: #e1282d; }
 h1 { font-size: 60px; margin: 0 30px; white-space: nowrap; }
 
-/* REVIEWS GRID */
+/* REVIEWS GRID - HIDDEN BY DEFAULT */
 #reviews {
-  display: flex;
+  display: none; /* Initially hidden */
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 40px;
+  margin: 50px 0;
+  perspective: 1200px;
+}
+
+/* WISHLIST GRID - HIDDEN BY DEFAULT */
+#wishlist {
+  display: none; /* Initially hidden */
   flex-wrap: wrap;
   justify-content: center;
   gap: 40px;
@@ -83,6 +119,25 @@ h1 { font-size: 60px; margin: 0 30px; white-space: nowrap; }
   transition: transform 0.35s ease;
   overflow: visible;
   height:570px;
+  position: relative;
+}
+
+/* WISHLIST CARD SPECIFIC */
+.wishlist-card {
+  border-color: #e1282d;
+}
+
+.wishlist-badge {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: gold;
+  color: black;
+  padding: 5px 10px;
+  border-radius: 15px;
+  font-size: 14px;
+  font-weight: bold;
+  z-index: 10;
 }
 
 .imgWrap {
@@ -101,6 +156,11 @@ h1 { font-size: 60px; margin: 0 30px; white-space: nowrap; }
   margin: auto;
   position: relative;
   z-index: 1;
+}
+
+/* Wishlist images are not clickable */
+.wishlist-card img {
+  cursor: default;
 }
 
 .imgWrap::before {
@@ -124,7 +184,7 @@ h1 { font-size: 60px; margin: 0 30px; white-space: nowrap; }
 
 .card h3 { margin-top: 15px; font-size: 26px; color: white; width:350px; text-align:center; }
 
-.card:hover img {
+.card:hover img, .wishlist-card:hover img {
   transform: scale(1.1) translateY(-15px);
   box-shadow: 0 30px 60px rgba(225,40,45,0.35);
 }
@@ -133,11 +193,10 @@ h1 { font-size: 60px; margin: 0 30px; white-space: nowrap; }
   left: -20%;
 }
 
-/* FULL REVIEW PAGE */
+/* FULL REVIEW PAGE - HIDDEN BY DEFAULT */
 #reviewPage {
-  display: none;
+  display: none; /* Initially hidden */
   margin: 60px 0;
-  display: flex;
   gap: 40px;
   align-items: flex-start;
 }
@@ -182,9 +241,9 @@ h1 { font-size: 60px; margin: 0 30px; white-space: nowrap; }
   display:block;
 }
 
-/* CATEGORY BACK BUTTON */
+/* CATEGORY BACK BUTTON - HIDDEN BY DEFAULT */
 #catBack {
-  display:none;
+  display: none; /* Initially hidden */
   margin:40px auto;
 }
 
@@ -198,6 +257,12 @@ footer { background-color:#111; padding:15px 50px; font-size:20px; }
 
 #pysh {
   color: #e1282d; /* change to any color you want */
+}
+
+/* ACTIVE BUTTON STYLE */
+.active {
+  background: #e1282d !important;
+  color: white !important;
 }
 
 /* MOBILE VIEW --------------------------------------------------------------------------------------------- */
@@ -225,6 +290,15 @@ footer { background-color:#111; padding:15px 50px; font-size:20px; }
     margin-right: 0;
   }
 
+  /* LOADER MOBILE */
+  .spinner-logo {
+    width: 50px;
+    height: 60px;
+  }
+
+  .loader-text {
+    font-size: 18px;
+  }
 
   #titleRow {
     flex-direction: column;   /* stack everything */
@@ -252,7 +326,7 @@ footer { background-color:#111; padding:15px 50px; font-size:20px; }
     padding: 5px;
 }
 
-#reviews {
+#reviews, #wishlist {
     gap: 20px; /* less space between cards */
   }
 
@@ -271,6 +345,13 @@ footer { background-color:#111; padding:15px 50px; font-size:20px; }
   .card h3 {
     font-size: 14px;
     width: 100%;
+  }
+
+  .wishlist-badge {
+    top: 5px;
+    right: 5px;
+    padding: 3px 6px;
+    font-size: 10px;
   }
 
   .imgWrap {
@@ -339,7 +420,6 @@ footer { background-color:#111; padding:15px 50px; font-size:20px; }
   }
 
   #c {
-   
     align-items: center;
     gap: 1px;
     font-size: 8px;
@@ -371,21 +451,32 @@ footer { background-color:#111; padding:15px 50px; font-size:20px; }
     <button class="boxBtn" onclick="filterCategory('Goated')">Goated</button>
   </div>
 
-  <h1>Pysh Index</h1>
+  <h1 onclick="location.reload()">Pysh Index</h1>
 
   <div class="btnGroup">
-    <button class="boxBtn">Top 10</button>
-    <button class="boxBtn">Studios</button>
-    <button class="boxBtn">Wishlist</button>
+    <button class="boxBtn" id="top10Btn">Top 10</button>
+    <button class="boxBtn" id="studiosBtn">Studios</button>
+    <button class="boxBtn" id="wishlistBtn">Wishlist</button>
   </div>
 </div>
 
+<!-- LOADER - VISIBLE BY DEFAULT -->
+<div id="loader">
+  <img src="lodlogo.png" class="spinner-logo" alt="Pysh Games Logo">
+  <div class="loader-text">Loading...</div>
+</div>
+
+<!-- REVIEWS SECTION - HIDDEN BY DEFAULT -->
 <div id="reviews"></div>
 
-<!-- CATEGORY BACK BUTTON (ONLY NEW ELEMENT) -->
-<button id="catBack" class="boxBtn">Back</button>
+<!-- WISHLIST SECTION - HIDDEN BY DEFAULT -->
+<div id="wishlist"></div>
 
-<div id="reviewPage">
+<!-- CATEGORY BACK BUTTON - HIDDEN BY DEFAULT -->
+<button id="catBack" class="boxBtn" style="display: none;">Back</button>
+
+<!-- REVIEW PAGE - HIDDEN BY DEFAULT -->
+<div id="reviewPage" style="display: none;">
   <img id="reviewImg">
   <div id="reviewContent">
     <h2 id="reviewTitle"></h2>
@@ -415,7 +506,13 @@ footer { background-color:#111; padding:15px 50px; font-size:20px; }
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getFirestore, collection, getDocs, query, orderBy } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { 
+  getFirestore, 
+  collection, 
+  getDocs, 
+  query, 
+  orderBy 
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyBoylOskSQPe1LiDehqp1gmSXfzzNNtRmY",
@@ -427,7 +524,9 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
+// DOM Elements
 const reviewsDiv = document.getElementById("reviews");
+const wishlistDiv = document.getElementById("wishlist");
 const reviewPage = document.getElementById("reviewPage");
 const reviewImg = document.getElementById("reviewImg");
 const reviewTitle = document.getElementById("reviewTitle");
@@ -435,19 +534,149 @@ const reviewCaption = document.getElementById("reviewCaption");
 const reviewCategory = document.getElementById("reviewCategory");
 const backBtn = document.getElementById("back");
 const catBack = document.getElementById("catBack");
+const loader = document.getElementById("loader");
+const wishlistBtn = document.getElementById("wishlistBtn");
+const top10Btn = document.getElementById("top10Btn");
+const studiosBtn = document.getElementById("studiosBtn");
 
+// Global state
 let allReviews = [];
+let allWishlist = [];
+let currentFilter = null;
 
-async function loadReviews() {
-  const q = query(collection(db, "reviews"), orderBy("createdAt", "desc"));
-  const snapshot = await getDocs(q);
+// Initialize - hide everything except loader
+document.addEventListener('DOMContentLoaded', function() {
+  // Hide elements initially to prevent flash
+  reviewsDiv.style.display = "none";
+  wishlistDiv.style.display = "none";
+  reviewPage.style.display = "none";
+  catBack.style.display = "none";
+  
+  // Show loader
+  loader.style.display = "flex";
+  
+  // Setup button event listeners
+  wishlistBtn.addEventListener('click', showWishlist);
+  top10Btn.addEventListener('click', showTop10);
+  studiosBtn.addEventListener('click', showStudios);
+  
+  // Load both reviews and wishlist
+  loadAllData();
+});
 
-  snapshot.forEach(doc => allReviews.push(doc.data()));
-  renderReviews(allReviews);
+async function loadAllData() {
+  try {
+    // Load reviews
+    const reviewsQuery = query(collection(db, "reviews"), orderBy("createdAt", "desc"));
+    const reviewsSnapshot = await getDocs(reviewsQuery);
+    allReviews = [];
+    reviewsSnapshot.forEach(doc => allReviews.push(doc.data()));
+    
+    // Load wishlist
+    const wishlistQuery = query(collection(db, "wishlist"), orderBy("addedAt", "desc"));
+    const wishlistSnapshot = await getDocs(wishlistQuery);
+    allWishlist = [];
+    wishlistSnapshot.forEach(doc => allWishlist.push(doc.data()));
+    
+    // Preload images for both
+    await Promise.all([
+      preloadImages(allReviews),
+      preloadImages(allWishlist)
+    ]);
+    
+    // Render both
+    renderReviews(allReviews);
+    renderWishlist(allWishlist);
+    
+    // Hide loader and show reviews by default
+    hideLoader();
+    showReviews();
+    
+  } catch (error) {
+    console.error("Error loading data:", error);
+    hideLoader();
+    alert("Error loading data. Please refresh the page.");
+  }
+}
+
+function hideLoader() {
+  loader.style.display = "none";
+}
+
+function preloadImages(items) {
+  return new Promise((resolve) => {
+    let loadedImages = 0;
+    const totalImages = items.length;
+    
+    if (totalImages === 0) {
+      resolve();
+      return;
+    }
+    
+    items.forEach(item => {
+      const img = new Image();
+      img.src = item.imageUrl;
+      img.onload = () => {
+        loadedImages++;
+        if (loadedImages === totalImages) {
+          resolve();
+        }
+      };
+      img.onerror = () => {
+        loadedImages++;
+        if (loadedImages === totalImages) {
+          resolve();
+        }
+      };
+    });
+  });
+}
+
+function showReviews() {
+  reviewsDiv.style.display = "flex";
+  wishlistDiv.style.display = "none";
+  reviewPage.style.display = "none";
+  
+  // Update button states
+  updateButtonStates('reviews');
+}
+
+function showWishlist() {
+  reviewsDiv.style.display = "none";
+  wishlistDiv.style.display = "flex";
+  reviewPage.style.display = "none";
+  catBack.style.display = "none";
+  
+  // Update button states
+  updateButtonStates('wishlist');
+}
+
+function updateButtonStates(view) {
+  // Reset all buttons
+  document.querySelectorAll('.boxBtn').forEach(btn => {
+    btn.classList.remove('active');
+  });
+  
+  // Activate current view button
+  if (view === 'wishlist') {
+    wishlistBtn.classList.add('active');
+  } else if (currentFilter) {
+    // If we're in reviews with a filter, highlight that filter button
+    const filterBtn = document.querySelector(`.boxBtn[onclick*="${currentFilter}"]`);
+    if (filterBtn) {
+      filterBtn.classList.add('active');
+    }
+  }
 }
 
 function renderReviews(list) {
   reviewsDiv.innerHTML = "";
+  
+  if (list.length === 0) {
+    reviewsDiv.innerHTML = '<p style="text-align: center; width: 100%; font-size: 24px; color: #888;">No reviews found</p>';
+    return;
+  }
+  
   list.forEach(r => {
     const img = document.createElement("img");
     img.src = r.imageUrl;
@@ -457,8 +686,9 @@ function renderReviews(list) {
 
     img.onclick = () => {
       reviewsDiv.style.display = "none";
+      wishlistDiv.style.display = "none";
       reviewPage.style.display = "flex";
-          document.getElementById("catBack").style.display = "none";
+      catBack.style.display = "none";
       reviewImg.src = r.imageUrl;
       reviewTitle.textContent = r.title;
       reviewCaption.textContent = r.caption;
@@ -479,27 +709,81 @@ function renderReviews(list) {
   });
 }
 
+function renderWishlist(list) {
+  wishlistDiv.innerHTML = "";
+  
+  if (list.length === 0) {
+    wishlistDiv.innerHTML = '<p style="text-align: center; width: 100%; font-size: 24px; color: #888;">No games in wishlist yet</p>';
+    return;
+  }
+  
+  list.forEach(item => {
+    const img = document.createElement("img");
+    img.src = item.imageUrl;
+
+    const title = document.createElement("h3");
+    title.textContent = item.title;
+
+    const wrap = document.createElement("div");
+    wrap.className = "imgWrap";
+    wrap.appendChild(img);
+
+    const card = document.createElement("div");
+    card.className = "card wishlist-card";
+    
+    // Add wishlist badge
+    const badge = document.createElement("div");
+    badge.className = "wishlist-badge";
+    badge.textContent = "Wishlist";
+    card.appendChild(badge);
+    
+    card.appendChild(wrap);
+    card.appendChild(title);
+
+    wishlistDiv.appendChild(card);
+  });
+}
+
+// Filter functions
 window.filterCategory = (cat) => {
-  renderReviews(allReviews.filter(r => r.category === cat));
+  currentFilter = cat;
+  const filtered = allReviews.filter(r => r.category === cat);
+  renderReviews(filtered);
+  showReviews();
+  
+  // Show back button
   catBack.style.display = "block";
+  
+  // Update button states
+  updateButtonStates('reviews');
 };
 
 catBack.onclick = () => {
+  currentFilter = null;
   renderReviews(allReviews);
+  showReviews();
   catBack.style.display = "none";
+  updateButtonStates('reviews');
 };
 
 backBtn.onclick = () => {
   reviewPage.style.display = "none";
-  reviewsDiv.style.display = "flex";
-  document.getElementById("catBack").style.display = "block";
-
-
+  if (currentFilter) {
+    showReviews();
+    catBack.style.display = "block";
+  } else {
+    showReviews();
+  }
 };
 
-reviewPage.style.display = "none";
-catBack.style.display = "none";
-loadReviews();
+// Placeholder functions for Top 10 and Studios
+function showTop10() {
+  alert("Top 10 feature coming soon!");
+}
+
+function showStudios() {
+  alert("Studios feature coming soon!");
+}
 </script>
 
 </body>
