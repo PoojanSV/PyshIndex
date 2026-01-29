@@ -89,6 +89,19 @@ hr { background-color: #e1282d; height: 5px; border: solid #e1282d; }
 .boxBtn:hover { background: #e1282d; }
 h1 { font-size: 60px; margin: 0 30px; white-space: nowrap; }
 
+/* Make the two buttons take equal space with margins */
+#titleRow .btnGroup:last-child {
+  width: 60%; /* Make this button group take more horizontal space */
+  max-width:400px; /* Add some space on left and right */
+}
+
+#titleRow .btnGroup:last-child .boxBtn {
+  flex: 1;
+  min-width: 0;
+  text-align: center;
+  margin: 0 2px; /* Add space between the two buttons */
+}
+
 /* REVIEWS GRID - HIDDEN BY DEFAULT */
 #reviews {
   display: none; /* Initially hidden */
@@ -304,16 +317,23 @@ footer { background-color:#111; padding:15px 50px; font-size:20px; }
     flex-direction: column;   /* stack everything */
     gap: 10px;
     text-align: center;
-
   }
 
   .btnGroup {
     display: grid;
-    grid-template-columns: repeat(3, 1fr); /* 3 buttons per row */
-    gap: 12px;
+    grid-template-columns: repeat(3, 1fr); /* 3 buttons per row for left group */
+    gap: 10px;
     width: 100%;
-    max-width: 300px;
+    max-width:280px;
+  }
 
+  /* For the right button group (Top 10 and Wishlist) on mobile */
+  #titleRow .btnGroup:last-child {
+  gap:0px;
+    width: 100%;
+    max-width: 290px;
+    /* Center the button group */
+    grid-template-columns: repeat(2, 1fr); /* 2 buttons per row */
   }
 
   h1 {
@@ -323,8 +343,8 @@ footer { background-color:#111; padding:15px 50px; font-size:20px; }
 
   .boxBtn {
     font-size: 14px;
-    padding: 5px;
-}
+    padding: 8px 5px; /* Slightly more padding for better touch */
+  }
 
 #reviews, #wishlist {
     gap: 20px; /* less space between cards */
@@ -455,7 +475,6 @@ footer { background-color:#111; padding:15px 50px; font-size:20px; }
 
   <div class="btnGroup">
     <button class="boxBtn" id="top10Btn">Top 10</button>
-    <button class="boxBtn" id="studiosBtn">Studios</button>
     <button class="boxBtn" id="wishlistBtn">Wishlist</button>
   </div>
 </div>
@@ -537,7 +556,6 @@ const catBack = document.getElementById("catBack");
 const loader = document.getElementById("loader");
 const wishlistBtn = document.getElementById("wishlistBtn");
 const top10Btn = document.getElementById("top10Btn");
-const studiosBtn = document.getElementById("studiosBtn");
 
 // Global state
 let allReviews = [];
@@ -558,7 +576,6 @@ document.addEventListener('DOMContentLoaded', function() {
   // Setup button event listeners
   wishlistBtn.addEventListener('click', showWishlist);
   top10Btn.addEventListener('click', showTop10);
-  studiosBtn.addEventListener('click', showStudios);
   
   // Load both reviews and wishlist
   loadAllData();
@@ -776,13 +793,9 @@ backBtn.onclick = () => {
   }
 };
 
-// Placeholder functions for Top 10 and Studios
+// Placeholder function for Top 10
 function showTop10() {
   alert("Top 10 feature coming soon!");
-}
-
-function showStudios() {
-  alert("Studios feature coming soon!");
 }
 </script>
 
