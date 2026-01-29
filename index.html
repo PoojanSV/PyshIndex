@@ -3,17 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
- <meta name="description" content="Pysh is an indie game development studio creating unique PC games and web projects.">
-  <meta name="keywords" content="Pysh, indie games, game development, PC games, web games">
-  <meta name="author" content="Poojan Vasani">
 
-  <!-- Open Graph (for Google, Discord, WhatsApp) -->
-  <meta property="og:title" content="Pysh – Indie Games & Projects">
-  <meta property="og:description" content="Indie games and projects by Pysh.">
-  <meta property="og:url" content="https://pysh.site">
-  <meta property="og:type" content="website">
-
-<title>Pysh Index</title>
+<title>Game Reviews</title>
 <link rel="icon" type="image" href="logo.jpg">
 
 <style>
@@ -133,6 +124,16 @@ h1 { font-size: 60px; margin: 0 30px; white-space: nowrap; }
   perspective: 1200px;
 }
 
+/* TOP 10 GRID - HIDDEN BY DEFAULT */
+#top10 {
+  display: none; /* Initially hidden */
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 40px;
+  margin: 50px 0;
+  perspective: 1200px;
+}
+
 /* CARD */
 .card {
   background: #111;
@@ -155,14 +156,41 @@ h1 { font-size: 60px; margin: 0 30px; white-space: nowrap; }
   position: absolute;
   top: 10px;
   right: 10px;
-  background: gold;
+  background: #e1282d;
   color: black;
   padding: 5px 10px;
   border-radius: 15px;
   font-size: 14px;
   font-weight: bold;
   z-index: 10;
+  border: 3px solid black;
 }
+
+/* TOP 10 CARD SPECIFIC */
+.top10-card {
+  position: relative;
+  border-color:#e1282d ;
+}
+
+.top10-rank {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background: linear-gradient( #e1282d, #5e1c1e);
+  color: black;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  font-weight: bold;
+  z-index: 10;
+  border: 3px solid black;
+}
+
+
 
 .imgWrap {
   position: relative;
@@ -208,7 +236,7 @@ h1 { font-size: 60px; margin: 0 30px; white-space: nowrap; }
 
 .card h3 { margin-top: 15px; font-size: 26px; color: white; width:350px; text-align:center; }
 
-.card:hover img, .wishlist-card:hover img {
+.card:hover img, .wishlist-card:hover img, .top10-card:hover img {
   transform: scale(1.1) translateY(-15px);
   box-shadow: 0 30px 60px rgba(225,40,45,0.35);
 }
@@ -357,7 +385,7 @@ footer { background-color:#111; padding:15px 50px; font-size:20px; }
     padding: 8px 5px; /* Slightly more padding for better touch */
   }
 
-#reviews, #wishlist {
+#reviews, #wishlist, #top10 {
     gap: 20px; /* less space between cards */
   }
 
@@ -378,11 +406,17 @@ footer { background-color:#111; padding:15px 50px; font-size:20px; }
     width: 100%;
   }
 
-  .wishlist-badge {
+  .wishlist-badge, .top10-badge {
     top: 5px;
     right: 5px;
     padding: 3px 6px;
     font-size: 10px;
+  }
+
+  .top10-rank {
+    width: 40px;
+    height: 40px;
+    font-size: 16px;
   }
 
   .imgWrap {
@@ -502,6 +536,9 @@ footer { background-color:#111; padding:15px 50px; font-size:20px; }
 <!-- WISHLIST SECTION - HIDDEN BY DEFAULT -->
 <div id="wishlist"></div>
 
+<!-- TOP 10 SECTION - HIDDEN BY DEFAULT -->
+<div id="top10"></div>
+
 <!-- CATEGORY BACK BUTTON - HIDDEN BY DEFAULT -->
 <button id="catBack" class="boxBtn" style="display: none;">Back</button>
 
@@ -541,7 +578,8 @@ import {
   collection, 
   getDocs, 
   query, 
-  orderBy 
+  orderBy,
+  where
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -557,6 +595,7 @@ const db = getFirestore(app);
 // DOM Elements
 const reviewsDiv = document.getElementById("reviews");
 const wishlistDiv = document.getElementById("wishlist");
+const top10Div = document.getElementById("top10");
 const reviewPage = document.getElementById("reviewPage");
 const reviewImg = document.getElementById("reviewImg");
 const reviewTitle = document.getElementById("reviewTitle");
@@ -571,6 +610,7 @@ const top10Btn = document.getElementById("top10Btn");
 // Global state
 let allReviews = [];
 let allWishlist = [];
+let top10Reviews = [];
 let currentFilter = null;
 
 // Initialize - hide everything except loader
@@ -578,6 +618,7 @@ document.addEventListener('DOMContentLoaded', function() {
   // Hide elements initially to prevent flash
   reviewsDiv.style.display = "none";
   wishlistDiv.style.display = "none";
+  top10Div.style.display = "none";
   reviewPage.style.display = "none";
   catBack.style.display = "none";
   
@@ -588,7 +629,7 @@ document.addEventListener('DOMContentLoaded', function() {
   wishlistBtn.addEventListener('click', showWishlist);
   top10Btn.addEventListener('click', showTop10);
   
-  // Load both reviews and wishlist
+  // Load all data
   loadAllData();
 });
 
@@ -606,15 +647,20 @@ async function loadAllData() {
     allWishlist = [];
     wishlistSnapshot.forEach(doc => allWishlist.push(doc.data()));
     
-    // Preload images for both
+    // Load top 10 reviews
+    await loadTop10Reviews();
+    
+    // Preload images for all
     await Promise.all([
       preloadImages(allReviews),
-      preloadImages(allWishlist)
+      preloadImages(allWishlist),
+      preloadImages(top10Reviews)
     ]);
     
-    // Render both
+    // Render all
     renderReviews(allReviews);
     renderWishlist(allWishlist);
+    renderTop10();
     
     // Hide loader and show reviews by default
     hideLoader();
@@ -624,6 +670,27 @@ async function loadAllData() {
     console.error("Error loading data:", error);
     hideLoader();
     alert("Error loading data. Please refresh the page.");
+  }
+}
+
+async function loadTop10Reviews() {
+  try {
+    // Get reviews with ranks 1-10
+    const q = query(collection(db, "reviews"), where("rank", ">=", 1));
+    const snapshot = await getDocs(q);
+    
+    top10Reviews = [];
+    snapshot.forEach(doc => {
+      const review = { ...doc.data() };
+      top10Reviews.push(review);
+    });
+    
+    // Sort by rank
+    top10Reviews.sort((a, b) => a.rank - b.rank);
+    
+  } catch (error) {
+    console.error("Error loading top 10:", error);
+    top10Reviews = [];
   }
 }
 
@@ -663,6 +730,7 @@ function preloadImages(items) {
 function showReviews() {
   reviewsDiv.style.display = "flex";
   wishlistDiv.style.display = "none";
+  top10Div.style.display = "none";
   reviewPage.style.display = "none";
   
   // Update button states
@@ -672,11 +740,23 @@ function showReviews() {
 function showWishlist() {
   reviewsDiv.style.display = "none";
   wishlistDiv.style.display = "flex";
+  top10Div.style.display = "none";
   reviewPage.style.display = "none";
   catBack.style.display = "none";
   
   // Update button states
   updateButtonStates('wishlist');
+}
+
+function showTop10() {
+  reviewsDiv.style.display = "none";
+  wishlistDiv.style.display = "none";
+  top10Div.style.display = "flex";
+  reviewPage.style.display = "none";
+  catBack.style.display = "none";
+  
+  // Update button states
+  updateButtonStates('top10');
 }
 
 function updateButtonStates(view) {
@@ -688,6 +768,8 @@ function updateButtonStates(view) {
   // Activate current view button
   if (view === 'wishlist') {
     wishlistBtn.classList.add('active');
+  } else if (view === 'top10') {
+    top10Btn.classList.add('active');
   } else if (currentFilter) {
     // If we're in reviews with a filter, highlight that filter button
     const filterBtn = document.querySelector(`.boxBtn[onclick*="${currentFilter}"]`);
@@ -715,6 +797,7 @@ function renderReviews(list) {
     img.onclick = () => {
       reviewsDiv.style.display = "none";
       wishlistDiv.style.display = "none";
+      top10Div.style.display = "none";
       reviewPage.style.display = "flex";
       catBack.style.display = "none";
       reviewImg.src = r.imageUrl;
@@ -772,6 +855,84 @@ function renderWishlist(list) {
   });
 }
 
+function renderTop10() {
+  top10Div.innerHTML = "";
+  
+  if (top10Reviews.length === 0) {
+    top10Div.innerHTML = '<p style="text-align: center; width: 100%; font-size: 24px; color: #888;">Top 10 list is empty. Check back soon!</p>';
+    return;
+  }
+  
+  // Create array of all 10 positions
+  const allRanks = [];
+  for (let i = 1; i <= 10; i++) {
+    const review = top10Reviews.find(r => r.rank === i);
+    allRanks.push({ rank: i, review: review });
+  }
+  
+  allRanks.forEach(({ rank, review }) => {
+    const card = document.createElement("div");
+    card.className = "card top10-card";
+    
+    // Add rank number
+    const rankDiv = document.createElement("div");
+    rankDiv.className = "top10-rank";
+    rankDiv.textContent = `#${rank}`;
+    card.appendChild(rankDiv);
+    
+    // Add top 10 badge
+ 
+    
+    if (review) {
+      const img = document.createElement("img");
+      img.src = review.imageUrl;
+
+      const title = document.createElement("h3");
+      title.textContent = review.title;
+
+      img.onclick = () => {
+        reviewsDiv.style.display = "none";
+        wishlistDiv.style.display = "none";
+        top10Div.style.display = "none";
+        reviewPage.style.display = "flex";
+        catBack.style.display = "none";
+        reviewImg.src = review.imageUrl;
+        reviewTitle.textContent = review.title;
+        reviewCaption.textContent = review.caption;
+        reviewCategory.textContent = review.category.toUpperCase();
+        reviewCategory.className = "cat-" + review.category;
+      };
+
+      const wrap = document.createElement("div");
+      wrap.className = "imgWrap";
+      wrap.appendChild(img);
+
+      card.appendChild(wrap);
+      card.appendChild(title);
+    } else {
+      // Empty slot
+      const emptyDiv = document.createElement("div");
+      emptyDiv.className = "imgWrap";
+      emptyDiv.style.height = "300px";
+      emptyDiv.style.display = "flex";
+      emptyDiv.style.alignItems = "center";
+      emptyDiv.style.justifyContent = "center";
+      emptyDiv.style.backgroundColor = "#222";
+      emptyDiv.style.borderRadius = "20px";
+      emptyDiv.innerHTML = '<span style="color: #888; font-size: 18px;">Coming Soon</span>';
+      
+      const title = document.createElement("h3");
+      title.textContent = "To Be Announced";
+      title.style.color = "#888";
+      
+      card.appendChild(emptyDiv);
+      card.appendChild(title);
+    }
+
+    top10Div.appendChild(card);
+  });
+}
+
 // Filter functions
 window.filterCategory = (cat) => {
   currentFilter = cat;
@@ -800,14 +961,16 @@ backBtn.onclick = () => {
     showReviews();
     catBack.style.display = "block";
   } else {
-    showReviews();
+    // Return to previous view
+    if (top10Div.style.display === "flex") {
+      showTop10();
+    } else if (wishlistDiv.style.display === "flex") {
+      showWishlist();
+    } else {
+      showReviews();
+    }
   }
 };
-
-// Placeholder function for Top 10
-function showTop10() {
-  alert("Top 10 feature coming soon!");
-}
 </script>
 
 </body>
