@@ -572,20 +572,64 @@ footer { background-color:#111; padding:15px 50px; font-size:20px; }
 </footer>
 
 <script type="module">
-	alert("Game available for beta testing ");
+// Create overlay
+const overlay = document.createElement("div");
+overlay.style.position = "fixed";
+overlay.style.top = "0";
+overlay.style.left = "0";
+overlay.style.width = "100%";
+overlay.style.height = "100%";
+overlay.style.background = "rgba(0,0,0,0.6)";
+overlay.style.display = "flex";
+overlay.style.alignItems = "center";
+overlay.style.justifyContent = "center";
+overlay.style.zIndex = "9999";
 
-const btn = document.createElement("button");
-btn.innerText = "Download Beta";
-btn.style.padding = "12px 20px";
-btn.style.fontSize = "16px";
-btn.style.cursor = "pointer";
-btn.style.marginTop = "20px";
+// Create popup
+const popup = document.createElement("div");
+popup.style.background = "#e1282d";
+popup.style.padding = "25px";
+popup.style.borderRadius = "10px";
+popup.style.width = "320px";
+popup.style.position = "relative";
+popup.style.boxShadow = "0 10px 25px rgba(0,0,0,0.3)";
+popup.style.fontFamily = "Arial";
 
-btn.onclick = function() {
-    window.location.href = "google.com";
+// Close button (FIXED)
+const closeBtn = document.createElement("button");
+closeBtn.innerHTML = "✖";
+closeBtn.style.position = "absolute";
+closeBtn.style.top = "8px";
+closeBtn.style.right = "10px";
+closeBtn.style.border = "none";
+closeBtn.style.background = "transparent";
+closeBtn.style.fontSize = "18px";
+closeBtn.style.cursor = "pointer";
+closeBtn.onclick = () => overlay.remove();
+
+// Title
+const title = document.createElement("h3");
+title.innerText = "Pysh00 Alpha Available";
+title.style.marginTop = "0";
+
+// Download button (Opens in browser)
+const downloadBtn = document.createElement("button");
+downloadBtn.innerText = "Download";
+downloadBtn.style.padding = "10px 15px";
+downloadBtn.style.cursor = "pointer";
+downloadBtn.style.marginTop = "15px";
+
+downloadBtn.onclick = () => {
+    window.location.href = "https://www.transfernow.net/dl/20260222xST9IcQs";
 };
 
-document.body.appendChild(btn);
+// Assemble
+popup.appendChild(closeBtn);
+popup.appendChild(title);
+popup.appendChild(downloadBtn);
+overlay.appendChild(popup);
+document.body.appendChild(overlay);
+
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { 
   getFirestore, 
