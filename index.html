@@ -572,6 +572,20 @@ footer { background-color:#111; padding:15px 50px; font-size:20px; }
 </footer>
 
 <script type="module">
+	alert("Game available for beta testing ");
+
+const btn = document.createElement("button");
+btn.innerText = "Download Beta";
+btn.style.padding = "12px 20px";
+btn.style.fontSize = "16px";
+btn.style.cursor = "pointer";
+btn.style.marginTop = "20px";
+
+btn.onclick = function() {
+    window.location.href = "YOUR_RELEASE_LINK";
+};
+
+document.body.appendChild(btn);
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { 
   getFirestore, 
