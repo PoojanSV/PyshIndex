@@ -1,146 +1,644 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Imposter Online</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>Imposter Game</title>
+    <!-- Google Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,600;14..32,700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
 
-<style>
+        body {
+            background: radial-gradient(circle at 10% 20%, #1e2538, #0c0f17);
+            min-height: 100vh;
+            color: #edf2fb;
+        }
 
-body{
-font-family:Arial;
-background:#f2f2f2;
-text-align:center;
-padding:40px;
-}
+        /* Splash screen */
+        #splashScreen {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: black;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            animation: fadeOut 4s forwards;
+        }
+        .splash-content {
+            text-align: center;
+        }
+        .splash-content img {
+            width: 200px;
+            display: block;
+            margin: 0 auto;
+        }
+        .splash-content p {
+            font-size: 28px;
+            margin-top: 20px;
+            color: white;
+        }
+        @keyframes fadeOut {
+            0% { opacity: 1; transform: scale(0.9); }
+            20% { opacity: 1; transform: scale(1); }
+            80% { opacity: 1; }
+            100% { opacity: 0; transform: scale(1.1); visibility: hidden; }
+        }
 
-.card{
-background:white;
-padding:20px;
-border-radius:10px;
-width:350px;
-margin:auto;
-box-shadow:0 0 10px rgba(0,0,0,0.2);
-}
+        /* Screen system */
+        .screen {
+            display: none;
+            height: 100vh;
+            width: 100%;
+        }
+        .active {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
 
-input{
-width:90%;
-padding:10px;
-margin:10px;
-font-size:16px;
-}
+        /* ---------- JOIN SCREEN ---------- */
+        #joinScreen {
+            background: rgba(10, 14, 23, 0.9);
+            backdrop-filter: blur(10px);
+            padding: 20px;
+        }
 
-button{
-padding:12px;
-width:90%;
-margin:10px;
-font-size:16px;
-background:#457b9d;
-color:white;
-border:none;
-border-radius:6px;
-cursor:pointer;
-}
+        .join-card {
+            background: #1f283e;
+            padding: clamp(30px, 8vw, 50px) clamp(20px, 6vw, 40px);
+            border-radius: 48px;
+            width: 100%;
+            max-width: 420px;
+            box-shadow: 0 30px 40px -20px black;
+            border: 1px solid #3c4a62;
+            text-align: center;
+        }
 
-button:hover{
-background:#1d3557;
-}
+        .join-card h1 {
+            font-size: clamp(2.2rem, 10vw, 3rem);
+            font-weight: 700;
+            background: linear-gradient(145deg, #ff8a7a, #ff5f6d);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 20px;
+        }
 
-</style>
+        .join-card input {
+            width: 100%;
+            padding: 16px 22px;
+            font-size: 1rem;
+            background: #0f172a;
+            border: 1.5px solid #314361;
+            border-radius: 60px;
+            color: white;
+            outline: none;
+            transition: 0.2s;
+        }
+
+        .join-card input:focus {
+            border-color: #e63946;
+            box-shadow: 0 0 0 3px rgba(230, 57, 70, 0.2);
+        }
+
+        .join-card button {
+            width: 100%;
+            padding: 16px;
+            margin-top: 25px;
+            background: linear-gradient(145deg, #e63946, #c5303c);
+            border: none;
+            border-radius: 60px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: white;
+            cursor: pointer;
+            transition: 0.2s;
+            box-shadow: 0 10px 18px -6px #821a24;
+        }
+
+        .join-card button:hover {
+            transform: scale(1.02);
+            background: #d93a48;
+        }
+
+        /* ---------- LOBBY ---------- */
+        #lobby {
+            padding: 15px 12px;
+            justify-content: flex-start;
+            overflow-y: auto;
+        }
+
+        .lobby-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            max-width: 1000px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .lobby-header h2 {
+            font-size: clamp(1.8rem, 6vw, 2.2rem);
+            font-weight: 600;
+            background: linear-gradient(145deg, #bdc9f0, #a0b0da);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .leave-btn {
+            background: #2f3a4f;
+            border: 1px solid #4a5a7a;
+            color: #f0a5b2;
+            padding: 10px 25px;
+            border-radius: 40px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+            font-size: 0.95rem;
+        }
+
+        .leave-btn:hover {
+            background: #3e4c68;
+            color: #ffc1cc;
+        }
+
+        /* player grid */
+        .player-grid {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 12px;
+            padding: 18px 10px;
+            width: 100%;
+            max-width: 1000px;
+            background: rgba(20, 28, 45, 0.5);
+            border-radius: 40px;
+            backdrop-filter: blur(5px);
+            margin-bottom: 20px;
+            border: 1px solid #323f5a;
+        }
+
+        .player-card {
+            width: clamp(80px, 22vw, 100px);
+            height: auto;
+            background: #1e2740;
+            border-radius: 28px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 12px 5px;
+            border: 2px solid #37445c;
+            box-shadow: 0 6px 0 #0f1625;
+        }
+
+        .player-avatar {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(145deg, #e63946, #bb2e3a);
+            border-radius: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+            color: white;
+            box-shadow: 0 4px 0 #731d26;
+        }
+
+        .player-name {
+            font-size: 0.85rem;
+            font-weight: 600;
+            max-width: 90px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            padding: 0 4px;
+        }
+
+        /* chat area */
+        .chat-section {
+            width: 100%;
+            max-width: 700px;
+            background: #151e30;
+            border-radius: 36px;
+            padding: 18px;
+            border: 1px solid #31415b;
+            margin-top: 5px;
+        }
+
+        .messages {
+            background: #101827;
+            border-radius: 28px;
+            padding: 16px;
+            height: 180px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 16px;
+            border: 1px solid #26324a;
+        }
+
+        .messages div {
+            background: #1f2a40;
+            padding: 8px 16px;
+            border-radius: 30px;
+            max-width: 90%;
+            align-self: flex-start;
+            word-break: break-word;
+            font-size: 0.9rem;
+            border: 1px solid #394a6b;
+        }
+
+        .messages div b {
+            color: #ff8a7a;
+            margin-right: 6px;
+        }
+
+        .chat-controls {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .chat-controls input {
+            flex: 1 1 200px;
+            padding: 14px 20px;
+            background: #101827;
+            border: 1.5px solid #2c3b57;
+            border-radius: 60px;
+            color: white;
+            font-size: 0.95rem;
+            outline: none;
+        }
+
+        .chat-controls input:focus {
+            border-color: #e63946;
+        }
+
+        .chat-controls button {
+            padding: 14px 28px;
+            background: #e63946;
+            border: none;
+            border-radius: 60px;
+            font-weight: 600;
+            color: white;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: 0.15s;
+            border: 1px solid #ff6f7e;
+            white-space: nowrap;
+        }
+
+        .chat-controls button:hover {
+            background: #cf2f3b;
+        }
+
+        /* ---------- ROLE POPUP with close button ---------- */
+        #rolePopup {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .role-box {
+            background: #1d2942;
+            padding: 40px 30px;
+            border-radius: 70px;
+            border: 3px solid #e63946;
+            box-shadow: 0 25px 40px #b11e2b80;
+            text-align: center;
+            max-width: 500px;
+            width: 90%;
+            position: relative;
+        }
+
+        .close-popup {
+            position: absolute;
+            top: 18px;
+            right: 22px;
+            background: rgba(255,255,255,0.15);
+            border: none;
+            color: white;
+            font-size: 1.8rem;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: 0.2s;
+            line-height: 1;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .close-popup:hover {
+            background: rgba(230, 57, 70, 0.8);
+            transform: scale(1.05);
+        }
+
+        .role-icon {
+            font-size: 4rem;
+            margin-bottom: 15px;
+        }
+
+        .role-text {
+            font-size: clamp(1.5rem, 5vw, 2.2rem);
+            font-weight: 700;
+            line-height: 1.4;
+            color: #ffffff;
+            word-break: break-word;
+        }
+
+        .sub {
+            margin-top: 20px;
+            font-size: 0.9rem;
+            color: #a6bbdd;
+        }
+
+        /* small screens adjustments */
+        @media (max-width: 480px) {
+            .player-card {
+                width: 75px;
+                padding: 8px 3px;
+            }
+            .player-avatar {
+                width: 40px;
+                height: 40px;
+                font-size: 1.4rem;
+            }
+            .player-name {
+                font-size: 0.75rem;
+            }
+            .chat-controls button {
+                padding: 14px 18px;
+            }
+            .role-box {
+                padding: 35px 20px 25px;
+                border-radius: 50px;
+            }
+            .close-popup {
+                top: 12px;
+                right: 16px;
+                width: 38px;
+                height: 38px;
+                font-size: 1.5rem;
+            }
+        }
+    </style>
 </head>
-
 <body>
 
-<div class="card">
-
-<h1>Who's The Imposter</h1>
-
-<h2>Join Lobby</h2>
-
-<input id="playerName" placeholder="Enter your name">
-
-<button onclick="joinGame()">Join Lobby</button>
-
-<h3 id="lobbyPlayers">Players:</h3>
-
+<!-- SPLASH SCREEN (shown first) -->
+<div id="splashScreen">
+    <div class="splash-content">
+        <img src="logo.png" alt="Logo">   <!-- replace with your logo -->
+        <p>Presents</p>
+    </div>
 </div>
 
+<!-- JOIN SCREEN -->
+<div id="joinScreen" class="screen">
+    <div class="join-card">
+        <h1>IMPOSTER</h1>
+        <input id="nameInput" type="text" placeholder="Enter your name" maxlength="20">
+        <button onclick="joinGame()">Join Lobby</button>
+    </div>
+</div>
 
-<!-- Firebase Libraries -->
+<!-- LOBBY -->
+<div id="lobby" class="screen">
+    <div class="lobby-header">
+        <h2>LOBBY</h2>   <!-- emoji removed -->
+        <button class="leave-btn" onclick="leaveGame()">Leave</button>   <!-- emoji removed -->
+    </div>
+
+    <div class="player-grid" id="playerArea"></div>
+
+    <div class="chat-section">
+        <div class="messages" id="messages"></div>
+        <div class="chat-controls">
+            <input id="chatInput" type="text" placeholder="Type a message...">
+            <button onclick="sendMessage()">Send</button>
+        </div>
+    </div>
+</div>
+
+<!-- ROLE POPUP with close button -->
+<div id="rolePopup">
+    <div class="role-box" id="roleBox">
+        <button class="close-popup" id="closeRolePopup" aria-label="Close">✕</button>
+      
+        <div class="role-text" id="roleText"></div>
+        <div class="sub">wait for the discussion to begin</div>
+    </div>
+</div>
+
 <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getDatabase, ref, push, set, onValue, remove } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getDatabase, ref, push, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+    const firebaseConfig = {
+        apiKey: "AIzaSyBowp_bXKpWD_1obdLegIlCoT_oLzAiHQA",
+        authDomain: "pysh-index.firebaseapp.com",
+        databaseURL: "https://pysh-index-default-rtdb.firebaseio.com",
+        projectId: "pysh-index",
+        storageBucket: "pysh-index.firebasestorage.app",
+        messagingSenderId: "263831699229",
+        appId: "1:263831699229:web:e78c6be2b3c4bed2c9ebf4"
+    };
 
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
 
-/* PASTE YOUR FIREBASE CONFIG HERE */
+    let myID = null;
+    let myName = null;
+    let ownPlayerListener = null;
+    let roleListener = null;
 
-const firebaseConfig = {
+    // UI helpers
+    function showJoinScreen() {
+        document.getElementById("joinScreen").classList.add("active");
+        document.getElementById("lobby").classList.remove("active");
+        document.getElementById("rolePopup").style.display = "none";
+    }
 
-apiKey: "AIzaSyBowp_bXKpWD_1obdLegIlCoT_oLzAiHQA",
+    function showLobby() {
+        document.getElementById("joinScreen").classList.remove("active");
+        document.getElementById("lobby").classList.add("active");
+    }
 
-authDomain: "pysh-index.firebaseapp.com",
+    // Hide splash screen after animation (4s)
+    setTimeout(() => {
+        document.getElementById("splashScreen").style.display = "none";
+        document.getElementById("joinScreen").classList.add("active");
+    }, 4000);
 
-databaseURL: "https://pysh-index-default-rtdb.firebaseio.com",
+    // --- JOIN GAME ---
+    window.joinGame = function() {
+        const name = document.getElementById("nameInput").value.trim();
+        if (!name) {
+            alert("Please enter your name.");
+            return;
+        }
 
-projectId: "pysh-index",
+        myName = name;
+        const playerRef = push(ref(db, "players"));
+        set(playerRef, { name: name });
 
-storageBucket: "pysh-index.firebasestorage.app",
+        myID = playerRef.key;
+        showLobby();
 
-messagingSenderId: "263831699229",
+        // Listen for removal of own player (admin reset)
+        if (ownPlayerListener) ownPlayerListener();
+        const playerSelfRef = ref(db, "players/" + myID);
+        ownPlayerListener = onValue(playerSelfRef, (snapshot) => {
+            if (!snapshot.exists()) {
+                alert("You have been removed from the lobby.");
+                leaveGame();
+            }
+        });
 
-appId: "1:263831699229:web:e78c6be2b3c4bed2c9ebf4"
+        // Start listening for role changes
+        watchRole();
+    };
 
-};
+    // --- LEAVE GAME (cleanup) ---
+    window.leaveGame = function() {
+        if (myID) {
+            remove(ref(db, "players/" + myID));
+            remove(ref(db, "roles/" + myID));
+        }
+        if (ownPlayerListener) {
+            ownPlayerListener();
+            ownPlayerListener = null;
+        }
+        if (roleListener) {
+            roleListener();
+            roleListener = null;
+        }
+        myID = null;
+        myName = null;
+        document.getElementById("rolePopup").style.display = "none";
+        showJoinScreen();
+    };
 
+    // --- PLAYER LIST (real time) ---
+    onValue(ref(db, "players"), (snapshot) => {
+        const players = snapshot.val();
+        let html = "";
+        if (players) {
+            for (let id in players) {
+                const name = players[id].name;
+                const letter = name.charAt(0).toUpperCase();
+                html += `
+                    <div class="player-card">
+                        <div class="player-avatar">${letter}</div>
+                        <div class="player-name">${name}</div>
+                    </div>
+                `;
+            }
+        } else {
+            html = "<div style='padding:20px; text-align:center; width:100%;'>Waiting for players...</div>";
+        }
+        document.getElementById("playerArea").innerHTML = html;
+    });
 
-/* Initialize Firebase */
+    // --- CHAT ---
+    window.sendMessage = function() {
+        const text = document.getElementById("chatInput").value.trim();
+        if (!text || !myName) return;
 
-const app = initializeApp(firebaseConfig);
+        push(ref(db, "chat"), {
+            name: myName,
+            text: text
+        });
+        document.getElementById("chatInput").value = "";
+    };
 
-const db = getDatabase(app);
+    onValue(ref(db, "chat"), (snapshot) => {
+        const data = snapshot.val();
+        let html = "";
+        if (data) {
+            for (let id in data) {
+                html += `<div><b>${data[id].name}:</b> ${data[id].text}</div>`;
+            }
+        }
+        document.getElementById("messages").innerHTML = html;
+        const msgDiv = document.getElementById("messages");
+        msgDiv.scrollTop = msgDiv.scrollHeight;
+    });
 
+    // --- ROLE LISTENER (shows popup) ---
+    function watchRole() {
+        if (!myID) return;
+        if (roleListener) roleListener(); // remove old if any
 
-/* Join Lobby */
+        const roleRef = ref(db, "roles/" + myID);
+        roleListener = onValue(roleRef, (snapshot) => {
+            const role = snapshot.val();
+            const popup = document.getElementById("rolePopup");
+            const roleText = document.getElementById("roleText");
 
-window.joinGame = function(){
+            if (!role) {
+                popup.style.display = "none";
+                return;
+            }
 
-let name=document.getElementById("playerName").value;
+            if (role.role === "imposter") {
+                roleText.innerText = "YOU ARE THE IMPOSTER";
+            } else {
+                roleText.innerText = `Your word: ${role.word || "???"}`;
+            }
+            popup.style.display = "flex";
+        });
+    }
 
-if(name==""){
-alert("Enter name");
-return;
-}
+    // --- Popup close: X button and click outside ---
+    document.addEventListener('DOMContentLoaded', () => {
+        const popup = document.getElementById('rolePopup');
+        const closeBtn = document.getElementById('closeRolePopup');
 
-push(ref(db,"players"),{
-name:name
-});
+        closeBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            popup.style.display = 'none';
+        });
 
-document.getElementById("playerName").value="";
+        popup.addEventListener('click', (e) => {
+            if (e.target === popup) {
+                popup.style.display = 'none';
+            }
+        });
+    });
 
-}
+    // Cleanup on page unload (optional)
+    window.addEventListener("beforeunload", function() {
+        if (myID) {
+            remove(ref(db, "players/" + myID));
+            remove(ref(db, "roles/" + myID));
+        }
+    });
 
-
-/* Listen for Players */
-
-onValue(ref(db,"players"),(snapshot)=>{
-
-let data=snapshot.val();
-
-let list=[];
-
-for(let id in data){
-
-list.push(data[id].name);
-
-}
-
-document.getElementById("lobbyPlayers").innerHTML=
-"Players: "+list.join(", ");
-
-});
-
+    // On initial load, splash is already showing; join screen will appear after timeout.
 </script>
-
 </body>
 </html>
