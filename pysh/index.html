@@ -1,1 +1,146 @@
 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Imposter Online</title>
+
+<style>
+
+body{
+font-family:Arial;
+background:#f2f2f2;
+text-align:center;
+padding:40px;
+}
+
+.card{
+background:white;
+padding:20px;
+border-radius:10px;
+width:350px;
+margin:auto;
+box-shadow:0 0 10px rgba(0,0,0,0.2);
+}
+
+input{
+width:90%;
+padding:10px;
+margin:10px;
+font-size:16px;
+}
+
+button{
+padding:12px;
+width:90%;
+margin:10px;
+font-size:16px;
+background:#457b9d;
+color:white;
+border:none;
+border-radius:6px;
+cursor:pointer;
+}
+
+button:hover{
+background:#1d3557;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="card">
+
+<h1>Who's The Imposter</h1>
+
+<h2>Join Lobby</h2>
+
+<input id="playerName" placeholder="Enter your name">
+
+<button onclick="joinGame()">Join Lobby</button>
+
+<h3 id="lobbyPlayers">Players:</h3>
+
+</div>
+
+
+<!-- Firebase Libraries -->
+<script type="module">
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getDatabase, ref, push, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+
+/* PASTE YOUR FIREBASE CONFIG HERE */
+
+const firebaseConfig = {
+
+apiKey: "AIzaSyBowp_bXKpWD_1obdLegIlCoT_oLzAiHQA",
+
+authDomain: "pysh-index.firebaseapp.com",
+
+databaseURL: "https://pysh-index-default-rtdb.firebaseio.com",
+
+projectId: "pysh-index",
+
+storageBucket: "pysh-index.firebasestorage.app",
+
+messagingSenderId: "263831699229",
+
+appId: "1:263831699229:web:e78c6be2b3c4bed2c9ebf4"
+
+};
+
+
+/* Initialize Firebase */
+
+const app = initializeApp(firebaseConfig);
+
+const db = getDatabase(app);
+
+
+/* Join Lobby */
+
+window.joinGame = function(){
+
+let name=document.getElementById("playerName").value;
+
+if(name==""){
+alert("Enter name");
+return;
+}
+
+push(ref(db,"players"),{
+name:name
+});
+
+document.getElementById("playerName").value="";
+
+}
+
+
+/* Listen for Players */
+
+onValue(ref(db,"players"),(snapshot)=>{
+
+let data=snapshot.val();
+
+let list=[];
+
+for(let id in data){
+
+list.push(data[id].name);
+
+}
+
+document.getElementById("lobbyPlayers").innerHTML=
+"Players: "+list.join(", ");
+
+});
+
+</script>
+
+</body>
+</html>
