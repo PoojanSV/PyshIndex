@@ -4,17 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
     <title>Imposter Game</title>
-    <!-- Google Font -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,600;14..32,700&display=swap" rel="stylesheet">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Inter', sans-serif;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
 
         body {
             background: radial-gradient(circle at 10% 20%, #1e2538, #0c0f17);
@@ -22,30 +16,15 @@
             color: #edf2fb;
         }
 
-        /* Splash screen */
+        /* Splash */
         #splashScreen {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: black;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 2000;
-            animation: fadeOut 4s forwards;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: black; display: flex; justify-content: center; align-items: center;
+            z-index: 2000; animation: fadeOut 4s forwards;
         }
-        .splash-content {
-            text-align: center;
-        }
-        .splash-content img {
-            width: 200px;
-            display: block;
-            margin: 0 auto;
-        }
-        .splash-content p {
-            font-size: 28px;
-            margin-top: 20px;
-            color: white;
-        }
+        .splash-content { text-align: center; }
+        .splash-content img { width: 200px; display: block; margin: 0 auto; }
+        .splash-content p { font-size: 28px; margin-top: 20px; color: white; }
         @keyframes fadeOut {
             0% { opacity: 1; transform: scale(0.9); }
             20% { opacity: 1; transform: scale(1); }
@@ -53,370 +32,245 @@
             100% { opacity: 0; transform: scale(1.1); visibility: hidden; }
         }
 
-        /* Screen system */
-        .screen {
-            display: none;
-            height: 100vh;
-            width: 100%;
-        }
-        .active {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-        }
+        /* Screens */
+        .screen { display: none; height: 100vh; width: 100%; }
+        .active { display: flex; flex-direction: column; align-items: center; justify-content: center; }
 
-        /* ---------- JOIN SCREEN ---------- */
-        #joinScreen {
-            background: rgba(10, 14, 23, 0.9);
-            backdrop-filter: blur(10px);
-            padding: 20px;
-        }
-
+        /* Join */
+        #joinScreen { background: rgba(10,14,23,0.9); backdrop-filter: blur(10px); padding: 20px; }
         .join-card {
-            background: #1f283e;
-            padding: clamp(30px, 8vw, 50px) clamp(20px, 6vw, 40px);
-            border-radius: 48px;
-            width: 100%;
-            max-width: 420px;
-            box-shadow: 0 30px 40px -20px black;
-            border: 1px solid #3c4a62;
-            text-align: center;
+            background: #1f283e; padding: clamp(30px,8vw,50px) clamp(20px,6vw,40px);
+            border-radius: 48px; width: 100%; max-width: 420px;
+            box-shadow: 0 30px 40px -20px black; border: 1px solid #3c4a62; text-align: center;
         }
-
         .join-card h1 {
-            font-size: clamp(2.2rem, 10vw, 3rem);
-            font-weight: 700;
+            font-size: clamp(2.2rem,10vw,3rem); font-weight: 700;
             background: linear-gradient(145deg, #ff8a7a, #ff5f6d);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            margin-bottom: 20px;
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px;
         }
-
         .join-card input {
-            width: 100%;
-            padding: 16px 22px;
-            font-size: 1rem;
-            background: #0f172a;
-            border: 1.5px solid #314361;
-            border-radius: 60px;
-            color: white;
-            outline: none;
-            transition: 0.2s;
+            width: 100%; padding: 16px 22px; font-size: 1rem; background: #0f172a;
+            border: 1.5px solid #314361; border-radius: 60px; color: white; outline: none; transition: 0.2s;
         }
-
-        .join-card input:focus {
-            border-color: #e63946;
-            box-shadow: 0 0 0 3px rgba(230, 57, 70, 0.2);
-        }
-
+        .join-card input:focus { border-color: #e63946; box-shadow: 0 0 0 3px rgba(230,57,70,0.2); }
         .join-card button {
-            width: 100%;
-            padding: 16px;
-            margin-top: 25px;
-            background: linear-gradient(145deg, #e63946, #c5303c);
-            border: none;
-            border-radius: 60px;
-            font-size: 1.2rem;
-            font-weight: 600;
-            color: white;
-            cursor: pointer;
-            transition: 0.2s;
+            width: 100%; padding: 16px; margin-top: 25px;
+            background: linear-gradient(145deg,#e63946,#c5303c); border: none; border-radius: 60px;
+            font-size: 1.2rem; font-weight: 600; color: white; cursor: pointer; transition: 0.2s;
             box-shadow: 0 10px 18px -6px #821a24;
         }
+        .join-card button:hover { transform: scale(1.02); background: #d93a48; }
 
-        .join-card button:hover {
-            transform: scale(1.02);
-            background: #d93a48;
-        }
-
-        /* ---------- LOBBY ---------- */
-        #lobby {
-            padding: 15px 12px;
-            justify-content: flex-start;
-            overflow-y: auto;
-        }
+        /* Lobby */
+        #lobby { padding: 15px 12px; justify-content: flex-start; overflow-y: auto; }
 
         .lobby-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            width: 100%;
-            max-width: 1000px;
-            margin-bottom: 15px;
-            flex-wrap: wrap;
-            gap: 10px;
+            display: flex; align-items: center; justify-content: space-between;
+            width: 100%; max-width: 1000px; margin-bottom: 15px; flex-wrap: wrap; gap: 10px;
         }
-
         .lobby-header h2 {
-            font-size: clamp(1.8rem, 6vw, 2.2rem);
-            font-weight: 600;
-            background: linear-gradient(145deg, #bdc9f0, #a0b0da);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            font-size: clamp(1.8rem,6vw,2.2rem); font-weight: 600;
+            background: linear-gradient(145deg,#bdc9f0,#a0b0da);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
         }
-
         .leave-btn {
-            background: #2f3a4f;
-            border: 1px solid #4a5a7a;
-            color: #f0a5b2;
-            padding: 10px 25px;
-            border-radius: 40px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: 0.2s;
-            font-size: 0.95rem;
+            background: #2f3a4f; border: 1px solid #4a5a7a; color: #f0a5b2;
+            padding: 10px 25px; border-radius: 40px; font-weight: 600; cursor: pointer;
+            transition: 0.2s; font-size: 0.95rem;
         }
+        .leave-btn:hover { background: #3e4c68; color: #ffc1cc; }
 
-        .leave-btn:hover {
-            background: #3e4c68;
-            color: #ffc1cc;
-        }
-
-        /* player grid */
+        /* Player Grid */
         .player-grid {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 12px;
-            padding: 18px 10px;
-            width: 100%;
-            max-width: 1000px;
-            background: rgba(20, 28, 45, 0.5);
-            border-radius: 40px;
-            backdrop-filter: blur(5px);
-            margin-bottom: 20px;
-            border: 1px solid #323f5a;
+            display: flex; flex-wrap: wrap; justify-content: center; gap: 12px;
+            padding: 18px 10px; width: 100%; max-width: 1000px;
+            background: rgba(20,28,45,0.5); border-radius: 40px;
+            backdrop-filter: blur(5px); margin-bottom: 14px; border: 1px solid #323f5a;
         }
-
         .player-card {
-            width: clamp(80px, 22vw, 100px);
-            height: auto;
-            background: #1e2740;
-            border-radius: 28px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 12px 5px;
-            border: 2px solid #37445c;
-            box-shadow: 0 6px 0 #0f1625;
+            width: clamp(80px,22vw,100px); background: #1e2740; border-radius: 28px;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            padding: 12px 5px; border: 2px solid #37445c; box-shadow: 0 6px 0 #0f1625;
+            transition: border-color 0.2s;
         }
-
         .player-avatar {
-            width: 50px;
-            height: 50px;
-            background: linear-gradient(145deg, #e63946, #bb2e3a);
-            border-radius: 30px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.8rem;
-            font-weight: 700;
-            margin-bottom: 6px;
-            color: white;
-            box-shadow: 0 4px 0 #731d26;
-        }
-
-        .player-name {
-            font-size: 0.85rem;
-            font-weight: 600;
-            max-width: 90px;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-            padding: 0 4px;
-        }
-
-        /* chat area */
-        .chat-section {
-            width: 100%;
-            max-width: 700px;
-            background: #151e30;
-            border-radius: 36px;
-            padding: 18px;
-            border: 1px solid #31415b;
-            margin-top: 5px;
-        }
-
-        .messages {
-            background: #101827;
-            border-radius: 28px;
-            padding: 16px;
-            height: 180px;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            margin-bottom: 16px;
-            border: 1px solid #26324a;
-        }
-
-        .messages div {
-            background: #1f2a40;
-            padding: 8px 16px;
-            border-radius: 30px;
-            max-width: 90%;
-            align-self: flex-start;
-            word-break: break-word;
-            font-size: 0.9rem;
-            border: 1px solid #394a6b;
-        }
-
-        .messages div b {
-            color: #ff8a7a;
-            margin-right: 6px;
-        }
-
-        .chat-controls {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-
-        .chat-controls input {
-            flex: 1 1 200px;
-            padding: 14px 20px;
-            background: #101827;
-            border: 1.5px solid #2c3b57;
-            border-radius: 60px;
-            color: white;
-            font-size: 0.95rem;
-            outline: none;
-        }
-
-        .chat-controls input:focus {
-            border-color: #e63946;
-        }
-
-        .chat-controls button {
-            padding: 14px 28px;
-            background: #e63946;
-            border: none;
-            border-radius: 60px;
-            font-weight: 600;
-            color: white;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: 0.15s;
-            border: 1px solid #ff6f7e;
-            white-space: nowrap;
-        }
-
-        .chat-controls button:hover {
-            background: #cf2f3b;
-        }
-
-        /* ---------- ROLE POPUP with close button ---------- */
-        #rolePopup {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.8);
-            backdrop-filter: blur(5px);
-            display: none;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-        }
-
-        .role-box {
-            background: #1d2942;
-            padding: 40px 30px;
-            border-radius: 70px;
-            border: 3px solid #e63946;
-            box-shadow: 0 25px 40px #b11e2b80;
-            text-align: center;
-            max-width: 500px;
-            width: 90%;
+            width: 50px; height: 50px;
+            background: linear-gradient(145deg,#e63946,#bb2e3a); border-radius: 30px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.8rem; font-weight: 700; margin-bottom: 6px; color: white;
+            box-shadow: 0 4px 0 #731d26; transition: box-shadow 0.15s, transform 0.15s;
             position: relative;
         }
 
+        /* Speaking animation */
+        .player-avatar.speaking {
+            box-shadow: 0 0 0 3px rgba(76,255,154,0.6), 0 0 14px rgba(76,255,154,0.3) !important;
+            animation: speakPulse 0.7s ease-in-out infinite;
+        }
+        @keyframes speakPulse {
+            0%,100% { box-shadow: 0 0 0 2px rgba(76,255,154,0.5), 0 0 10px rgba(76,255,154,0.2); }
+            50%      { box-shadow: 0 0 0 5px rgba(76,255,154,0.2), 0 0 20px rgba(76,255,154,0.1); }
+        }
+
+        /* Mic status badge on card */
+        .mic-badge {
+            position: absolute; bottom: -3px; right: -3px;
+            width: 16px; height: 16px; border-radius: 50%;
+            display: none; align-items: center; justify-content: center;
+            font-size: 8px; border: 1.5px solid #1e2740;
+        }
+        .mic-badge.live  { display: flex; background: #1a6e44; }
+        .mic-badge.muted { display: flex; background: #7a2020; }
+
+        .player-name {
+            font-size: 0.85rem; font-weight: 600; max-width: 90px;
+            overflow: hidden; text-overflow: ellipsis; white-space: nowrap; padding: 0 4px;
+        }
+        .voice-in-room {
+            font-size: 9px; color: #4cff9a; margin-top: 3px; opacity: 0.7; display: none;
+        }
+
+        /* ── VOICE PANEL ── */
+        .voice-panel {
+            width: 100%; max-width: 700px; margin-bottom: 14px;
+            background: rgba(12,20,35,0.8); border: 1px solid #263550;
+            border-radius: 28px; overflow: hidden;
+        }
+        .voice-topbar {
+            display: flex; align-items: center; gap: 12px; padding: 12px 18px;
+            flex-wrap: wrap;
+        }
+        .voice-title {
+            font-size: 0.8rem; font-weight: 700; letter-spacing: 1px;
+            color: #5a7caa; text-transform: uppercase;
+        }
+        .voice-live-dot {
+            width: 7px; height: 7px; border-radius: 50%; background: #4cff9a;
+            animation: liveBlink 1.2s ease-in-out infinite; display: none;
+        }
+        @keyframes liveBlink { 0%,100%{opacity:1;} 50%{opacity:0.2;} }
+
+        .vbtn {
+            display: flex; align-items: center; gap: 5px;
+            padding: 8px 18px; border-radius: 40px; border: none;
+            font-weight: 600; font-size: 0.85rem; cursor: pointer; transition: 0.15s;
+            font-family: 'Inter', sans-serif;
+        }
+        .vbtn:hover { transform: scale(1.03); }
+        .vbtn.join   { background: rgba(20,90,55,0.9); color: #7effc4; border: 1px solid #2aaa72; }
+        .vbtn.leave  { background: rgba(100,25,35,0.9); color: #ff8a9a; border: 1px solid #8a2535; }
+        .vbtn.mute   { background: rgba(35,50,75,0.9); color: #9ab0d5; border: 1px solid #3a4f70; }
+        .vbtn.unmute { background: rgba(100,45,20,0.9); color: #ffb090; border: 1px solid #9a4020; }
+
+        .volume-wrap {
+            display: flex; align-items: center; gap: 8px; margin-left: auto;
+        }
+        .vol-label { font-size: 0.75rem; color: #5a7caa; white-space: nowrap; }
+        input[type=range].vol-slider {
+            -webkit-appearance: none; appearance: none;
+            width: 80px; height: 4px; border-radius: 4px;
+            background: linear-gradient(to right,#3a8aff 0%,#3a8aff var(--val),#1e2d45 var(--val),#1e2d45 100%);
+            outline: none; cursor: pointer;
+        }
+        input[type=range].vol-slider::-webkit-slider-thumb {
+            -webkit-appearance: none; width: 14px; height: 14px;
+            border-radius: 50%; background: #5b9aff; border: none;
+        }
+
+        /* Voice room members list (compact) */
+        .voice-members-bar {
+            display: none; padding: 0 18px 12px; gap: 8px; flex-wrap: wrap;
+        }
+        .voice-peer-chip {
+            display: flex; align-items: center; gap: 6px;
+            background: rgba(30,45,65,0.8); border: 1px solid #2a3f5a;
+            padding: 4px 12px; border-radius: 30px; font-size: 0.78rem;
+        }
+        .vpc-dot {
+            width: 6px; height: 6px; border-radius: 50%; background: #3a6aaa;
+            transition: background 0.2s;
+        }
+        .vpc-dot.speaking { background: #4cff9a; }
+        .vpc-dot.muted    { background: #aa4040; }
+
+        /* Chat */
+        .chat-section {
+            width: 100%; max-width: 700px; background: #151e30;
+            border-radius: 36px; padding: 18px; border: 1px solid #31415b; margin-top: 5px;
+        }
+        .messages {
+            background: #101827; border-radius: 28px; padding: 16px;
+            height: 160px; overflow-y: auto; display: flex; flex-direction: column;
+            gap: 8px; margin-bottom: 16px; border: 1px solid #26324a;
+        }
+        .messages div {
+            background: #1f2a40; padding: 8px 16px; border-radius: 30px;
+            max-width: 90%; align-self: flex-start; word-break: break-word;
+            font-size: 0.9rem; border: 1px solid #394a6b;
+        }
+        .messages div b { color: #ff8a7a; margin-right: 6px; }
+
+        .chat-controls { display: flex; gap: 10px; flex-wrap: wrap; }
+        .chat-controls input {
+            flex: 1 1 200px; padding: 14px 20px; background: #101827;
+            border: 1.5px solid #2c3b57; border-radius: 60px; color: white;
+            font-size: 0.95rem; outline: none;
+        }
+        .chat-controls input:focus { border-color: #e63946; }
+        .chat-controls button {
+            padding: 14px 28px; background: #e63946; border: none; border-radius: 60px;
+            font-weight: 600; color: white; font-size: 1rem; cursor: pointer;
+            transition: 0.15s; border: 1px solid #ff6f7e; white-space: nowrap;
+        }
+        .chat-controls button:hover { background: #cf2f3b; }
+
+        /* Role popup */
+        #rolePopup {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8); backdrop-filter: blur(5px);
+            display: none; align-items: center; justify-content: center; z-index: 1000;
+        }
+        .role-box {
+            background: #1d2942; padding: 40px 30px; border-radius: 70px;
+            border: 3px solid #e63946; box-shadow: 0 25px 40px #b11e2b80;
+            text-align: center; max-width: 500px; width: 90%; position: relative;
+        }
         .close-popup {
-            position: absolute;
-            top: 18px;
-            right: 22px;
-            background: rgba(255,255,255,0.15);
-            border: none;
-            color: white;
-            font-size: 1.8rem;
-            width: 44px;
-            height: 44px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: 0.2s;
-            line-height: 1;
-            border: 1px solid rgba(255,255,255,0.2);
+            position: absolute; top: 18px; right: 22px; background: rgba(255,255,255,0.15);
+            border: 1px solid rgba(255,255,255,0.2); color: white; font-size: 1.8rem;
+            width: 44px; height: 44px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; transition: 0.2s; line-height: 1;
         }
-
-        .close-popup:hover {
-            background: rgba(230, 57, 70, 0.8);
-            transform: scale(1.05);
-        }
-
-        .role-icon {
-            font-size: 4rem;
-            margin-bottom: 15px;
-        }
-
+        .close-popup:hover { background: rgba(230,57,70,0.8); transform: scale(1.05); }
         .role-text {
-            font-size: clamp(1.5rem, 5vw, 2.2rem);
-            font-weight: 700;
-            line-height: 1.4;
-            color: #ffffff;
-            word-break: break-word;
+            font-size: clamp(1.5rem,5vw,2.2rem); font-weight: 700;
+            line-height: 1.4; color: #ffffff; word-break: break-word;
         }
+        .sub { margin-top: 20px; font-size: 0.9rem; color: #a6bbdd; }
 
-        .sub {
-            margin-top: 20px;
-            font-size: 0.9rem;
-            color: #a6bbdd;
-        }
-
-        /* small screens adjustments */
         @media (max-width: 480px) {
-            .player-card {
-                width: 75px;
-                padding: 8px 3px;
-            }
-            .player-avatar {
-                width: 40px;
-                height: 40px;
-                font-size: 1.4rem;
-            }
-            .player-name {
-                font-size: 0.75rem;
-            }
-            .chat-controls button {
-                padding: 14px 18px;
-            }
-            .role-box {
-                padding: 35px 20px 25px;
-                border-radius: 50px;
-            }
-            .close-popup {
-                top: 12px;
-                right: 16px;
-                width: 38px;
-                height: 38px;
-                font-size: 1.5rem;
-            }
+            .player-card { width: 75px; padding: 8px 3px; }
+            .player-avatar { width: 40px; height: 40px; font-size: 1.4rem; }
+            .player-name { font-size: 0.75rem; }
+            .chat-controls button { padding: 14px 18px; }
+            .role-box { padding: 35px 20px 25px; border-radius: 50px; }
+            .close-popup { top: 12px; right: 16px; width: 38px; height: 38px; font-size: 1.5rem; }
+            input[type=range].vol-slider { width: 60px; }
         }
     </style>
 </head>
 <body>
 
-<!-- SPLASH SCREEN (shown first) -->
+<!-- SPLASH -->
 <div id="splashScreen">
     <div class="splash-content">
-        <img src="logo.png" alt="Logo">   <!-- replace with your logo -->
+        <img src="logo.png" alt="Logo">
         <p>Presents</p>
     </div>
 </div>
 
-<!-- JOIN SCREEN -->
+<!-- JOIN -->
 <div id="joinScreen" class="screen">
     <div class="join-card">
         <h1>SPYCY</h1>
@@ -428,11 +282,27 @@
 <!-- LOBBY -->
 <div id="lobby" class="screen">
     <div class="lobby-header">
-        <h2>LOBBY</h2>   <!-- emoji removed -->
-        <button class="leave-btn" onclick="leaveGame()">Leave</button>   <!-- emoji removed -->
+        <h2>LOBBY</h2>
+        <button class="leave-btn" onclick="leaveGame()">Leave</button>
     </div>
 
     <div class="player-grid" id="playerArea"></div>
+
+    <!-- ── VOICE PANEL ── -->
+    <div class="voice-panel">
+        <div class="voice-topbar">
+            <span class="voice-title">Voice Chat</span>
+            <div class="voice-live-dot" id="voiceLiveDot"></div>
+            <button class="vbtn join" id="voiceJoinBtn" onclick="toggleVoice()">🎤 Join Voice</button>
+            <button class="vbtn mute" id="voiceMuteBtn" onclick="toggleMute()" style="display:none">🎙️ Mute</button>
+            <div class="volume-wrap" id="volumeWrap" style="display:none">
+                <span class="vol-label">Vol</span>
+                <input type="range" class="vol-slider" id="volSlider" min="0" max="100" value="100"
+                       style="--val:100%" oninput="setVolume(this)">
+            </div>
+        </div>
+        <div class="voice-members-bar" id="voiceMembersBar"></div>
+    </div>
 
     <div class="chat-section">
         <div class="messages" id="messages"></div>
@@ -443,202 +313,574 @@
     </div>
 </div>
 
-<!-- ROLE POPUP with close button -->
+<!-- ROLE POPUP -->
 <div id="rolePopup">
     <div class="role-box" id="roleBox">
         <button class="close-popup" id="closeRolePopup" aria-label="Close">✕</button>
-      
         <div class="role-text" id="roleText"></div>
         <div class="sub">wait for the discussion to begin</div>
     </div>
 </div>
 
+<!-- Hidden audio container -->
+<div id="audioContainer" style="display:none"></div>
+
 <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getDatabase, ref, push, set, onValue, remove } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+import { initializeApp }       from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getDatabase, ref, push, set, get, onValue, remove }
+                               from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
-    const firebaseConfig = {
-        apiKey: "AIzaSyBowp_bXKpWD_1obdLegIlCoT_oLzAiHQA",
-        authDomain: "pysh-index.firebaseapp.com",
-        databaseURL: "https://pysh-index-default-rtdb.firebaseio.com",
-        projectId: "pysh-index",
-        storageBucket: "pysh-index.firebasestorage.app",
-        messagingSenderId: "263831699229",
-        appId: "1:263831699229:web:e78c6be2b3c4bed2c9ebf4"
-    };
+// ── FIREBASE ──────────────────────────────────────────────────────────────
+const firebaseConfig = {
+    apiKey: "AIzaSyBowp_bXKpWD_1obdLegIlCoT_oLzAiHQA",
+    authDomain: "pysh-index.firebaseapp.com",
+    databaseURL: "https://pysh-index-default-rtdb.firebaseio.com",
+    projectId: "pysh-index",
+    storageBucket: "pysh-index.firebasestorage.app",
+    messagingSenderId: "263831699229",
+    appId: "1:263831699229:web:e78c6be2b3c4bed2c9ebf4"
+};
 
-    const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
+const app = initializeApp(firebaseConfig);
+const db  = getDatabase(app);
 
-    let myID = null;
-    let myName = null;
-    let ownPlayerListener = null;
-    let roleListener = null;
+let myID   = null;
+let myName = null;
+let ownPlayerListener = null;
+let roleListener      = null;
 
-    // UI helpers
-    function showJoinScreen() {
-        document.getElementById("joinScreen").classList.add("active");
-        document.getElementById("lobby").classList.remove("active");
-        document.getElementById("rolePopup").style.display = "none";
-    }
+// ── SCREEN HELPERS ────────────────────────────────────────────────────────
+function showJoinScreen() {
+    document.getElementById("joinScreen").classList.add("active");
+    document.getElementById("lobby").classList.remove("active");
+    document.getElementById("rolePopup").style.display = "none";
+}
+function showLobby() {
+    document.getElementById("joinScreen").classList.remove("active");
+    document.getElementById("lobby").classList.add("active");
+}
 
-    function showLobby() {
-        document.getElementById("joinScreen").classList.remove("active");
-        document.getElementById("lobby").classList.add("active");
-    }
+setTimeout(() => {
+    document.getElementById("splashScreen").style.display = "none";
+    document.getElementById("joinScreen").classList.add("active");
+}, 4000);
 
-    // Hide splash screen after animation (4s)
-    setTimeout(() => {
-        document.getElementById("splashScreen").style.display = "none";
-        document.getElementById("joinScreen").classList.add("active");
-    }, 4000);
+// ── JOIN / LEAVE GAME ─────────────────────────────────────────────────────
+window.joinGame = async function () {
+    const name = document.getElementById("nameInput").value.trim();
+    if (!name) { alert("Please enter your name."); return; }
 
-    // --- JOIN GAME ---
-    window.joinGame = function() {
-        const name = document.getElementById("nameInput").value.trim();
-        if (!name) {
-            alert("Please enter your name.");
-            return;
-        }
+    myName = name;
+    const playerRef = push(ref(db, "players"));
+    await set(playerRef, { name });
+    myID = playerRef.key;
 
-        myName = name;
-        const playerRef = push(ref(db, "players"));
-        set(playerRef, { name: name });
+    showLobby();
+    updateVoiceUI();
 
-        myID = playerRef.key;
-        showLobby();
-
-        // Listen for removal of own player (admin reset)
-        if (ownPlayerListener) ownPlayerListener();
-        const playerSelfRef = ref(db, "players/" + myID);
-        ownPlayerListener = onValue(playerSelfRef, (snapshot) => {
-            if (!snapshot.exists()) {
-                alert("You have been removed from the lobby.");
-                leaveGame();
-            }
-        });
-
-        // Start listening for role changes
-        watchRole();
-    };
-
-    // --- LEAVE GAME (cleanup) ---
-    window.leaveGame = function() {
-        if (myID) {
-            remove(ref(db, "players/" + myID));
-            remove(ref(db, "roles/" + myID));
-        }
-        if (ownPlayerListener) {
-            ownPlayerListener();
-            ownPlayerListener = null;
-        }
-        if (roleListener) {
-            roleListener();
-            roleListener = null;
-        }
-        myID = null;
-        myName = null;
-        document.getElementById("rolePopup").style.display = "none";
-        showJoinScreen();
-    };
-
-    // --- PLAYER LIST (real time) ---
-    onValue(ref(db, "players"), (snapshot) => {
-        const players = snapshot.val();
-        let html = "";
-        if (players) {
-            for (let id in players) {
-                const name = players[id].name;
-                const letter = name.charAt(0).toUpperCase();
-                html += `
-                    <div class="player-card">
-                        <div class="player-avatar">${letter}</div>
-                        <div class="player-name">${name}</div>
-                    </div>
-                `;
-            }
-        } else {
-            html = "<div style='padding:20px; text-align:center; width:100%;'>Waiting for players...</div>";
-        }
-        document.getElementById("playerArea").innerHTML = html;
+    if (ownPlayerListener) ownPlayerListener();
+    ownPlayerListener = onValue(ref(db, "players/" + myID), (snap) => {
+        if (!snap.exists()) { alert("You have been removed from the lobby."); leaveGame(); }
     });
 
-    // --- CHAT ---
-    window.sendMessage = function() {
-        const text = document.getElementById("chatInput").value.trim();
-        if (!text || !myName) return;
+    watchRole();
+};
 
-        push(ref(db, "chat"), {
-            name: myName,
-            text: text
+window.leaveGame = async function () {
+    await leaveVoice();                         // clean up voice first
+    if (myID) {
+        remove(ref(db, "players/"   + myID));
+        remove(ref(db, "roles/"     + myID));
+    }
+    if (ownPlayerListener) { ownPlayerListener(); ownPlayerListener = null; }
+    if (roleListener)       { roleListener();       roleListener = null;      }
+    myID = myName = null;
+    document.getElementById("rolePopup").style.display = "none";
+    showJoinScreen();
+};
+
+// ── PLAYER LIST ───────────────────────────────────────────────────────────
+let voiceRoomMembers = {};   // updated by voice room listener
+
+onValue(ref(db, "players"), (snap) => {
+    const players = snap.val();
+    let html = "";
+    if (players) {
+        for (const id in players) {
+            const name   = players[id].name;
+            const letter = name.charAt(0).toUpperCase();
+            const inVoice = !!voiceRoomMembers[id];
+            html += `
+            <div class="player-card" data-id="${id}">
+                <div class="player-avatar" id="avatar-${id}">
+                    ${letter}
+                    <div class="mic-badge" id="mic-${id}"></div>
+                </div>
+                <div class="player-name">${name}</div>
+                <div class="voice-in-room" id="vinroom-${id}" style="display:${inVoice?'block':'none'}">🎤</div>
+            </div>`;
+        }
+    } else {
+        html = "<div style='padding:20px;text-align:center;width:100%;'>Waiting for players...</div>";
+    }
+    document.getElementById("playerArea").innerHTML = html;
+    // reapply speaking states after re-render
+    for (const [id, state] of Object.entries(peerSpeakingState)) {
+        applySpeaking(id, state);
+    }
+    applyMicBadges();
+});
+
+// ── CHAT ──────────────────────────────────────────────────────────────────
+window.sendMessage = function () {
+    const text = document.getElementById("chatInput").value.trim();
+    if (!text || !myName) return;
+    push(ref(db, "chat"), { name: myName, text });
+    document.getElementById("chatInput").value = "";
+};
+
+onValue(ref(db, "chat"), (snap) => {
+    const data = snap.val();
+    let html = "";
+    if (data) for (const id in data)
+        html += `<div><b>${data[id].name}:</b> ${data[id].text}</div>`;
+    const el = document.getElementById("messages");
+    el.innerHTML = html;
+    el.scrollTop = el.scrollHeight;
+});
+
+// ── ROLE POPUP ────────────────────────────────────────────────────────────
+function watchRole() {
+    if (!myID) return;
+    if (roleListener) roleListener();
+    roleListener = onValue(ref(db, "roles/" + myID), (snap) => {
+        const role = snap.val();
+        const popup = document.getElementById("rolePopup");
+        if (!role) { popup.style.display = "none"; return; }
+        document.getElementById("roleText").innerText =
+            role.role === "imposter" ? "YOU ARE THE IMPOSTER" : `Your word: ${role.word || "???"}`;
+        popup.style.display = "flex";
+    });
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    const popup    = document.getElementById('rolePopup');
+    const closeBtn = document.getElementById('closeRolePopup');
+    closeBtn.addEventListener('click', (e) => { e.stopPropagation(); popup.style.display = 'none'; });
+    popup.addEventListener('click', (e) => { if (e.target === popup) popup.style.display = 'none'; });
+});
+
+// ============================================================
+//  VOICE CHAT — WebRTC mesh, Firebase signalling
+// ============================================================
+
+const STUN_CONFIG = {
+    iceServers: [
+        { urls: 'stun:stun.l.google.com:19302'  },
+        { urls: 'stun:stun1.l.google.com:19302' },
+        { urls: 'stun:stun2.l.google.com:19302' },
+    ]
+};
+
+const Voice = {
+    stream:            null,     // local MediaStream
+    peers:             {},       // peerId → { pc, audioEl, gainNode, ctx }
+    processed:         {},       // peerId → { offer, answer, candidateKeys:Set }
+    connectedPeerIds:  new Set(),
+    listeners:         [],       // Firebase unsubscribers
+    muted:             false,
+    active:            false,
+    masterGain:        1.0,      // 0–1, master volume for remote audio
+    speakInterval:     null,
+};
+
+const peerSpeakingState = {};   // peerId → bool (for re-render)
+
+// ── helpers ───────────────────────────────────────────────────────────────
+function getProc(peerId) {
+    if (!Voice.processed[peerId])
+        Voice.processed[peerId] = { offer: false, answer: false, candidateKeys: new Set() };
+    return Voice.processed[peerId];
+}
+
+// ── join / leave voice ────────────────────────────────────────────────────
+window.toggleVoice = async function () {
+    if (!Voice.active) await joinVoice(); else await leaveVoice();
+};
+
+async function joinVoice() {
+    if (!myID) { alert("Join the lobby first!"); return; }
+    try {
+        Voice.stream = await navigator.mediaDevices.getUserMedia({
+            audio: { echoCancellation: true, noiseSuppression: true, sampleRate: 48000 },
+            video: false
         });
-        document.getElementById("chatInput").value = "";
+    } catch (e) {
+        alert("Microphone access denied.\n" + e.message);
+        return;
+    }
+    Voice.active = true;
+    Voice.muted  = false;
+
+    setupLocalAnalyser();
+
+    // Register presence
+    await set(ref(db, `voiceRoom/${myID}`), { name: myName, ts: Date.now() });
+
+    // Listeners
+    const u1 = onValue(ref(db, 'voiceRoom'),         onVoiceRoomSnapshot);
+    const u2 = onValue(ref(db, `signals/${myID}`),   onSignalReceived);
+    Voice.listeners.push(u1, u2);
+
+    updateVoiceUI();
+}
+
+async function leaveVoice() {
+    if (!Voice.active) return;
+    Voice.active = false;
+
+    clearInterval(Voice.speakInterval);
+    Voice.speakInterval = null;
+
+    // Close peers
+    for (const [pid, peer] of Object.entries(Voice.peers)) {
+        try { peer.pc.close(); } catch(_) {}
+        if (peer.audioEl) { peer.audioEl.pause(); peer.audioEl.srcObject = null; }
+        if (peer.ctx)     try { peer.ctx.close(); } catch(_) {}
+    }
+    Voice.peers            = {};
+    Voice.processed        = {};
+    Voice.connectedPeerIds.clear();
+
+    // Unsubscribe FB listeners
+    for (const u of Voice.listeners) try { u(); } catch(_) {}
+    Voice.listeners = [];
+
+    // Clean up Firebase
+    if (myID) {
+        await remove(ref(db, `voiceRoom/${myID}`)).catch(()=>{});
+        await remove(ref(db, `signals/${myID}`)).catch(()=>{});
+        await remove(ref(db, `speaking/${myID}`)).catch(()=>{});
+    }
+
+    // Stop local tracks
+    if (Voice.stream) { Voice.stream.getTracks().forEach(t => t.stop()); Voice.stream = null; }
+
+    // Clear all speaking indicators
+    for (const id in peerSpeakingState) applySpeaking(id, false);
+
+    voiceRoomMembers = {};
+    updateVoiceUI();
+    updateVoiceMembersBar({});
+}
+
+// ── voice room presence → manage peer connections ──────────────────────────
+function onVoiceRoomSnapshot(snap) {
+    voiceRoomMembers = snap.val() || {};
+
+    // New members
+    for (const peerId of Object.keys(voiceRoomMembers)) {
+        if (peerId === myID || Voice.connectedPeerIds.has(peerId)) continue;
+        Voice.connectedPeerIds.add(peerId);
+        // Higher ID initiates (deterministic, avoids double)
+        createPeerConnection(peerId, myID > peerId);
+    }
+
+    // Departed members
+    for (const peerId of [...Voice.connectedPeerIds]) {
+        if (!voiceRoomMembers[peerId]) {
+            closePeer(peerId);
+            Voice.connectedPeerIds.delete(peerId);
+        }
+    }
+
+    updateVoiceMembersBar(voiceRoomMembers);
+    refreshVoiceInRoomIcons();
+}
+
+// ── create a peer connection ───────────────────────────────────────────────
+async function createPeerConnection(peerId, initiator) {
+    const pc      = new RTCPeerConnection(STUN_CONFIG);
+    const audioEl = new Audio();
+    audioEl.autoplay = true;
+
+    Voice.peers[peerId] = { pc, audioEl, gainNode: null, ctx: null };
+
+    // Add local tracks
+    Voice.stream.getTracks().forEach(t => pc.addTrack(t, Voice.stream));
+
+    // Remote audio
+    pc.ontrack = (e) => {
+        audioEl.srcObject = e.streams[0];
+        setupRemoteAnalyser(peerId, e.streams[0]);
+        applyMasterGain(peerId);
     };
 
-    onValue(ref(db, "chat"), (snapshot) => {
-        const data = snapshot.val();
-        let html = "";
-        if (data) {
-            for (let id in data) {
-                html += `<div><b>${data[id].name}:</b> ${data[id].text}</div>`;
+    // ICE candidates → Firebase
+    pc.onicecandidate = (e) => {
+        if (e.candidate)
+            push(ref(db, `signals/${peerId}/${myID}/candidates`), e.candidate.toJSON());
+    };
+
+    pc.onconnectionstatechange = () => {
+        const s = pc.connectionState;
+        if (s === 'disconnected' || s === 'failed' || s === 'closed') {
+            closePeer(peerId);
+            Voice.connectedPeerIds.delete(peerId);
+        }
+    };
+
+    if (initiator) {
+        try {
+            const offer = await pc.createOffer();
+            await pc.setLocalDescription(offer);
+            await set(ref(db, `signals/${peerId}/${myID}/offer`),
+                      { type: offer.type, sdp: offer.sdp });
+        } catch(e) { console.warn('[Voice] offer error', e); }
+    }
+}
+
+// ── inbound signals ────────────────────────────────────────────────────────
+async function onSignalReceived(snap) {
+    if (!snap.exists() || !Voice.active) return;
+    const inbox = snap.val();
+
+    for (const [fromId, data] of Object.entries(inbox)) {
+        // Auto-create peer if we haven't yet (race: they sent offer before we saw voiceRoom)
+        if (!Voice.peers[fromId] && data.offer) {
+            if (!Voice.connectedPeerIds.has(fromId)) {
+                Voice.connectedPeerIds.add(fromId);
+                await createPeerConnection(fromId, false); // they initiated
             }
         }
-        document.getElementById("messages").innerHTML = html;
-        const msgDiv = document.getElementById("messages");
-        msgDiv.scrollTop = msgDiv.scrollHeight;
-    });
 
-    // --- ROLE LISTENER (shows popup) ---
-    function watchRole() {
-        if (!myID) return;
-        if (roleListener) roleListener(); // remove old if any
+        const peer = Voice.peers[fromId];
+        if (!peer) continue;
+        const proc = getProc(fromId);
 
-        const roleRef = ref(db, "roles/" + myID);
-        roleListener = onValue(roleRef, (snapshot) => {
-            const role = snapshot.val();
-            const popup = document.getElementById("rolePopup");
-            const roleText = document.getElementById("roleText");
+        // Offer
+        if (data.offer && !proc.offer && peer.pc.signalingState === 'stable') {
+            proc.offer = true;
+            try {
+                await peer.pc.setRemoteDescription(new RTCSessionDescription(data.offer));
+                const answer = await peer.pc.createAnswer();
+                await peer.pc.setLocalDescription(answer);
+                await set(ref(db, `signals/${fromId}/${myID}/answer`),
+                          { type: answer.type, sdp: answer.sdp });
+            } catch(e) { proc.offer = false; console.warn('[Voice] answer error', e); }
+        }
 
-            if (!role) {
-                popup.style.display = "none";
+        // Answer
+        if (data.answer && !proc.answer && peer.pc.signalingState === 'have-local-offer') {
+            proc.answer = true;
+            try {
+                await peer.pc.setRemoteDescription(new RTCSessionDescription(data.answer));
+            } catch(e) { proc.answer = false; console.warn('[Voice] setRemote answer error', e); }
+        }
+
+        // ICE candidates (deduplicated)
+        if (data.candidates) {
+            for (const [key, cand] of Object.entries(data.candidates)) {
+                if (!proc.candidateKeys.has(key)) {
+                    proc.candidateKeys.add(key);
+                    try {
+                        if (peer.pc.remoteDescription)
+                            await peer.pc.addIceCandidate(new RTCIceCandidate(cand));
+                    } catch(_) {}
+                }
+            }
+        }
+    }
+}
+
+function closePeer(peerId) {
+    const peer = Voice.peers[peerId];
+    if (!peer) return;
+    try { peer.pc.close(); } catch(_) {}
+    if (peer.audioEl) { peer.audioEl.pause(); peer.audioEl.srcObject = null; }
+    if (peer.ctx)     try { peer.ctx.close(); } catch(_) {}
+    delete Voice.peers[peerId];
+    delete Voice.processed[peerId];
+    applySpeaking(peerId, false);
+}
+
+// ── audio analysers for speaking detection ────────────────────────────────
+function setupLocalAnalyser() {
+    try {
+        const ctx      = new (window.AudioContext || window.webkitAudioContext)();
+        const src      = ctx.createMediaStreamSource(Voice.stream);
+        const analyser = ctx.createAnalyser();
+        analyser.fftSize = 256;
+        src.connect(analyser);
+        const data = new Uint8Array(analyser.frequencyBinCount);
+        let wasSpeaking = false;
+
+        Voice.speakInterval = setInterval(() => {
+            if (!Voice.active) return;
+            if (Voice.muted) {
+                if (wasSpeaking) { wasSpeaking = false; applySpeaking(myID, false); updateMicBadge(myID, 'muted'); }
                 return;
             }
-
-            if (role.role === "imposter") {
-                roleText.innerText = "YOU ARE THE IMPOSTER";
-            } else {
-                roleText.innerText = `Your word: ${role.word || "???"}`;
+            analyser.getByteFrequencyData(data);
+            const vol = data.reduce((a,b) => a+b, 0) / data.length;
+            const now = vol > 9;
+            if (now !== wasSpeaking) {
+                wasSpeaking = now;
+                applySpeaking(myID, now);
             }
-            popup.style.display = "flex";
-        });
+            updateMicBadge(myID, 'live');
+        }, 120);
+    } catch(e) { console.warn('[Voice] local analyser error', e); }
+}
+
+function setupRemoteAnalyser(peerId, stream) {
+    try {
+        const ctx      = new (window.AudioContext || window.webkitAudioContext)();
+        const src      = ctx.createMediaStreamSource(stream);
+        const gainNode = ctx.createGain();
+        const analyser = ctx.createAnalyser();
+        analyser.fftSize = 256;
+        src.connect(gainNode);
+        gainNode.connect(analyser);
+        gainNode.connect(ctx.destination);
+        gainNode.gain.value = Voice.masterGain;
+
+        const peer = Voice.peers[peerId];
+        if (peer) { peer.gainNode = gainNode; peer.ctx = ctx; }
+
+        const data = new Uint8Array(analyser.frequencyBinCount);
+        let wasSpeaking = false;
+
+        const id = setInterval(() => {
+            if (!Voice.peers[peerId]) { clearInterval(id); return; }
+            analyser.getByteFrequencyData(data);
+            const vol = data.reduce((a,b) => a+b, 0) / data.length;
+            const now = vol > 6;
+            if (now !== wasSpeaking) {
+                wasSpeaking = now;
+                applySpeaking(peerId, now);
+                // Update chip dot in voice bar
+                const dot = document.querySelector(`#vpc-${peerId}`);
+                if (dot) dot.className = 'vpc-dot' + (now ? ' speaking' : '');
+            }
+        }, 120);
+    } catch(e) { console.warn('[Voice] remote analyser error', e); }
+}
+
+// ── mute / volume ─────────────────────────────────────────────────────────
+window.toggleMute = function () {
+    Voice.muted = !Voice.muted;
+    if (Voice.stream)
+        Voice.stream.getAudioTracks().forEach(t => { t.enabled = !Voice.muted; });
+    if (Voice.muted) {
+        applySpeaking(myID, false);
+        updateMicBadge(myID, 'muted');
+    } else {
+        updateMicBadge(myID, 'live');
     }
+    updateVoiceUI();
+};
 
-    // --- Popup close: X button and click outside ---
-    document.addEventListener('DOMContentLoaded', () => {
-        const popup = document.getElementById('rolePopup');
-        const closeBtn = document.getElementById('closeRolePopup');
+window.setVolume = function (input) {
+    const v = parseInt(input.value);
+    input.style.setProperty('--val', v + '%');
+    Voice.masterGain = v / 100;
+    for (const peer of Object.values(Voice.peers))
+        if (peer.gainNode) peer.gainNode.gain.value = Voice.masterGain;
+};
 
-        closeBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            popup.style.display = 'none';
-        });
+function applyMasterGain(peerId) {
+    const peer = Voice.peers[peerId];
+    if (peer && peer.gainNode) peer.gainNode.gain.value = Voice.masterGain;
+}
 
-        popup.addEventListener('click', (e) => {
-            if (e.target === popup) {
-                popup.style.display = 'none';
-            }
-        });
+// ── speaking / mic badge helpers ──────────────────────────────────────────
+function applySpeaking(playerId, speaking) {
+    peerSpeakingState[playerId] = speaking;
+    const avatar = document.getElementById(`avatar-${playerId}`);
+    if (avatar) avatar.classList.toggle('speaking', speaking);
+    // update chip dot
+    const dot = document.querySelector(`#vpc-${playerId}`);
+    if (dot && speaking) dot.className = 'vpc-dot speaking';
+    else if (dot && !speaking) dot.className = 'vpc-dot';
+}
+
+function updateMicBadge(playerId, state) {
+    const badge = document.getElementById(`mic-${playerId}`);
+    if (!badge) return;
+    badge.className = 'mic-badge ' + state;
+    badge.textContent = state === 'muted' ? '🔇' : '🎙';
+}
+
+function applyMicBadges() {
+    if (myID && Voice.active)
+        updateMicBadge(myID, Voice.muted ? 'muted' : 'live');
+}
+
+function refreshVoiceInRoomIcons() {
+    document.querySelectorAll('[id^="vinroom-"]').forEach(el => {
+        const pid = el.id.replace('vinroom-','');
+        el.style.display = voiceRoomMembers[pid] ? 'block' : 'none';
     });
+}
 
-    // Cleanup on page unload (optional)
-    window.addEventListener("beforeunload", function() {
+// ── voice members bar ─────────────────────────────────────────────────────
+function updateVoiceMembersBar(members) {
+    const bar = document.getElementById('voiceMembersBar');
+    const ids = Object.keys(members);
+    if (!Voice.active || ids.length === 0) { bar.style.display = 'none'; return; }
+    bar.style.display = 'flex';
+    bar.innerHTML = ids.map(id => `
+        <div class="voice-peer-chip">
+            <div class="vpc-dot${peerSpeakingState[id] ? ' speaking':''}" id="vpc-${id}"></div>
+            <span>${members[id].name || id}${id === myID ? ' (you)' : ''}</span>
+        </div>`).join('');
+}
+
+// ── voice UI state ────────────────────────────────────────────────────────
+function updateVoiceUI() {
+    const joinBtn   = document.getElementById('voiceJoinBtn');
+    const muteBtn   = document.getElementById('voiceMuteBtn');
+    const liveDot   = document.getElementById('voiceLiveDot');
+    const volWrap   = document.getElementById('volumeWrap');
+
+    if (Voice.active) {
+        joinBtn.textContent   = '📵 Leave Voice';
+        joinBtn.className     = 'vbtn leave';
+        muteBtn.style.display = 'flex';
+        muteBtn.textContent   = Voice.muted ? '🎙️ Unmute' : '🔇 Mute';
+        muteBtn.className     = Voice.muted ? 'vbtn unmute' : 'vbtn mute';
+        liveDot.style.display = 'block';
+        volWrap.style.display = 'flex';
+        if (myID) updateMicBadge(myID, Voice.muted ? 'muted' : 'live');
+    } else {
+        joinBtn.textContent   = '🎤 Join Voice';
+        joinBtn.className     = 'vbtn join';
+        muteBtn.style.display = 'none';
+        liveDot.style.display = 'none';
+        volWrap.style.display = 'none';
+        if (myID) { const b = document.getElementById(`mic-${myID}`); if(b) b.className='mic-badge'; }
+    }
+}
+
+// ── cleanup on page unload ────────────────────────────────────────────────
+window.addEventListener("beforeunload", async () => {
+    if (Voice.active) {
         if (myID) {
-            remove(ref(db, "players/" + myID));
-            remove(ref(db, "roles/" + myID));
+            remove(ref(db, `voiceRoom/${myID}`));
+            remove(ref(db, `signals/${myID}`));
+            remove(ref(db, `speaking/${myID}`));
         }
-    });
+        if (Voice.stream) Voice.stream.getTracks().forEach(t => t.stop());
+    }
+    if (myID) {
+        remove(ref(db, "players/" + myID));
+        remove(ref(db, "roles/"   + myID));
+    }
+});
 
-    // On initial load, splash is already showing; join screen will appear after timeout.
+// ── initial UI state ──────────────────────────────────────────────────────
+updateVoiceUI();
 </script>
 </body>
 </html>
