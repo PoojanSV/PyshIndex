@@ -476,13 +476,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
 const STUN_CONFIG = {
     iceServers: [
-        { urls: 'stun:freestun.net:3478' },
-        { urls: 'turn:freestun.net:3478',
-          username: 'free',
-          credential: 'free' },
-        { urls: 'turns:freestun.net:5349',   // TLS fallback
-          username: 'free',
-          credential: 'free' }
+        { urls: 'stun:stun.l.google.com:19302'  },
+        { urls: 'stun:stun1.l.google.com:19302' },
+        { urls: 'stun:stun2.l.google.com:19302' },
     ]
 };
 
@@ -515,16 +511,8 @@ window.toggleVoice = async function () {
 async function joinVoice() {
     if (!myID) { alert("Join the lobby first!"); return; }
     try {
-        Voice.stream = await navigator.mediaDevices.getUserMedia(
-		{
-		audio: {
-    echoCancellation: true,
-    noiseSuppression: true,
-    autoGainControl: true,
-    sampleRate: 48000,
-    sampleSize: 16,
-    channelCount: 1        // mono is better for voice
-                 },
+        Voice.stream = await navigator.mediaDevices.getUserMedia({
+            audio: { echoCancellation: true, noiseSuppression: true, sampleRate: 48000 },
             video: false
         });
     } catch (e) {
@@ -645,12 +633,6 @@ async function createPeerConnection(peerId, initiator) {
     if (initiator) {
         try {
             const offer = await pc.createOffer();
-			
-			offer.sdp = offer.sdp.replace(
-    /a=fmtp:111 /,
-    'a=fmtp:111 maxaveragebitrate=32000;stereo=0;sprop-stereo=0;useinbandfec=1;'
-                );
-				
             await pc.setLocalDescription(offer);
             await set(ref(db, `signals/${peerId}/${myID}/offer`),
                       { type: offer.type, sdp: offer.sdp });
