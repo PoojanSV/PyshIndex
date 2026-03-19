@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-    <title>Imposter Game</title>
+    <title>Imposter Game · Voice Enhanced</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,600;14..32,700&display=swap" rel="stylesheet">
@@ -322,7 +322,7 @@
     </div>
 </div>
 
-<!-- Hidden audio container -->
+<!-- Hidden audio container (not used, but kept for safety) -->
 <div id="audioContainer" style="display:none"></div>
 
 <script type="module">
@@ -437,6 +437,7 @@ window.sendMessage = function () {
     if (!text || !myName) return;
     push(ref(db, "chat"), { name: myName, text });
     document.getElementById("chatInput").value = "";
+    playSoundEffect('send');   // ✨ sound effect
 };
 
 onValue(ref(db, "chat"), (snap) => {
@@ -469,6 +470,49 @@ document.addEventListener('DOMContentLoaded', () => {
     closeBtn.addEventListener('click', (e) => { e.stopPropagation(); popup.style.display = 'none'; });
     popup.addEventListener('click', (e) => { if (e.target === popup) popup.style.display = 'none'; });
 });
+
+// ============================================================
+//  SOUND EFFECTS (crisp UI feedback)
+// ============================================================
+let soundCtx = null;  // lazy AudioContext
+
+function playSoundEffect(type) {
+    try {
+        if (!soundCtx) {
+            soundCtx = new (window.AudioContext || window.webkitAudioContext)();
+        }
+        if (soundCtx.state === 'suspended') {
+            soundCtx.resume(); // will be called inside user gesture
+        }
+        const now = soundCtx.currentTime;
+        const osc = soundCtx.createOscillator();
+        const gain = soundCtx.createGain();
+        osc.connect(gain);
+        gain.connect(soundCtx.destination);
+
+        let freq = 600;
+        let duration = 0.08;
+        let vol = 0.15;
+
+        switch (type) {
+            case 'join': freq = 880; duration = 0.12; vol = 0.2; break;
+            case 'leave': freq = 440; duration = 0.1; vol = 0.15; break;
+            case 'mute': freq = 300; duration = 0.06; vol = 0.1; break;
+            case 'unmute': freq = 1200; duration = 0.08; vol = 0.15; break;
+            case 'send': freq = 600; duration = 0.04; vol = 0.1; break;
+            default: freq = 500;
+        }
+
+        gain.gain.setValueAtTime(vol, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + duration);
+        osc.frequency.value = freq;
+        osc.start(now);
+        osc.stop(now + duration);
+        osc.onended = () => osc.disconnect();
+    } catch (e) {
+        // ignore — sound is optional
+    }
+}
 
 // ============================================================
 //  VOICE CHAT — WebRTC mesh, Firebase signalling
@@ -509,22 +553,27 @@ function getProc(peerId) {
 
 // ── join / leave voice ────────────────────────────────────────────────────
 window.toggleVoice = async function () {
-    if (!Voice.active) await joinVoice(); else await leaveVoice();
+    if (!Voice.active) {
+        await joinVoice();
+        playSoundEffect('join');
+    } else {
+        await leaveVoice();
+        playSoundEffect('leave');
+    }
 };
 
 async function joinVoice() {
     if (!myID) { alert("Join the lobby first!"); return; }
     try {
-        Voice.stream = await navigator.mediaDevices.getUserMedia(
-		{
-		audio: {
-    echoCancellation: true,
-    noiseSuppression: true,
-    autoGainControl: true,
-    sampleRate: 48000,
-    sampleSize: 16,
-    channelCount: 1        // mono is better for voice
-                 },
+        Voice.stream = await navigator.mediaDevices.getUserMedia({
+            audio: {
+                echoCancellation: true,
+                noiseSuppression: true,
+                autoGainControl: true,
+                sampleRate: 48000,
+                sampleSize: 16,
+                channelCount: 1        // mono is perfect for voice
+            },
             video: false
         });
     } catch (e) {
@@ -610,6 +659,12 @@ function onVoiceRoomSnapshot(snap) {
     refreshVoiceInRoomIcons();
 }
 
+// ── enhance SDP for high‑quality Opus (64 kbps, mono, FEC) ─────────────────
+function enhanceSdp(sdp) {
+    // Replace the fmtp line for Opus (payload 111) with our parameters
+    return sdp.replace(/a=fmtp:111 .*/, 'a=fmtp:111 maxaveragebitrate=64000;stereo=0;sprop-stereo=0;useinbandfec=1');
+}
+
 // ── create a peer connection ───────────────────────────────────────────────
 async function createPeerConnection(peerId, initiator) {
     const pc      = new RTCPeerConnection(STUN_CONFIG);
@@ -644,13 +699,8 @@ async function createPeerConnection(peerId, initiator) {
 
     if (initiator) {
         try {
-            const offer = await pc.createOffer();
-			
-			offer.sdp = offer.sdp.replace(
-    /a=fmtp:111 /,
-    'a=fmtp:111 maxaveragebitrate=32000;stereo=0;sprop-stereo=0;useinbandfec=1;'
-                );
-				
+            let offer = await pc.createOffer();
+            offer.sdp = enhanceSdp(offer.sdp);          // ✨ boost quality
             await pc.setLocalDescription(offer);
             await set(ref(db, `signals/${peerId}/${myID}/offer`),
                       { type: offer.type, sdp: offer.sdp });
@@ -681,7 +731,8 @@ async function onSignalReceived(snap) {
             proc.offer = true;
             try {
                 await peer.pc.setRemoteDescription(new RTCSessionDescription(data.offer));
-                const answer = await peer.pc.createAnswer();
+                let answer = await peer.pc.createAnswer();
+                answer.sdp = enhanceSdp(answer.sdp);      // ✨ boost quality (answer side)
                 await peer.pc.setLocalDescription(answer);
                 await set(ref(db, `signals/${fromId}/${myID}/answer`),
                           { type: answer.type, sdp: answer.sdp });
@@ -787,14 +838,17 @@ function setupRemoteAnalyser(peerId, stream) {
 
 // ── mute / volume ─────────────────────────────────────────────────────────
 window.toggleMute = function () {
+    if (!Voice.active) return;
     Voice.muted = !Voice.muted;
     if (Voice.stream)
         Voice.stream.getAudioTracks().forEach(t => { t.enabled = !Voice.muted; });
     if (Voice.muted) {
         applySpeaking(myID, false);
         updateMicBadge(myID, 'muted');
+        playSoundEffect('mute');
     } else {
         updateMicBadge(myID, 'live');
+        playSoundEffect('unmute');
     }
     updateVoiceUI();
 };
@@ -895,6 +949,7 @@ window.addEventListener("beforeunload", async () => {
         remove(ref(db, "players/" + myID));
         remove(ref(db, "roles/"   + myID));
     }
+    if (soundCtx) await soundCtx.close();
 });
 
 // ── initial UI state ──────────────────────────────────────────────────────
