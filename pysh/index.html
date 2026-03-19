@@ -917,16 +917,16 @@ function updateVoiceUI() {
     const volWrap   = document.getElementById('volumeWrap');
 
     if (Voice.active) {
-        joinBtn.textContent   = '📵 Leave Voice';
+        joinBtn.textContent   = 'disconnect';
         joinBtn.className     = 'vbtn leave';
         muteBtn.style.display = 'flex';
-        muteBtn.textContent   = Voice.muted ? '🎙️ Unmute' : '🔇 Mute';
+        muteBtn.textContent   = Voice.muted ? 'Unmute' : 'Mute';
         muteBtn.className     = Voice.muted ? 'vbtn unmute' : 'vbtn mute';
         liveDot.style.display = 'block';
         volWrap.style.display = 'flex';
         if (myID) updateMicBadge(myID, Voice.muted ? 'muted' : 'live');
     } else {
-        joinBtn.textContent   = '🎤 Join Voice';
+        joinBtn.textContent   = 'Connect';
         joinBtn.className     = 'vbtn join';
         muteBtn.style.display = 'none';
         liveDot.style.display = 'none';
