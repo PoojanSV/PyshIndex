@@ -1,0 +1,1515 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Game Reviews</title>
+<link rel="icon" type="image/jpeg" href="logo.jpg">
+
+<style>
+/* =========================================================
+   ROOT / SCALE
+   All spacing, radii and most font-sizes use clamp() so the
+   whole layout scales smoothly with the viewport instead of
+   jumping at fixed breakpoints.
+   ========================================================= */
+*, *::before, *::after { box-sizing: border-box; }
+
+:root {
+  --red: #e1282d;
+  --bg: #000;
+  --panel: #111;
+  --muted: #ccc;
+
+  --container-w: min(1400px, 94vw);
+
+  --gap: clamp(8px, 2.2vw, 32px);
+  --gap-sm: clamp(6px, 1.2vw, 18px);
+
+  --radius-lg: clamp(14px, 2vw, 30px);
+  --radius-md: clamp(10px, 1.3vw, 20px);
+  --radius-sm: clamp(8px, 1vw, 15px);
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  font-family: Arial, sans-serif;
+  margin: 0;
+  color: white;
+  overflow-x: hidden;
+}
+
+/* HEADER */
+header {
+  padding: clamp(8px, 1.2vw, 16px) 0;
+  background-color: #111;
+}
+
+nav {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  width: var(--container-w);
+  margin: 0 auto;
+  gap: var(--gap-sm);
+}
+
+nav a {
+  color: white;
+  text-decoration: none;
+  font-size: clamp(16px, 2.4vw, 35px);
+  padding: clamp(6px, 1.2vw, 20px);
+}
+
+nav a:hover { color: var(--red); }
+
+nav > a:first-of-type { justify-self: center; }
+
+#l { width: clamp(90px, 12vw, 250px); height: auto; display: block; }
+
+#navLeft {
+  
+  display: flex;
+  align-items: center;
+}
+
+#right {
+  margin-left:45%;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: clamp(4px, 0.8vw, 10px);
+}
+
+/* FAKE SEARCH ICON (placeholder, not yet functional) */
+.searchIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: clamp(30px, 3vw, 44px);
+  height: clamp(30px, 3vw, 44px);
+  color: var(--muted);
+  cursor: default;
+  margin-right: clamp(2px, 0.6vw, 8px);
+}
+.searchIcon svg { width: 60%; height: 60%; }
+.searchIcon:hover { color: var(--red); }
+
+/* AUTH NAV */
+nav a.nav-auth {
+  font-size: clamp(12px, 1.1vw, 20px);
+  padding: clamp(6px, 0.8vw, 10px) clamp(8px, 1.2vw, 15px);
+  border: 2px solid var(--red);
+  border-radius: var(--radius-sm);
+  margin-left: clamp(4px, 0.6vw, 10px);
+  white-space: nowrap;
+}
+nav a.nav-auth:hover { background: var(--red); color: white; }
+
+#userGreeting {
+  font-size: clamp(11px, 1vw, 18px);
+  color: var(--muted);
+  padding: 0 clamp(4px, 0.6vw, 10px);
+  white-space: nowrap;
+}
+
+hr { background-color: var(--red); height: 5px; border: solid var(--red); }
+
+/* LOADER */
+#loader {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: clamp(30px, 5vw, 60px);
+}
+
+.spinner-logo {
+  width: clamp(40px, 5vw, 60px);
+  height: clamp(54px, 6.6vw, 80px);
+  animation: spin 1.5s linear infinite;
+  transform-origin: center center;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.loader-text {
+  font-size: clamp(16px, 2vw, 24px);
+  color: var(--red);
+}
+
+/* TITLE ROW / FILTER BUTTONS
+   This row is locked to the same width as the card grid below it,
+   and its 3 buttons split that width equally so their outer edges
+   line up exactly with the edges of the card grid. */
+#titleRow {
+  width: var(--container-w);
+  margin: clamp(24px, 4vw, 40px) auto;
+  display: flex;
+  justify-content: center;
+}
+
+.btnGroup {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--gap);
+  width: 100%;
+}
+
+.boxBtn {
+  background: #111;
+  border: 3px solid var(--red);
+  color: white;
+  width: 100%;
+  margin: 0;
+  padding: clamp(10px, 1.4vw, 14px) clamp(10px, 1.6vw, 20px);
+  font-size: clamp(14px, 1.8vw, 26px);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+}
+
+.boxBtn:hover { background: var(--red); }
+
+h1 { font-size: clamp(28px, 5vw, 60px); margin: 0 clamp(10px, 2vw, 30px); white-space: nowrap; }
+
+/* REVIEWS / WISHLIST GRID
+   CSS grid with a fixed column count so the row layout stays
+   consistent (3 up, 2 on mobile) while each card's own size still
+   flows fluidly with the viewport width in between. */
+#reviews,
+#wishlist {
+  display: none; /* JS sets this to "grid" when shown */
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--gap);
+  width: var(--container-w);
+  margin: clamp(30px, 5vw, 50px) auto;
+  perspective: 1200px;
+}
+
+/* CARD */
+.card {
+  background: #111;
+  border: 3px solid var(--red);
+  border-radius: var(--radius-lg);
+  padding: clamp(10px, 1.6vw, 20px);
+  text-align: center;
+  transition: transform 0.35s ease;
+  overflow: visible;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+}
+
+/* WISHLIST CARD SPECIFIC */
+.wishlist-card { border-color: var(--red); }
+
+.wishlist-badge {
+  position: absolute;
+  top: clamp(6px, 0.8vw, 10px);
+  right: clamp(6px, 0.8vw, 10px);
+  background: gold;
+  color: black;
+  padding: clamp(3px, 0.5vw, 5px) clamp(6px, 0.9vw, 10px);
+  border-radius: var(--radius-sm);
+  font-size: clamp(9px, 1vw, 14px);
+  font-weight: bold;
+  z-index: 10;
+}
+
+.imgWrap {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--radius-md);
+}
+
+.card img {
+  width: 100%;
+  aspect-ratio: 7 / 9;
+  object-fit: cover;
+  cursor: pointer;
+  transition: transform 0.35s ease, box-shadow 0.35s ease;
+  display: block;
+  margin: auto;
+  position: relative;
+  z-index: 1;
+}
+
+/* Wishlist images are not clickable */
+.wishlist-card img { cursor: default; }
+
+/* CLICK ANIMATION - brief pulse/flash when a game card is opened */
+@keyframes cardClickPulse {
+  0%   { transform: scale(1); filter: brightness(1); }
+  35%  { transform: scale(0.94); filter: brightness(1.25); }
+  100% { transform: scale(1); filter: brightness(1); }
+}
+
+.imgWrap.clicked img { animation: cardClickPulse 0.4s ease; }
+
+.imgWrap::before {
+  content: '';
+  position: absolute;
+  top: -120%;
+  left: -150%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    120deg,
+    transparent 30%,
+    rgba(255,255,255,0.35) 50%,
+    transparent 70%
+  );
+  transform: rotate(25deg);
+  transition: top 0.7s ease, left 0.7s ease;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.card h3 {
+  margin: clamp(8px, 1vw, 15px) 0 0;
+  font-size: clamp(11px, 1.6vw, 26px);
+  color: white;
+  width: 100%;
+  text-align: center;
+  line-height: 1.25;
+}
+
+.card:hover img, .wishlist-card:hover img {
+  transform: scale(1.1) translateY(-15px);
+  box-shadow: 0 30px 60px rgba(225,40,45,0.35);
+}
+.card:hover .imgWrap::before { top: -20%; left: -20%; }
+
+/* FULL REVIEW PAGE */
+#reviewPage {
+  display: none; /* toggled by JS */
+  width: var(--container-w);
+  margin: clamp(40px, 6vw, 60px) auto;
+  gap: var(--gap);
+  align-items: flex-start;
+  flex-wrap: wrap;
+  opacity: 0;
+  transform: translateY(25px);
+  transition: opacity 0.45s ease, transform 0.45s ease;
+}
+
+#reviewPage.visible { opacity: 1; transform: translateY(0); }
+
+#reviewPage img {
+  flex: 1 1 260px;
+  max-width: 350px;
+  width: 100%;
+  border-radius: var(--radius-lg);
+  border: 3px solid var(--red);
+}
+
+#reviewContent { flex: 2 1 320px; min-width: 0; }
+
+#reviewContent p {
+  color: grey;
+  font-size: clamp(16px, 1.8vw, 26px);
+  line-height: 1.5;
+  max-width: 700px;
+}
+
+/* GAME DESCRIPTION + AVG RATING (beside photo) */
+#reviewDescription {
+  color: #ccc;
+  font-size: clamp(14px, 1.3vw, 20px);
+  line-height: 1.5;
+  max-width: 600px;
+  margin-bottom: clamp(16px, 2vw, 25px);
+}
+
+#reviewMetaBadge { margin: 0 0 10px; }
+
+#back {
+  background: var(--red);
+  color: white;
+  border: none;
+  padding: clamp(10px, 1.2vw, 12px) clamp(18px, 2vw, 25px);
+  font-size: clamp(15px, 1.2vw, 18px);
+  border-radius: var(--radius-sm);
+  margin-top: clamp(20px, 3vw, 30px);
+  cursor: pointer;
+  display: block;
+}
+
+/* CATEGORY BACK BUTTON */
+#catBack {
+  display: none; /* shown by JS */
+  margin: clamp(24px, 4vw, 40px) auto;
+  width: auto;
+}
+
+/* FOOTER */
+footer { background-color: #111; padding: clamp(15px, 2vw, 20px) clamp(20px, 4vw, 50px); font-size: clamp(13px, 1.4vw, 20px); }
+
+#f { display: flex; justify-content: center; flex-wrap: wrap; gap: clamp(16px, 3vw, 50px); }
+#f a { display: flex; align-items: center; gap: 8px; text-decoration: none; color: var(--muted); }
+#f img { width: clamp(16px, 1.6vw, 24px); height: clamp(16px, 1.6vw, 24px); }
+
+#lf { height: clamp(60px, 6vw, 100px); width: clamp(60px, 6vw, 100px); display: block; margin: 0 auto; }
+
+#c {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+  color: var(--muted);
+  margin-top: 10px;
+}
+
+#pysh { color: var(--red); }
+
+/* ACTIVE BUTTON STYLE */
+.active { background: var(--red) !important; color: white !important; }
+
+/* COMMUNITY REVIEWS SECTION */
+#communitySection {
+  display: none;
+  width: min(800px, 94vw);
+  margin: 20px auto 60px;
+}
+
+#communitySection h3 {
+  font-size: clamp(20px, 2.4vw, 28px);
+  color: var(--red);
+  border-bottom: 2px solid var(--red);
+  padding-bottom: 10px;
+  margin-bottom: 20px;
+}
+
+#avgBadgeWrap { margin: 0 0 30px; font-size: clamp(16px, 1.6vw, 20px); }
+#avgBadgeWrap .avg-label { color: var(--muted); margin-right: 10px; }
+
+#avgBadge {
+  font-weight: bold;
+  padding: 5px 16px;
+  border-radius: 20px;
+  border: 2px solid #555;
+  color: #888;
+}
+
+#avgBadge.avg-Goated { color: limegreen; border-color: limegreen; }
+#avgBadge.avg-Good { color: dodgerblue; border-color: dodgerblue; }
+#avgBadge.avg-Dropped { color: yellow; border-color: yellow; }
+
+#reviewForm {
+  background: #111;
+  border: 2px solid var(--red);
+  border-radius: var(--radius-md);
+  padding: clamp(15px, 2vw, 20px) clamp(16px, 2.2vw, 25px);
+  margin-bottom: 35px;
+}
+
+#reviewForm label { display: block; margin: 12px 0 6px; color: var(--muted); font-size: 15px; }
+
+#reviewForm input[type="text"],
+#reviewForm select,
+#reviewForm textarea {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid #444;
+  background: #000;
+  color: white;
+  font-family: inherit;
+  font-size: 15px;
+}
+
+#reviewForm textarea { min-height: 90px; resize: vertical; }
+
+#commentName[readonly] { color: var(--muted); border-color: #444; cursor: not-allowed; }
+#commentName.owner-name[readonly] { color: var(--red); font-weight: bold; border-color: var(--red); }
+
+#submitReviewBtn {
+  margin-top: 18px;
+  background: var(--red);
+  color: white;
+  border: none;
+  padding: 10px 26px;
+  border-radius: 10px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+}
+#submitReviewBtn:hover { background: white; color: var(--red); }
+
+#reviewFormMsg { margin-top: 12px; font-size: 14px; }
+
+.commentCard {
+  background: #111;
+  border: 1px solid #333;
+  border-radius: 12px;
+  padding: 16px 20px;
+  margin-bottom: 16px;
+}
+
+.commentCard .commentHead { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; flex-wrap: wrap; }
+.commentCard .commentName { font-weight: bold; font-size: 17px; color: white; }
+.commentCard .commentName.owner { color: var(--red); }
+
+.commentCard .commentRating { font-size: 12px; font-weight: bold; padding: 3px 10px; border-radius: 12px; }
+
+.rating-Goated { background: rgba(50,205,50,0.2); color: limegreen; }
+.rating-Good { background: rgba(30,144,255,0.2); color: dodgerblue; }
+.rating-Dropped { background: rgba(255,255,0,0.2); color: yellow; }
+
+.commentCard .commentText { color: var(--muted); font-size: 15px; line-height: 1.4; }
+
+#noComments { color: #888; font-size: 16px; }
+
+.commentAvatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #333;
+  vertical-align: middle;
+}
+
+.commentCard.pinned { border-color: var(--red); }
+
+.pinnedTag {
+  font-size: 11px;
+  color: #888;
+  border: 1px solid #444;
+  border-radius: 10px;
+  padding: 2px 8px;
+  margin-left: 4px;
+}
+
+/* GUEST BLOCK MESSAGE */
+#guestBlock {
+  background: #111;
+  border: 2px solid #444;
+  border-radius: var(--radius-md);
+  padding: 20px 25px;
+  margin-bottom: 35px;
+  color: var(--muted);
+  font-size: 16px;
+}
+#guestBlock a { color: var(--red); font-weight: bold; text-decoration: none; }
+#guestBlock a:hover { text-decoration: underline; }
+
+/* PROFILE ICON (nav) */
+.profileIcon {
+  width: clamp(40px, 4vw, 67px);
+  height: clamp(40px, 4vw, 67px);
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid var(--red);
+  cursor: pointer;
+  margin-left: 25%;
+  vertical-align: middle;
+  transition: transform 0.2s ease;
+}
+.profileIcon:hover { transform: scale(1.08); }
+
+/* =========================================================
+   PROFILE SIDE PANEL
+   ========================================================= */
+#profileOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.35s ease;
+  z-index: 1999;
+}
+#profileOverlay.open { opacity: 1; pointer-events: auto; }
+
+#profilePanel {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  width: min(380px, 100vw);
+  background: #111;
+  border-right: 3px solid var(--red);
+  overflow-y: auto;
+  transform: translateX(-100%);
+  transition: transform 0.35s ease;
+  z-index: 2000;
+
+  display: flex;
+  flex-direction: column;
+  padding: clamp(20px, 3vw, 30px) clamp(20px, 3vw, 28px);
+}
+
+#profilePanel.open { transform: translateX(0); }
+
+#profilePanel .panelTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+#profilePanel h3 { font-size: 22px; color: var(--red); margin: 0; }
+
+.closePanel { font-size: 28px; line-height: 1; cursor: pointer; color: var(--muted); }
+.closePanel:hover { color: var(--red); }
+
+.profileAvatarWrap { text-align: center; margin: 10px 0 20px; }
+
+.profileAvatarLarge {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid var(--red);
+  display: block;
+  margin: 0 auto 14px;
+}
+
+.profileUsername { font-size: 20px; font-weight: bold; text-align: center; margin-bottom: 4px; }
+.profileRole { text-align: center; font-size: 13px; color: #888; margin-bottom: 0; }
+
+/* section dividers use gap instead of manual margins */
+#profilePanel > hr {
+  border: none;
+  border-top: 1px solid #333;
+  background: none;
+  height: 0;
+  margin: 20px 0;
+  width: 100%;
+}
+
+.panelSection { display: flex; flex-direction: column; gap: 10px; }
+
+#profilePanel label { display: block; margin: 0; color: var(--muted); font-size: 13px; }
+
+#profilePanel input[type="text"],
+#profilePanel input[type="password"],
+#profilePanel input[type="file"] {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 8px;
+  border: 1px solid #444;
+  background: #000;
+  color: white;
+  font-family: inherit;
+  font-size: 14px;
+}
+
+.panelBtn {
+  background: var(--red);
+  color: white;
+  border: none;
+  padding: 11px 20px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+  width: 100%;
+}
+.panelBtn:hover { background: white; color: var(--red); }
+
+.panelBtn.secondaryBtn {
+  background: transparent;
+  border: 2px solid var(--red);
+  color: var(--red);
+}
+.panelBtn.secondaryBtn:hover { background: var(--red); color: white; }
+.panelBtn.secondaryBtn.open { background: var(--red); color: white; }
+
+.panelBtn.logoutBtn { background: #333; margin-top: auto; }
+.panelBtn.logoutBtn:hover { background: var(--red); color: white; }
+
+/* collapsible reset-password fields */
+#passwordSection {
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  transition: max-height 0.35s ease, opacity 0.3s ease, margin-top 0.35s ease;
+}
+#passwordSection.open {
+  max-height: 400px;
+  opacity: 1;
+  margin-top: 12px;
+}
+
+#profileMsg, #passwordMsg { margin-top: 4px; font-size: 13px; }
+
+/* Everything below this point relies on fluid clamp() sizing, so
+   very few hard breakpoints are needed. These remaining rules only
+   cover structural stacking that clamp() can't express. */
+@media (max-width: 640px) {
+
+  #reviews, #wishlist { grid-template-columns: repeat(2, 1fr); }
+
+  #reviewPage { flex-direction: column; align-items: center; text-align: center; }
+  #reviewPage img { max-width: 70%; }
+  #reviewContent { width: 100%; }
+  #reviewContent p, #reviewDescription { margin-left: auto; margin-right: auto; }
+  #back { margin-left: auto; margin-right: auto; }
+
+  #c { flex-direction: column; text-align: center; }
+  #c > div { text-align: center !important; }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+<nav>
+  <div id="navLeft">
+    <img id="profileIcon" class="profileIcon" src="" alt="Your profile" style="display:none;">
+  </div>
+  <a href="about.html"><img id="l" src="logo5.png" alt="Pysh Games logo"></a>
+  <div id="right">
+    <span id="searchIcon" class="searchIcon" title="Search (coming soon)" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="2"></circle>
+        <line x1="16.65" y1="16.65" x2="21" y2="21" stroke="currentColor" stroke-width="2" stroke-linecap="round"></line>
+      </svg>
+    </span>
+    <span id="userGreeting" style="display:none;"></span>
+    <a href="login.html" id="authLink" class="nav-auth">Sign In</a>
+    <a href="#" id="logoutLink" class="nav-auth" style="display:none;">Logout</a>
+  </div>
+</nav>
+</header>
+
+<hr>
+
+<main>
+<div id="titleRow">
+  <div class="btnGroup">
+    <button class="boxBtn" onclick="filterCategory('Dropped')">Dropped</button>
+    <button class="boxBtn" onclick="filterCategory('Good')">Good</button>
+    <button class="boxBtn" onclick="filterCategory('Goated')">Goated</button>
+  </div>
+
+
+
+</div>
+
+<!-- LOADER - VISIBLE BY DEFAULT -->
+<div id="loader">
+  <img src="lodlogo.png" class="spinner-logo" alt="Pysh Games Logo">
+  <div class="loader-text">Loading...</div>
+</div>
+
+<!-- REVIEWS SECTION - HIDDEN BY DEFAULT -->
+<div id="reviews"></div>
+
+<!-- WISHLIST SECTION - HIDDEN BY DEFAULT -->
+<div id="wishlist"></div>
+
+<!-- CATEGORY BACK BUTTON - HIDDEN BY DEFAULT -->
+<button id="catBack" class="boxBtn" style="display: none;">Back</button>
+
+<!-- REVIEW PAGE - HIDDEN BY DEFAULT -->
+<div id="reviewPage" style="display: none;">
+  <img id="reviewImg">
+  <div id="reviewContent">
+    <h2 id="reviewTitle"></h2>
+    <p id="reviewDescription"></p>
+    <div id="avgBadgeWrap">
+      <span class="avg-label">Community Verdict:</span>
+      <span id="avgBadge">No reviews yet</span>
+    </div>
+    <button id="back">Back</button>
+  </div>
+</div>
+
+<!-- COMMUNITY REVIEWS SECTION - HIDDEN BY DEFAULT -->
+<div id="communitySection">
+  <h3>Community Reviews</h3>
+
+  <div id="guestBlock" style="display:none;">
+    Want to leave your own verdict? <a href="login.html">Sign in</a> to post a review.
+  </div>
+
+  <div id="reviewForm">
+    <label for="commentName">Your Name</label>
+    <input type="text" id="commentName" placeholder="Guest">
+
+    <label for="commentRating">Your Rating</label>
+    <select id="commentRating">
+      <option value="">Select a rating</option>
+      <option value="Dropped">Dropped</option>
+      <option value="Good">Good</option>
+      <option value="Goated">Goated</option>
+    </select>
+
+    <label for="commentText">Your Review</label>
+    <textarea id="commentText" placeholder="What did you think?"></textarea>
+
+    <button id="submitReviewBtn">Post Review</button>
+    <div id="reviewFormMsg"></div>
+  </div>
+
+  <div id="commentsList"></div>
+</div>
+
+<hr>
+</main>
+
+<footer>
+<img id="lf" src="logo.png" alt="Pysh Games logo">
+<div id="f">
+  <a href="#"><img src="youtube.jpg" alt="">YouTube</a>
+  <a href="#"><img src="instagram.jpg" alt="">Instagram</a>
+  <a href="#"><img src="x.jpg" alt="">X</a>
+</div>
+<br>
+<div id="c">
+  <div>&copy; 2008</div>
+  <div id="pysh">Pysh Games&reg;</div>
+  <div>All Rights Reserved</div>
+</div>
+</footer>
+
+<!-- PROFILE SIDE PANEL -->
+<div id="profileOverlay"></div>
+<div id="profilePanel">
+  <div class="panelTop">
+    <h3>Your Profile</h3>
+    <span class="closePanel" id="closePanelBtn">&times;</span>
+  </div>
+
+  <div class="profileAvatarWrap">
+    <img id="panelAvatar" class="profileAvatarLarge" src="" alt="Profile photo">
+    <label for="profilePicInput" class="panelBtn" style="display:inline-block;width:auto;padding:8px 16px;font-size:13px;">Change Photo</label>
+    <input type="file" id="profilePicInput" accept="image/*" style="display:none;">
+    <div id="profileMsg"></div>
+  </div>
+
+  <div class="profileUsername" id="panelUsername"></div>
+  <div class="profileRole" id="panelRole"></div>
+
+  <hr>
+
+  <div class="panelSection">
+    <a href="../Admin/admin.html" id="adminLink" class="nav-auth" style="display:none; text-align:center;">Admin</a>
+    <button class="boxBtn" id="top10Btn">Top 10</button>
+    <button class="boxBtn" id="wishlistBtn">Wishlist</button>
+  </div>
+
+  <hr>
+
+  <div class="panelSection">
+    <button class="panelBtn secondaryBtn" id="togglePasswordBtn">Reset Password</button>
+    <div id="passwordSection">
+      <label for="currentPasswordInput">Current Password</label>
+      <input type="password" id="currentPasswordInput" placeholder="Current password">
+      <label for="newPasswordInput">New Password</label>
+      <input type="password" id="newPasswordInput" placeholder="New password">
+      <button class="panelBtn" id="changePasswordBtn">Update Password</button>
+      <div id="passwordMsg"></div>
+    </div>
+  </div>
+
+  <hr>
+
+  <button class="panelBtn logoutBtn" id="panelLogoutBtn">Log Out</button>
+</div>
+
+<script type="module">
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { 
+  getFirestore, 
+  collection, 
+  getDocs, 
+  addDoc,
+  query, 
+  orderBy,
+  doc,
+  getDoc,
+  updateDoc
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+// Cloudinary config (same account used in the admin panel) - used for profile photo uploads
+const CLOUD_NAME = "dkwmnfnjf";
+const UPLOAD_PRESET = "yugwf5bd";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBoylOskSQPe1LiDehqp1gmSXfzzNNtRmY",
+  authDomain: "pysh-index.firebaseapp.com",
+  projectId: "pysh-index",
+  appId: "1:263831699229:web:f514a3d8388868f6c9ebf4"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+// ---- Auth session helpers (shared pattern across index.html, login.html, admin.html) ----
+const AUTH_KEY = "pyshAuthUser";
+function getSession() {
+  try {
+    return JSON.parse(localStorage.getItem(AUTH_KEY));
+  } catch {
+    return null;
+  }
+}
+function clearSession() {
+  localStorage.removeItem(AUTH_KEY);
+}
+function setSession(session) {
+  localStorage.setItem(AUTH_KEY, JSON.stringify(session));
+}
+
+// Simple default avatar (grey circle silhouette) used when a user has no profile photo yet
+const DEFAULT_AVATAR = "data:image/svg+xml;utf8," + encodeURIComponent(
+  '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" fill="#333"/><circle cx="50" cy="38" r="18" fill="#888"/><circle cx="50" cy="95" r="32" fill="#888"/></svg>'
+);
+
+// DOM Elements
+const reviewsDiv = document.getElementById("reviews");
+const wishlistDiv = document.getElementById("wishlist");
+const reviewPage = document.getElementById("reviewPage");
+const reviewImg = document.getElementById("reviewImg");
+const reviewTitle = document.getElementById("reviewTitle");
+const reviewDescription = document.getElementById("reviewDescription");
+const backBtn = document.getElementById("back");
+const catBack = document.getElementById("catBack");
+const loader = document.getElementById("loader");
+const wishlistBtn = document.getElementById("wishlistBtn");
+const top10Btn = document.getElementById("top10Btn");
+const authLink = document.getElementById("authLink");
+const adminLink = document.getElementById("adminLink");
+const logoutLink = document.getElementById("logoutLink");
+const userGreeting = document.getElementById("userGreeting");
+const profileIcon = document.getElementById("profileIcon");
+const communitySection = document.getElementById("communitySection");
+const avgBadge = document.getElementById("avgBadge");
+const guestBlock = document.getElementById("guestBlock");
+const reviewForm = document.getElementById("reviewForm");
+const commentName = document.getElementById("commentName");
+const commentRating = document.getElementById("commentRating");
+const commentText = document.getElementById("commentText");
+const submitReviewBtn = document.getElementById("submitReviewBtn");
+const reviewFormMsg = document.getElementById("reviewFormMsg");
+const commentsList = document.getElementById("commentsList");
+
+// Profile panel elements
+const profileOverlay = document.getElementById("profileOverlay");
+const profilePanel = document.getElementById("profilePanel");
+const closePanelBtn = document.getElementById("closePanelBtn");
+const panelAvatar = document.getElementById("panelAvatar");
+const profilePicInput = document.getElementById("profilePicInput");
+const profileMsg = document.getElementById("profileMsg");
+const panelUsername = document.getElementById("panelUsername");
+const panelRole = document.getElementById("panelRole");
+const togglePasswordBtn = document.getElementById("togglePasswordBtn");
+const passwordSection = document.getElementById("passwordSection");
+const currentPasswordInput = document.getElementById("currentPasswordInput");
+const newPasswordInput = document.getElementById("newPasswordInput");
+const changePasswordBtn = document.getElementById("changePasswordBtn");
+const passwordMsg = document.getElementById("passwordMsg");
+const panelLogoutBtn = document.getElementById("panelLogoutBtn");
+
+// Global state
+let allReviews = [];
+let allWishlist = [];
+let currentFilter = null;
+let currentReviewId = null;
+let currentReviewMeta = null;
+let currentComments = [];
+
+// ---- Auth nav UI ----
+function initAuthUI() {
+  const session = getSession();
+  if (session) {
+    authLink.style.display = "none";
+    logoutLink.style.display = "none"; // logging out now happens from the profile panel
+    userGreeting.style.display = "";
+  
+    adminLink.style.display = session.role === "admin" ? "" : "none";
+    profileIcon.style.display = "";
+    profileIcon.src = session.photoURL || DEFAULT_AVATAR;
+  } else {
+    authLink.style.display = "";
+    logoutLink.style.display = "none";
+    userGreeting.style.display = "none";
+    adminLink.style.display = "none";
+    profileIcon.style.display = "none";
+  }
+}
+
+// Logging out instantly sends the user back to the login page
+function doLogout() {
+  clearSession();
+  window.location.href = "login.html";
+}
+
+logoutLink.addEventListener("click", (e) => {
+  e.preventDefault();
+  doLogout();
+});
+panelLogoutBtn.addEventListener("click", doLogout);
+
+initAuthUI();
+
+// ---- Profile side panel ----
+function openProfilePanel() {
+  const session = getSession();
+  if (!session) return;
+  panelAvatar.src = session.photoURL || DEFAULT_AVATAR;
+  panelUsername.textContent = session.username;
+  panelRole.textContent = session.role === "admin" ? "Admin" : "Member";
+  currentPasswordInput.value = "";
+  newPasswordInput.value = "";
+  profileMsg.textContent = "";
+  passwordMsg.textContent = "";
+  passwordSection.classList.remove("open");
+  togglePasswordBtn.classList.remove("open");
+  profileOverlay.classList.add("open");
+  profilePanel.classList.add("open");
+}
+
+function closeProfilePanel() {
+  profileOverlay.classList.remove("open");
+  profilePanel.classList.remove("open");
+}
+
+profileIcon.addEventListener("click", openProfilePanel);
+closePanelBtn.addEventListener("click", closeProfilePanel);
+profileOverlay.addEventListener("click", closeProfilePanel);
+
+// Reset Password reveals the current/new password fields instead of
+// showing them all the time, which was cluttering the panel.
+togglePasswordBtn.addEventListener("click", () => {
+  const isOpen = passwordSection.classList.toggle("open");
+  togglePasswordBtn.classList.toggle("open", isOpen);
+  togglePasswordBtn.textContent = isOpen ? "Cancel" : "Reset Password";
+});
+
+profilePicInput.addEventListener("change", async () => {
+  const session = getSession();
+  const file = profilePicInput.files[0];
+  if (!session || !file) return;
+
+  profileMsg.style.color = "#ccc";
+  profileMsg.textContent = "Uploading...";
+
+  try {
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("upload_preset", UPLOAD_PRESET);
+
+    const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`, {
+      method: "POST",
+      body: formData
+    });
+    if (!res.ok) throw new Error("Upload failed");
+    const data = await res.json();
+
+    await updateDoc(doc(db, "users", session.id), { photoURL: data.secure_url });
+
+    const updatedSession = { ...session, photoURL: data.secure_url };
+    setSession(updatedSession);
+    panelAvatar.src = data.secure_url;
+    profileIcon.src = data.secure_url;
+
+    profileMsg.style.color = "limegreen";
+    profileMsg.textContent = "Profile photo updated!";
+  } catch (error) {
+    console.error("Error uploading profile photo:", error);
+    profileMsg.style.color = "#e1282d";
+    profileMsg.textContent = "Could not upload photo. Please try again.";
+  }
+});
+
+changePasswordBtn.addEventListener("click", async () => {
+  const session = getSession();
+  if (!session) return;
+
+  const currentPassword = currentPasswordInput.value;
+  const newPassword = newPasswordInput.value;
+
+  if (!currentPassword || !newPassword) {
+    passwordMsg.style.color = "#e1282d";
+    passwordMsg.textContent = "Please fill in both password fields.";
+    return;
+  }
+  if (newPassword.length < 6) {
+    passwordMsg.style.color = "#e1282d";
+    passwordMsg.textContent = "New password must be at least 6 characters.";
+    return;
+  }
+
+  passwordMsg.style.color = "#ccc";
+  passwordMsg.textContent = "Updating...";
+
+  try {
+    const userSnap = await getDoc(doc(db, "users", session.id));
+    if (!userSnap.exists() || userSnap.data().password !== currentPassword) {
+      passwordMsg.style.color = "#e1282d";
+      passwordMsg.textContent = "Current password is incorrect.";
+      return;
+    }
+    await updateDoc(doc(db, "users", session.id), { password: newPassword });
+    currentPasswordInput.value = "";
+    newPasswordInput.value = "";
+    passwordMsg.style.color = "limegreen";
+    passwordMsg.textContent = "Password updated!";
+  } catch (error) {
+    console.error("Error updating password:", error);
+    passwordMsg.style.color = "#e1282d";
+    passwordMsg.textContent = "Could not update password. Please try again.";
+  }
+});
+
+// Initialize - hide everything except loader
+document.addEventListener('DOMContentLoaded', function() {
+  // Hide elements initially to prevent flash
+  reviewsDiv.style.display = "none";
+  wishlistDiv.style.display = "none";
+  reviewPage.style.display = "none";
+  catBack.style.display = "none";
+  
+  // Show loader
+  loader.style.display = "flex";
+  
+  // Setup button event listeners
+  wishlistBtn.addEventListener('click', showWishlist);
+  top10Btn.addEventListener('click', showTop10);
+  
+  // Load both reviews and wishlist
+  loadAllData();
+});
+
+async function loadAllData() {
+  try {
+    // Load reviews
+    const reviewsQuery = query(collection(db, "reviews"), orderBy("createdAt", "desc"));
+    const reviewsSnapshot = await getDocs(reviewsQuery);
+    allReviews = [];
+    reviewsSnapshot.forEach(doc => allReviews.push({ id: doc.id, ...doc.data() }));
+    
+    // Load wishlist
+    const wishlistQuery = query(collection(db, "wishlist"), orderBy("addedAt", "desc"));
+    const wishlistSnapshot = await getDocs(wishlistQuery);
+    allWishlist = [];
+    wishlistSnapshot.forEach(doc => allWishlist.push(doc.data()));
+    
+    // Preload images for both
+    await Promise.all([
+      preloadImages(allReviews),
+      preloadImages(allWishlist)
+    ]);
+    
+    // Render both
+    renderReviews(allReviews);
+    renderWishlist(allWishlist);
+    
+    // Hide loader and show reviews by default
+    hideLoader();
+    showReviews();
+    
+  } catch (error) {
+    console.error("Error loading data:", error);
+    hideLoader();
+    alert("Error loading data. Please refresh the page.");
+  }
+}
+
+function hideLoader() {
+  loader.style.display = "none";
+}
+
+function preloadImages(items) {
+  return new Promise((resolve) => {
+    let loadedImages = 0;
+    const totalImages = items.length;
+    
+    if (totalImages === 0) {
+      resolve();
+      return;
+    }
+    
+    items.forEach(item => {
+      const img = new Image();
+      img.src = item.imageUrl;
+      img.onload = () => {
+        loadedImages++;
+        if (loadedImages === totalImages) {
+          resolve();
+        }
+      };
+      img.onerror = () => {
+        loadedImages++;
+        if (loadedImages === totalImages) {
+          resolve();
+        }
+      };
+    });
+  });
+}
+
+function showReviews() {
+  reviewsDiv.style.display = "grid";
+  wishlistDiv.style.display = "none";
+  reviewPage.style.display = "none";
+  communitySection.style.display = "none";
+  
+  // Update button states
+  updateButtonStates('reviews');
+}
+
+function showWishlist() {
+  reviewsDiv.style.display = "none";
+  wishlistDiv.style.display = "grid";
+  reviewPage.style.display = "none";
+  communitySection.style.display = "none";
+  catBack.style.display = "none";
+  
+  // Update button states
+  updateButtonStates('wishlist');
+   closeProfilePanel();
+}
+
+function updateButtonStates(view) {
+  // Reset all buttons
+  document.querySelectorAll('.boxBtn').forEach(btn => {
+    btn.classList.remove('active');
+  });
+  
+  // Activate current view button
+  if (view === 'wishlist') {
+    wishlistBtn.classList.add('active');
+  } else if (view === 'top10') {
+    top10Btn.classList.add('active');
+  } else if (currentFilter) {
+    // If we're in reviews with a filter, highlight that filter button
+    const filterBtn = document.querySelector(`.boxBtn[onclick*="${currentFilter}"]`);
+    if (filterBtn) {
+      filterBtn.classList.add('active');
+    }
+  }
+}
+
+function renderReviews(list, showRank = false) {
+  reviewsDiv.innerHTML = "";
+  
+  if (list.length === 0) {
+    const msg = showRank ? "No Top 10 games ranked yet" : "No reviews found";
+    reviewsDiv.innerHTML = `<p style="grid-column: 1 / -1; text-align: center; font-size: 24px; color: #888;">${msg}</p>`;
+    return;
+  }
+  
+  list.forEach(r => {
+    const img = document.createElement("img");
+    img.src = r.imageUrl;
+    img.alt = r.title;
+
+    const title = document.createElement("h3");
+    title.textContent = r.title;
+
+    img.onclick = () => {
+      // Brief click animation on the card before transitioning
+      wrap.classList.add("clicked");
+      setTimeout(() => wrap.classList.remove("clicked"), 400);
+
+      reviewsDiv.style.display = "none";
+      wishlistDiv.style.display = "none";
+      reviewPage.style.display = "flex";
+      catBack.style.display = "none";
+      reviewImg.src = r.imageUrl;
+      reviewImg.alt = r.title;
+      reviewTitle.textContent = r.title;
+      reviewDescription.textContent = r.description || "";
+
+      // Fade the review page in
+      reviewPage.classList.remove("visible");
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => reviewPage.classList.add("visible"));
+      });
+
+      // Open the community reviews section for this game
+      currentReviewId = r.id;
+      currentReviewMeta = r;
+      communitySection.style.display = "block";
+      resetReviewForm();
+      setupCommentNameField();
+      loadComments(currentReviewId);
+    };
+
+    const wrap = document.createElement("div");
+    wrap.className = "imgWrap";
+    wrap.appendChild(img);
+
+    const card = document.createElement("div");
+    card.className = "card";
+
+    if (showRank && r.rank) {
+      const badge = document.createElement("div");
+      badge.className = "wishlist-badge";
+      badge.style.background = "gold";
+      badge.textContent = "#" + r.rank;
+      card.appendChild(badge);
+    }
+
+    card.appendChild(wrap);
+    card.appendChild(title);
+
+    reviewsDiv.appendChild(card);
+  });
+}
+
+function renderWishlist(list) {
+  wishlistDiv.innerHTML = "";
+  
+  if (list.length === 0) {
+    wishlistDiv.innerHTML = '<p style="grid-column: 1 / -1; text-align: center; font-size: 24px; color: #888;">No games in wishlist yet</p>';
+    return;
+  }
+  
+  list.forEach(item => {
+    const img = document.createElement("img");
+    img.src = item.imageUrl;
+    img.alt = item.title;
+
+    const title = document.createElement("h3");
+    title.textContent = item.title;
+
+    const wrap = document.createElement("div");
+    wrap.className = "imgWrap";
+    wrap.appendChild(img);
+
+    const card = document.createElement("div");
+    card.className = "card wishlist-card";
+    
+    // Add wishlist badge
+    const badge = document.createElement("div");
+    badge.className = "wishlist-badge";
+    badge.textContent = "Wishlist";
+    card.appendChild(badge);
+    
+    card.appendChild(wrap);
+    card.appendChild(title);
+
+    wishlistDiv.appendChild(card);
+  });
+}
+
+// Filter functions
+window.filterCategory = (cat) => {
+  currentFilter = cat;
+  const filtered = allReviews.filter(r => r.category === cat);
+  renderReviews(filtered);
+  showReviews();
+  
+  // Show back button
+  catBack.style.display = "block";
+  
+  // Update button states
+  updateButtonStates('reviews');
+};
+
+catBack.onclick = () => {
+  currentFilter = null;
+  renderReviews(allReviews);
+  showReviews();
+  catBack.style.display = "none";
+  updateButtonStates('reviews');
+};
+
+backBtn.onclick = () => {
+  reviewPage.style.display = "none";
+  reviewPage.classList.remove("visible");
+  if (currentFilter) {
+    showReviews();
+    catBack.style.display = "block";
+  } else {
+    showReviews();
+  }
+};
+
+// Top 10 view - uses the "rank" field set from the admin panel
+function showTop10() {
+  currentFilter = null;
+  const top10 = allReviews
+    .filter(r => r.rank)
+    .sort((a, b) => a.rank - b.rank);
+
+  renderReviews(top10, true);
+  showReviews();
+  catBack.style.display = "block";
+  updateButtonStates('top10');
+  closeProfilePanel();
+}
+
+// ---- Community Reviews ----
+
+// Locks/pre-fills the "Your Name" field based on login state.
+// Logged-in admins always post as the red "Pysh" owner label.
+function setupCommentNameField() {
+  const session = getSession();
+
+  if (!session) {
+    // Guests (not signed in) can browse and read reviews, but can't post one
+    reviewForm.style.display = "none";
+    guestBlock.style.display = "block";
+    return;
+  }
+
+  reviewForm.style.display = "";
+  guestBlock.style.display = "none";
+
+  if (session.role === "admin") {
+    commentName.value = "Pysh";
+    commentName.readOnly = true;
+    commentName.classList.add("owner-name");
+  } else {
+    commentName.value = session.username;
+    commentName.readOnly = true;
+    commentName.classList.remove("owner-name");
+  }
+}
+
+function resetReviewForm() {
+  commentRating.value = "";
+  commentText.value = "";
+  reviewFormMsg.textContent = "";
+}
+
+async function loadComments(reviewId) {
+  commentsList.innerHTML = '<p id="noComments">Loading reviews...</p>';
+  try {
+    const q = query(collection(db, "reviews", reviewId, "comments"), orderBy("createdAt", "desc"));
+    const snapshot = await getDocs(q);
+    currentComments = [];
+    snapshot.forEach(d => currentComments.push({ id: d.id, ...d.data() }));
+
+    // Pin the game's original Pysh review (title + rating) to the top of the community list
+    if (currentReviewMeta && currentReviewMeta.caption && currentReviewMeta.category) {
+      currentComments.unshift({
+        id: "pinned-verdict",
+        name: "Pysh",
+        rating: currentReviewMeta.category,
+        text: currentReviewMeta.caption,
+        isOwner: true,
+        pinned: true
+      });
+    }
+
+    renderComments();
+    renderAverage();
+  } catch (error) {
+    console.error("Error loading community reviews:", error);
+    commentsList.innerHTML = '<p id="noComments">Could not load reviews right now.</p>';
+  }
+}
+
+function renderComments() {
+  if (currentComments.length === 0) {
+    commentsList.innerHTML = '<p id="noComments">No reviews yet — be the first!</p>';
+    return;
+  }
+
+  commentsList.innerHTML = currentComments.map(c => `
+    <div class="commentCard ${c.pinned ? 'pinned' : ''}">
+      <div class="commentHead">
+        <img class="commentAvatar" src="${c.photoURL || DEFAULT_AVATAR}" alt="">
+        <span class="commentName ${c.isOwner ? 'owner' : ''}">${c.isOwner ? 'Pysh' : escapeHtml(c.name)}</span>
+        <span class="commentRating rating-${c.rating}">${c.rating}</span>
+        ${c.pinned ? '<span class="pinnedTag">Official Verdict</span>' : ''}
+      </div>
+      <div class="commentText">${escapeHtml(c.text)}</div>
+    </div>
+  `).join('');
+}
+
+// Average verdict: Dropped=1, Good=2, Goated=3, mean rounded to nearest bucket
+function renderAverage() {
+  if (currentComments.length === 0) {
+    avgBadge.textContent = "No reviews yet";
+    avgBadge.className = "";
+    return;
+  }
+
+  const values = { Dropped: 1, Good: 2, Goated: 3 };
+  const order = ["Dropped", "Good", "Goated"];
+  const sum = currentComments.reduce((total, c) => total + (values[c.rating] || 2), 0);
+  const mean = sum / currentComments.length;
+  const idx = Math.max(0, Math.min(2, Math.round(mean) - 1));
+  const category = order[idx];
+
+  avgBadge.textContent = category.toUpperCase();
+  avgBadge.className = "avg-" + category;
+}
+
+function escapeHtml(str) {
+  const div = document.createElement("div");
+  div.textContent = str || "";
+  return div.innerHTML;
+}
+
+submitReviewBtn.addEventListener("click", async () => {
+  if (!currentReviewId) return;
+
+  const session = getSession();
+  if (!session) {
+    // Guests can't post - the form is hidden for them, but guard here too
+    reviewFormMsg.style.color = "#e1282d";
+    reviewFormMsg.textContent = "Please sign in to post a review.";
+    return;
+  }
+
+  const rating = commentRating.value;
+  const text = commentText.value.trim();
+
+  if (!rating) {
+    reviewFormMsg.style.color = "#e1282d";
+    reviewFormMsg.textContent = "Please select a rating.";
+    return;
+  }
+  if (!text) {
+    reviewFormMsg.style.color = "#e1282d";
+    reviewFormMsg.textContent = "Please write a short review.";
+    return;
+  }
+
+  const isOwner = session.role === "admin";
+  const name = isOwner ? "Pysh" : session.username;
+
+  submitReviewBtn.disabled = true;
+  reviewFormMsg.style.color = "#ccc";
+  reviewFormMsg.textContent = "Posting...";
+
+  try {
+    await addDoc(collection(db, "reviews", currentReviewId, "comments"), {
+      name,
+      rating,
+      text,
+      isOwner,
+      photoURL: session.photoURL || null,
+      createdAt: Date.now()
+    });
+
+    commentRating.value = "";
+    commentText.value = "";
+    reviewFormMsg.style.color = "limegreen";
+    reviewFormMsg.textContent = "Review posted!";
+    loadComments(currentReviewId);
+  } catch (error) {
+    console.error("Error posting review:", error);
+    reviewFormMsg.style.color = "#e1282d";
+    reviewFormMsg.textContent = "Error posting review. Please try again.";
+  } finally {
+    submitReviewBtn.disabled = false;
+  }
+});
+</script>
+
+</body>
+</html>
