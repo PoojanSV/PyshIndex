@@ -1,0 +1,487 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Sign In - Pysh Index</title>
+<link rel="icon" type="image/jpeg" href="logo.jpg">
+
+<style>
+body {
+  background: black;
+  font-family: Arial, sans-serif;
+  margin: 0;
+  color: white;
+}
+
+/* HEADER */
+header {
+  background-color: #111;
+  padding: 15px 50px;
+  
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+}
+
+nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+nav a {
+  color: white;
+  text-decoration: none;
+  font-size: 35px;
+  padding: 20px;
+}
+
+nav a:hover { color: #e1282d; }
+
+#l { width: 250px; height: 100px;  }
+
+
+hr { background-color: #e1282d; height: 5px; border: solid #e1282d; }
+
+/* AUTH CARD */
+#authWrap {
+  display: flex;
+  justify-content: center;
+  padding: 60px 20px;
+}
+
+.authCard {
+  background: #111;
+  border: 3px solid #e1282d;
+  border-radius: 30px;
+  padding: 40px;
+  width: 100%;
+  max-width: 420px;
+}
+
+.authTabs {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 30px;
+}
+
+.authTabs .boxBtn {
+  flex: 1;
+  font-size: 20px;
+  padding: 12px 10px;
+}
+
+.boxBtn {
+  background: #111;
+  border: 3px solid #e1282d;
+  color: white;
+  padding: 12px 22px;
+  font-size: 20px;
+  border-radius: 15px;
+  cursor: pointer;
+  text-align: center;
+}
+.boxBtn:hover { background: #e1282d; }
+.boxBtn.active { background: #e1282d; }
+
+.authForm { display: flex; flex-direction: column; }
+.authForm.hidden { display: none; }
+
+.authForm label {
+  color: #ccc;
+  font-size: 15px;
+  margin-bottom: 6px;
+  margin-top: 14px;
+}
+
+.authForm input {
+  background: #000;
+  border: 1px solid #444;
+  color: white;
+  padding: 12px;
+  border-radius: 8px;
+  font-size: 16px;
+}
+
+.authForm input:focus {
+  outline: none;
+  border-color: #e1282d;
+}
+
+.authSubmit {
+  margin-top: 25px;
+  width: 100%;
+  font-size: 20px;
+}
+
+.authStatus {
+  margin-top: 18px;
+  padding: 10px;
+  border-radius: 8px;
+  font-size: 14px;
+  display: none;
+}
+
+.authStatus.error {
+  display: block;
+  background: rgba(255, 0, 0, 0.15);
+  border: 1px solid #e1282d;
+  color: #ff8686;
+}
+
+.authStatus.success {
+  display: block;
+  background: rgba(50, 205, 50, 0.15);
+  border: 1px solid limegreen;
+  color: limegreen;
+}
+
+.authHint {
+  margin-top: 20px;
+  font-size: 12px;
+  color: #777;
+  text-align: center;
+  line-height: 1.5;
+}
+
+/* FOOTER */
+footer { background-color:#111; padding:15px 50px; font-size:20px; }
+#f { display:flex; justify-content:center; gap:50px; }
+#f a { display:flex; align-items:center; gap:8px; text-decoration:none; color:#ccc; }
+#f img { width:24px; height:24px; }
+#lf { height:100px; width:100px; margin-left:46.5%; }
+#c { display:flex; color:#ccc; }
+
+/* MOBILE VIEW */
+@media (max-width: 600px) {
+  header {
+    padding: 15px 20px;
+    height: 100px;
+	 display: flex;
+  justify-content: center;
+  align-items: center;
+  }
+
+  nav a {
+    font-size: 18px;
+    padding: 10px;
+  }
+
+  #l {
+    width: 150px;
+    height: 60px;
+
+  }
+
+ 
+  .authCard {
+    padding: 25px;
+  }
+
+  .authTabs .boxBtn {
+    font-size: 15px;
+    padding: 10px 5px;
+  }
+
+  footer {
+    padding: 15px 20px;
+    font-size: 14px;
+  }
+
+  #f {
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+
+  #f a { font-size: 14px; }
+  #f img { width: 18px; height: 18px; }
+
+  #lf {
+    width: 70px;
+    height: 70px;
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+  }
+
+  #c {
+    align-items: center;
+    gap: 1px;
+    font-size: 8px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+<nav>
+  
+  <a href="about.html"><img id="l" src="logo5.png" alt="Pysh Games logo"></a>
+
+</nav>
+</header>
+
+<hr>
+
+<main>
+<div id="authWrap">
+  <div class="authCard">
+    <div class="authTabs">
+      <button class="boxBtn active" id="signInTabBtn">Log In</button>
+      <button class="boxBtn" id="signUpTabBtn">Sign Up</button>
+    </div>
+
+    <form class="authForm" id="signInForm">
+      <label for="siUsername">Username</label>
+      <input type="text" id="siUsername" autocomplete="username" required>
+
+      <label for="siPassword">Password</label>
+      <input type="password" id="siPassword" autocomplete="current-password" required>
+
+      <button type="submit" class="boxBtn authSubmit">Sign In</button>
+    </form>
+
+    <form class="authForm hidden" id="signUpForm">
+      <label for="suUsername">Username</label>
+      <input type="text" id="suUsername" autocomplete="username" required>
+
+      <label for="suPassword">Password (min 6 characters)</label>
+      <input type="password" id="suPassword" autocomplete="new-password" required minlength="6">
+
+      <label for="suConfirm">Confirm Password</label>
+      <input type="password" id="suConfirm" autocomplete="new-password" required minlength="6">
+
+      <button type="submit" class="boxBtn authSubmit">Create Account</button>
+    </form>
+
+    <div class="authStatus" id="authStatus"></div>
+  </div>
+</div>
+</main>
+
+<hr>
+
+<footer>
+<img id="lf" src="logo.png" alt="Pysh Games logo">
+<div id="f">
+  <a href="#"><img src="youtube.jpg" alt="">YouTube</a>
+  <a href="#"><img src="instagram.jpg" alt="">Instagram</a>
+  <a href="#"><img src="x.jpg" alt="">X</a>
+</div>
+<br>
+<div id="c">
+  <div>&copy; 2008</div>
+  <div style="flex:1;text-align:center;"> &nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;Pysh Games&reg;</div>
+  <div style="text-align:right;">All Rights Reserved</div>
+</div>
+</footer>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import {
+  getFirestore,
+  collection,
+  getDocs,
+  doc,
+  getDoc,
+  setDoc
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBoylOskSQPe1LiDehqp1gmSXfzzNNtRmY",
+  authDomain: "pysh-index.firebaseapp.com",
+  projectId: "pysh-index",
+  appId: "1:263831699229:web:f514a3d8388868f6c9ebf4"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+// ---- Auth session helpers (shared pattern across index.html, login.html, admin.html) ----
+const AUTH_KEY = "pyshAuthUser";
+function getSession() {
+  try {
+    return JSON.parse(localStorage.getItem(AUTH_KEY));
+  } catch {
+    return null;
+  }
+}
+function setSession(user) {
+  localStorage.setItem(AUTH_KEY, JSON.stringify(user));
+}
+
+// ---- Password hashing (client-side SHA-256 with per-user salt) ----
+async function sha256Hex(text) {
+  const enc = new TextEncoder().encode(text);
+  const hashBuffer = await crypto.subtle.digest("SHA-256", enc);
+  return Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, "0")).join("");
+}
+function randomSalt() {
+  const arr = new Uint8Array(16);
+  crypto.getRandomValues(arr);
+  return Array.from(arr).map(b => b.toString(16).padStart(2, "0")).join("");
+}
+
+// ---- Redirect target ----
+const params = new URLSearchParams(window.location.search);
+const redirectTarget = params.get("redirect") || "index.html";
+
+// If already logged in, skip straight to destination
+if (getSession()) {
+  window.location.href = redirectTarget;
+}
+
+// ---- DOM ----
+const signInTabBtn = document.getElementById("signInTabBtn");
+const signUpTabBtn = document.getElementById("signUpTabBtn");
+const signInForm = document.getElementById("signInForm");
+const signUpForm = document.getElementById("signUpForm");
+const authStatus = document.getElementById("authStatus");
+
+signInTabBtn.addEventListener("click", () => {
+  signInTabBtn.classList.add("active");
+  signUpTabBtn.classList.remove("active");
+  signInForm.classList.remove("hidden");
+  signUpForm.classList.add("hidden");
+  clearStatus();
+});
+
+signUpTabBtn.addEventListener("click", () => {
+  signUpTabBtn.classList.add("active");
+  signInTabBtn.classList.remove("active");
+  signUpForm.classList.remove("hidden");
+  signInForm.classList.add("hidden");
+  clearStatus();
+});
+
+function clearStatus() {
+  authStatus.style.display = "none";
+  authStatus.textContent = "";
+}
+
+function showStatus(message, type) {
+  authStatus.textContent = message;
+  authStatus.className = "authStatus " + type;
+  authStatus.style.display = "block";
+}
+
+// ---- Sign In ----
+signInForm.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  clearStatus();
+
+  const username = document.getElementById("siUsername").value.trim();
+  const password = document.getElementById("siPassword").value;
+
+  if (!username || !password) {
+    showStatus("Please enter your username and password.", "error");
+    return;
+  }
+
+  const submitBtn = signInForm.querySelector(".authSubmit");
+  submitBtn.disabled = true;
+  submitBtn.textContent = "Signing in...";
+
+  try {
+    const usernameKey = username.toLowerCase();
+    const userRef = doc(db, "users", usernameKey);
+    const snap = await getDoc(userRef);
+
+    if (!snap.exists()) {
+      showStatus("Invalid username or password.", "error");
+      return;
+    }
+
+    const data = snap.data();
+    const hash = await sha256Hex(data.salt + password);
+
+    if (hash !== data.passwordHash) {
+      showStatus("Invalid username or password.", "error");
+      return;
+    }
+
+    setSession({ id: usernameKey, username: data.username, role: data.role });
+    showStatus("Signed in! Redirecting...", "success");
+    setTimeout(() => { window.location.href = redirectTarget; }, 400);
+  } catch (error) {
+    showStatus("Error signing in: " + error.message, "error");
+  } finally {
+    submitBtn.disabled = false;
+    submitBtn.textContent = "Sign In";
+  }
+});
+
+// ---- Sign Up ----
+signUpForm.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  clearStatus();
+
+  const username = document.getElementById("suUsername").value.trim();
+  const password = document.getElementById("suPassword").value;
+  const confirm = document.getElementById("suConfirm").value;
+
+  if (!username || !password || !confirm) {
+    showStatus("Please fill in all fields.", "error");
+    return;
+  }
+  if (!/^[a-zA-Z0-9_]{3,20}$/.test(username)) {
+    showStatus("Username must be 3-20 characters (letters, numbers, underscore only).", "error");
+    return;
+  }
+  if (password.length < 6) {
+    showStatus("Password must be at least 6 characters.", "error");
+    return;
+  }
+  if (password !== confirm) {
+    showStatus("Passwords do not match.", "error");
+    return;
+  }
+
+  const submitBtn = signUpForm.querySelector(".authSubmit");
+  submitBtn.disabled = true;
+  submitBtn.textContent = "Creating account...";
+
+  try {
+    const usernameKey = username.toLowerCase();
+    const userRef = doc(db, "users", usernameKey);
+    const existing = await getDoc(userRef);
+
+    if (existing.exists()) {
+      showStatus("That username is already taken.", "error");
+      return;
+    }
+
+    // First user ever created becomes admin automatically
+    const usersSnap = await getDocs(collection(db, "users"));
+    const role = usersSnap.empty ? "admin" : "user";
+
+    const salt = randomSalt();
+    const passwordHash = await sha256Hex(salt + password);
+
+    await setDoc(userRef, {
+      username,
+      role,
+      salt,
+      passwordHash,
+      createdAt: Date.now()
+    });
+
+    setSession({ id: usernameKey, username, role });
+    showStatus(role === "admin" ? "Account created! You're the first user, so you're the admin. Redirecting..." : "Account created! Redirecting...", "success");
+    setTimeout(() => { window.location.href = redirectTarget; }, 500);
+  } catch (error) {
+    showStatus("Error creating account: " + error.message, "error");
+  } finally {
+    submitBtn.disabled = false;
+    submitBtn.textContent = "Create Account";
+  }
+});
+</script>
+
+</body>
+</html>
