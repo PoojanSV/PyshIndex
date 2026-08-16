@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Sign In - Pysh Index</title>
+<title>Sign In — Pysh Games</title>
 <link rel="icon" type="image/jpeg" href="logo.jpg">
 
 <style>
@@ -13,205 +13,196 @@ body {
   font-family: Arial, sans-serif;
   margin: 0;
   color: white;
+  min-height: 100vh;
 }
 
-/* HEADER */
 header {
   background-color: #111;
   padding: 15px 50px;
-  
+  text-align: center;
+}
+
+header a { display: inline-block; }
+header img { width: 130px; height: auto; }
+
+hr { background-color: #e1282d; height: 5px; border: solid #e1282d; margin: 0; }
+
+main {
   display: flex;
   justify-content: center;
   align-items: center;
-
-}
-
-nav {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-nav a {
-  color: white;
-  text-decoration: none;
-  font-size: 35px;
-  padding: 20px;
-}
-
-nav a:hover { color: #e1282d; }
-
-#l { width: 250px; height: 100px;  }
-
-
-hr { background-color: #e1282d; height: 5px; border: solid #e1282d; }
-
-/* AUTH CARD */
-#authWrap {
-  display: flex;
-  justify-content: center;
   padding: 60px 20px;
 }
 
 .authCard {
   background: #111;
   border: 3px solid #e1282d;
-  border-radius: 30px;
-  padding: 40px;
+  border-radius: 25px;
+  padding: 35px 40px;
   width: 100%;
-  max-width: 420px;
+  max-width: 400px;
 }
 
+.authCard h1 {
+  font-size: 30px;
+  text-align: center;
+  margin: 0 0 5px;
+}
+
+.authSubtitle {
+  text-align: center;
+  color: #888;
+  font-size: 14px;
+  margin-bottom: 25px;
+}
+
+/* MODE TABS (Sign In / Sign Up) */
 .authTabs {
   display: flex;
-  gap: 15px;
-  margin-bottom: 30px;
+  gap: 10px;
+  margin-bottom: 25px;
 }
 
-.authTabs .boxBtn {
+.authTab {
   flex: 1;
-  font-size: 20px;
-  padding: 12px 10px;
-}
-
-.boxBtn {
-  background: #111;
-  border: 3px solid #e1282d;
-  color: white;
-  padding: 12px 22px;
-  font-size: 20px;
-  border-radius: 15px;
-  cursor: pointer;
   text-align: center;
-}
-.boxBtn:hover { background: #e1282d; }
-.boxBtn.active { background: #e1282d; }
-
-.authForm { display: flex; flex-direction: column; }
-.authForm.hidden { display: none; }
-
-.authForm label {
-  color: #ccc;
-  font-size: 15px;
-  margin-bottom: 6px;
-  margin-top: 14px;
-}
-
-.authForm input {
-  background: #000;
-  border: 1px solid #444;
-  color: white;
-  padding: 12px;
-  border-radius: 8px;
-  font-size: 16px;
-}
-
-.authForm input:focus {
-  outline: none;
-  border-color: #e1282d;
-}
-
-.authSubmit {
-  margin-top: 25px;
-  width: 100%;
-  font-size: 20px;
-}
-
-.authStatus {
-  margin-top: 18px;
   padding: 10px;
-  border-radius: 8px;
+  border: 2px solid #e1282d;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: bold;
+  color: #ccc;
+  transition: all 0.2s ease;
+}
+
+.authTab.active {
+  background: #e1282d;
+  color: white;
+}
+
+.authTab:hover:not(.active) { background: rgba(225,40,45,0.15); }
+
+label {
+  display: block;
+  margin: 14px 0 6px;
+  color: #ccc;
   font-size: 14px;
-  display: none;
 }
 
-.authStatus.error {
-  display: block;
-  background: rgba(255, 0, 0, 0.15);
-  border: 1px solid #e1282d;
-  color: #ff8686;
+input[type="text"],
+input[type="password"] {
+  width: 100%;
+  padding: 11px 13px;
+  border-radius: 8px;
+  border: 1px solid #444;
+  background: #000;
+  color: white;
+  font-family: inherit;
+  font-size: 15px;
+  box-sizing: border-box;
 }
 
-.authStatus.success {
-  display: block;
-  background: rgba(50, 205, 50, 0.15);
-  border: 1px solid limegreen;
-  color: limegreen;
+input:focus { outline: none; border-color: #e1282d; }
+
+/* usernames are stored/lowercase only - reflect that visually as the user types */
+#signinUsername,
+#signupUsername {
+  text-transform: lowercase;
 }
 
-.authHint {
-  margin-top: 20px;
-  font-size: 12px;
-  color: #777;
-  text-align: center;
-  line-height: 1.5;
+/* Password field + show/hide toggle */
+.pwField {
+  position: relative;
 }
 
-/* FOOTER */
-footer { background-color:#111; padding:15px 50px; font-size:20px; }
-#f { display:flex; justify-content:center; gap:50px; }
-#f a { display:flex; align-items:center; gap:8px; text-decoration:none; color:#ccc; }
-#f img { width:24px; height:24px; }
-#lf { height:100px; width:100px; margin-left:46.5%; }
-#c { display:flex; color:#ccc; }
+.pwField input[type="password"],
+.pwField input[type="text"] {
+  padding-right: 44px;
+}
 
-/* MOBILE VIEW */
-@media (max-width: 600px) {
-  header {
-    padding: 15px 20px;
-    height: 100px;
-	 display: flex;
-  justify-content: center;
+.pwToggle {
+  position: absolute;
+  top: 50%;
+  right: 6px;
+  transform: translateY(-50%);
+  width: 32px;
+  height: 32px;
+  display: flex;
   align-items: center;
-  }
+  justify-content: center;
+  background: transparent;
+  border: none;
+  border-radius: 6px;
+  color: #888;
+  cursor: pointer;
+  padding: 0;
+}
 
-  nav a {
-    font-size: 18px;
-    padding: 10px;
-  }
+.pwToggle:hover { color: #e1282d; }
+.pwToggle svg { width: 20px; height: 20px; pointer-events: none; }
 
-  #l {
-    width: 150px;
-    height: 60px;
+.authBtn {
+  width: 100%;
+  margin-top: 22px;
+  background: #e1282d;
+  color: white;
+  border: none;
+  padding: 13px;
+  border-radius: 10px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
 
-  }
+.authBtn:hover { background: white; color: #e1282d; }
+.authBtn:disabled { opacity: 0.6; cursor: not-allowed; }
 
- 
-  .authCard {
-    padding: 25px;
-  }
+.authMsg {
+  margin-top: 14px;
+  font-size: 14px;
+  text-align: center;
+  min-height: 18px;
+}
 
-  .authTabs .boxBtn {
-    font-size: 15px;
-    padding: 10px 5px;
-  }
+.authDivider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom:25px;
+  color: #555;
+  font-size: 12px;
+}
+.authDivider::before, .authDivider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: #333;
+}
 
-  footer {
-    padding: 15px 20px;
-    font-size: 14px;
-  }
+.guestBtn {
+  width: 100%;
+  background: transparent;
+  color: #ccc;
+  border: 2px solid #444;
+  padding: 12px;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
 
-  #f {
-    gap: 20px;
-    flex-wrap: wrap;
-  }
+.guestBtn:hover { border-color: #e1282d; color: white; }
 
-  #f a { font-size: 14px; }
-  #f img { width: 18px; height: 18px; }
+.formSection { display: none; }
+.formSection.active { display: block; }
 
-  #lf {
-    width: 70px;
-    height: 70px;
-    margin-left: auto;
-    margin-right: auto;
-    display: block;
-  }
-
-  #c {
-    align-items: center;
-    gap: 1px;
-    font-size: 8px;
-  }
+@media (max-width: 500px) {
+  header { padding: 15px 20px; }
+  header img { width: 90px; }
+  .authCard { padding: 25px 22px; border-radius: 18px; }
+  .authCard h1 { font-size: 24px; }
 }
 </style>
 </head>
@@ -219,77 +210,73 @@ footer { background-color:#111; padding:15px 50px; font-size:20px; }
 <body>
 
 <header>
-<nav>
-  
-  <a href="about.html"><img id="l" src="logo5.png" alt="Pysh Games logo"></a>
-
-</nav>
+  <a href="index.html"><img src="logo.png" alt="Pysh Games logo"></a>
 </header>
-
 <hr>
 
 <main>
-<div id="authWrap">
   <div class="authCard">
+    <h1 id="authHeading">Welcome Surfur!</h1><br>
+    
+
     <div class="authTabs">
-      <button class="boxBtn active" id="signInTabBtn">Log In</button>
-      <button class="boxBtn" id="signUpTabBtn">Sign Up</button>
+      <div class="authTab active" data-mode="signin">Log In</div>
+      <div class="authTab" data-mode="signup">Sign Up</div>
     </div>
 
-    <form class="authForm" id="signInForm">
-      <label for="siUsername">Username</label>
-      <input type="text" id="siUsername" autocomplete="username" required>
+    <!-- SIGN IN -->
+    <div class="formSection active" id="signinSection">
+      <label for="signinUsername">Username</label>
+      <input type="text" id="signinUsername" placeholder="Your username" autocomplete="username">
 
-      <label for="siPassword">Password</label>
-      <input type="password" id="siPassword" autocomplete="current-password" required>
+      <label for="signinPassword">Password</label>
+      <div class="pwField">
+        <input type="password" id="signinPassword" placeholder="Your password" autocomplete="current-password">
+        <button type="button" class="pwToggle" id="signinPasswordToggle" aria-label="Show password"></button>
+      </div>
 
-      <button type="submit" class="boxBtn authSubmit">Sign In</button>
-    </form>
+      <button class="authBtn" id="signinBtn">Sign In</button>
+      <div class="authMsg" id="signinMsg"></div>
+    </div>
 
-    <form class="authForm hidden" id="signUpForm">
-      <label for="suUsername">Username</label>
-      <input type="text" id="suUsername" autocomplete="username" required>
+    <!-- SIGN UP -->
+    <div class="formSection" id="signupSection">
+      <label for="signupUsername">Username</label>
+      <input type="text" id="signupUsername" placeholder="Pick a username" autocomplete="username">
 
-      <label for="suPassword">Password (min 6 characters)</label>
-      <input type="password" id="suPassword" autocomplete="new-password" required minlength="6">
+      <label for="signupPassword">Password</label>
+      <div class="pwField">
+        <input type="password" id="signupPassword" placeholder="At least 6 characters" autocomplete="new-password">
+        <button type="button" class="pwToggle" id="signupPasswordToggle" aria-label="Show password"></button>
+      </div>
 
-      <label for="suConfirm">Confirm Password</label>
-      <input type="password" id="suConfirm" autocomplete="new-password" required minlength="6">
+      <label for="signupConfirm">Confirm Password</label>
+      <div class="pwField">
+        <input type="password" id="signupConfirm" placeholder="Retype your password" autocomplete="new-password">
+        <button type="button" class="pwToggle" id="signupConfirmToggle" aria-label="Show password"></button>
+      </div>
 
-      <button type="submit" class="boxBtn authSubmit">Create Account</button>
-    </form>
+      <button class="authBtn" id="signupBtn">Create Account</button>
+      <div class="authMsg" id="signupMsg"></div>
+    </div>
 
-    <div class="authStatus" id="authStatus"></div>
+    <div class="authDivider">OR</div>
+    <button class="guestBtn" id="guestBtn">Continue as Guest</button>
+ 
   </div>
-</div>
 </main>
-
-<hr>
-
-<footer>
-<img id="lf" src="logo.png" alt="Pysh Games logo">
-<div id="f">
-  <a href="#"><img src="youtube.jpg" alt="">YouTube</a>
-  <a href="#"><img src="instagram.jpg" alt="">Instagram</a>
-  <a href="#"><img src="x.jpg" alt="">X</a>
-</div>
-<br>
-<div id="c">
-  <div>&copy; 2008</div>
-  <div style="flex:1;text-align:center;"> &nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;Pysh Games&reg;</div>
-  <div style="text-align:right;">All Rights Reserved</div>
-</div>
-</footer>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import {
   getFirestore,
   collection,
-  getDocs,
   doc,
-  getDoc,
-  setDoc
+  addDoc,
+  getDocs,
+  query,
+  where,
+  runTransaction
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -311,175 +298,251 @@ function getSession() {
     return null;
   }
 }
-function setSession(user) {
-  localStorage.setItem(AUTH_KEY, JSON.stringify(user));
+function setSession(session) {
+  localStorage.setItem(AUTH_KEY, JSON.stringify(session));
 }
 
-// ---- Password hashing (client-side SHA-256 with per-user salt) ----
-async function sha256Hex(text) {
-  const enc = new TextEncoder().encode(text);
-  const hashBuffer = await crypto.subtle.digest("SHA-256", enc);
-  return Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, "0")).join("");
-}
-function randomSalt() {
-  const arr = new Uint8Array(16);
-  crypto.getRandomValues(arr);
-  return Array.from(arr).map(b => b.toString(16).padStart(2, "0")).join("");
+// Normalize every username the same way, everywhere: trimmed, lowercase only.
+function normalizeUsername(raw) {
+  return raw.trim().toLowerCase();
 }
 
-// ---- Redirect target ----
+// Where to go after a successful sign in / guest continue
 const params = new URLSearchParams(window.location.search);
 const redirectTarget = params.get("redirect") || "index.html";
 
-// If already logged in, skip straight to destination
-if (getSession()) {
+// Already signed in? Skip straight through.
+const existingSession = getSession();
+if (existingSession) {
   window.location.href = redirectTarget;
 }
 
-// ---- DOM ----
-const signInTabBtn = document.getElementById("signInTabBtn");
-const signUpTabBtn = document.getElementById("signUpTabBtn");
-const signInForm = document.getElementById("signInForm");
-const signUpForm = document.getElementById("signUpForm");
-const authStatus = document.getElementById("authStatus");
+// ---- Tab switching ----
+const tabs = document.querySelectorAll(".authTab");
+const signinSection = document.getElementById("signinSection");
+const signupSection = document.getElementById("signupSection");
+const authHeading = document.getElementById("authHeading");
+const authSubtitle = document.getElementById("authSubtitle");
 
-signInTabBtn.addEventListener("click", () => {
-  signInTabBtn.classList.add("active");
-  signUpTabBtn.classList.remove("active");
-  signInForm.classList.remove("hidden");
-  signUpForm.classList.add("hidden");
-  clearStatus();
+tabs.forEach(tab => {
+  tab.addEventListener("click", () => {
+    tabs.forEach(t => t.classList.remove("active"));
+    tab.classList.add("active");
+    const mode = tab.dataset.mode;
+    if (mode === "signin") {
+      signinSection.classList.add("active");
+      signupSection.classList.remove("active");
+      authHeading.textContent = "Welcome Surfer!";
+      authSubtitle.textContent = "Sign in to rate and review games";
+    } else {
+      signupSection.classList.add("active");
+      signinSection.classList.remove("active");
+      authHeading.textContent = "Become a Surfer!";
+      authSubtitle.textContent = "Join the community and start rating games";
+    }
+  });
 });
 
-signUpTabBtn.addEventListener("click", () => {
-  signUpTabBtn.classList.add("active");
-  signInTabBtn.classList.remove("active");
-  signUpForm.classList.remove("hidden");
-  signInForm.classList.add("hidden");
-  clearStatus();
-});
+// Force every username field to lowercase as the person types, so what they
+// see always matches what will actually be checked/stored.
+function lowercaseAsYouType(input) {
+  input.addEventListener("input", () => {
+    const pos = input.selectionStart;
+    input.value = input.value.toLowerCase();
+    input.setSelectionRange(pos, pos);
+  });
+}
+lowercaseAsYouType(document.getElementById("signinUsername"));
+lowercaseAsYouType(document.getElementById("signupUsername"));
 
-function clearStatus() {
-  authStatus.style.display = "none";
-  authStatus.textContent = "";
+// ---- Password show/hide toggles ----
+const EYE_ICON = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.94 10.94 0 0 1 12 20c-7 0-11-8-11-8a21.3 21.3 0 0 1 5.06-6.06M9.9 4.24A10.94 10.94 0 0 1 12 4c7 0 11 8 11 8a21.32 21.32 0 0 1-3.22 4.39M14.12 14.12a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>`;
+const EYE_OFF_ICON = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>`;
+
+function wirePasswordToggle(inputId, toggleId) {
+  const input = document.getElementById(inputId);
+  const toggle = document.getElementById(toggleId);
+  toggle.innerHTML = EYE_ICON;
+  toggle.addEventListener("click", () => {
+    const isHidden = input.type === "password";
+    input.type = isHidden ? "text" : "password";
+    toggle.innerHTML = isHidden ? EYE_OFF_ICON : EYE_ICON;
+    toggle.setAttribute("aria-label", isHidden ? "Hide password" : "Show password");
+  });
 }
 
-function showStatus(message, type) {
-  authStatus.textContent = message;
-  authStatus.className = "authStatus " + type;
-  authStatus.style.display = "block";
-}
+wirePasswordToggle("signinPassword", "signinPasswordToggle");
+wirePasswordToggle("signupPassword", "signupPasswordToggle");
+wirePasswordToggle("signupConfirm", "signupConfirmToggle");
 
 // ---- Sign In ----
-signInForm.addEventListener("submit", async (e) => {
-  e.preventDefault();
-  clearStatus();
+const signinBtn = document.getElementById("signinBtn");
+const signinUsername = document.getElementById("signinUsername");
+const signinPassword = document.getElementById("signinPassword");
+const signinMsg = document.getElementById("signinMsg");
 
-  const username = document.getElementById("siUsername").value.trim();
-  const password = document.getElementById("siPassword").value;
+signinBtn.addEventListener("click", async () => {
+  const username = normalizeUsername(signinUsername.value);
+  const password = signinPassword.value;
 
   if (!username || !password) {
-    showStatus("Please enter your username and password.", "error");
+    signinMsg.style.color = "#e1282d";
+    signinMsg.textContent = "Please enter your username and password.";
     return;
   }
 
-  const submitBtn = signInForm.querySelector(".authSubmit");
-  submitBtn.disabled = true;
-  submitBtn.textContent = "Signing in...";
+  signinBtn.disabled = true;
+  signinMsg.style.color = "#ccc";
+  signinMsg.textContent = "Signing in...";
 
   try {
-    const usernameKey = username.toLowerCase();
-    const userRef = doc(db, "users", usernameKey);
-    const snap = await getDoc(userRef);
+    // Usernames are always stored lowercase, so an exact match here is safe
+    // no matter how the person capitalized it while typing.
+    const q = query(collection(db, "users"), where("username", "==", username));
+    const snapshot = await getDocs(q);
 
-    if (!snap.exists()) {
-      showStatus("Invalid username or password.", "error");
+    if (snapshot.empty) {
+      signinMsg.style.color = "#e1282d";
+      signinMsg.textContent = "No account found with that username.";
       return;
     }
 
-    const data = snap.data();
-    const hash = await sha256Hex(data.salt + password);
+    const userDoc = snapshot.docs[0];
+    const userData = userDoc.data();
 
-    if (hash !== data.passwordHash) {
-      showStatus("Invalid username or password.", "error");
+    if (userData.password !== password) {
+      signinMsg.style.color = "#e1282d";
+      signinMsg.textContent = "Incorrect password.";
       return;
     }
 
-    setSession({ id: usernameKey, username: data.username, role: data.role });
-    showStatus("Signed in! Redirecting...", "success");
-    setTimeout(() => { window.location.href = redirectTarget; }, 400);
+    setSession({
+      id: userDoc.id,
+      username: userData.username,
+      role: userData.role || "user",
+      photoURL: userData.photoURL || null
+    });
+
+    signinMsg.style.color = "limegreen";
+    signinMsg.textContent = "Signed in! Redirecting...";
+    window.location.href = redirectTarget;
   } catch (error) {
-    showStatus("Error signing in: " + error.message, "error");
+    console.error("Error signing in:", error);
+    signinMsg.style.color = "#e1282d";
+    signinMsg.textContent = "Something went wrong. Please try again.";
   } finally {
-    submitBtn.disabled = false;
-    submitBtn.textContent = "Sign In";
+    signinBtn.disabled = false;
   }
+});
+
+[signinUsername, signinPassword].forEach(input => {
+  input.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") signinBtn.click();
+  });
 });
 
 // ---- Sign Up ----
-signUpForm.addEventListener("submit", async (e) => {
-  e.preventDefault();
-  clearStatus();
+const signupBtn = document.getElementById("signupBtn");
+const signupUsername = document.getElementById("signupUsername");
+const signupPassword = document.getElementById("signupPassword");
+const signupConfirm = document.getElementById("signupConfirm");
+const signupMsg = document.getElementById("signupMsg");
 
-  const username = document.getElementById("suUsername").value.trim();
-  const password = document.getElementById("suPassword").value;
-  const confirm = document.getElementById("suConfirm").value;
+signupBtn.addEventListener("click", async () => {
+  const username = normalizeUsername(signupUsername.value);
+  const password = signupPassword.value;
+  const confirm = signupConfirm.value;
 
   if (!username || !password || !confirm) {
-    showStatus("Please fill in all fields.", "error");
-    return;
-  }
-  if (!/^[a-zA-Z0-9_]{3,20}$/.test(username)) {
-    showStatus("Username must be 3-20 characters (letters, numbers, underscore only).", "error");
+    signupMsg.style.color = "#e1282d";
+    signupMsg.textContent = "Please fill in every field.";
     return;
   }
   if (password.length < 6) {
-    showStatus("Password must be at least 6 characters.", "error");
+    signupMsg.style.color = "#e1282d";
+    signupMsg.textContent = "Password must be at least 6 characters.";
     return;
   }
   if (password !== confirm) {
-    showStatus("Passwords do not match.", "error");
+    signupMsg.style.color = "#e1282d";
+    signupMsg.textContent = "Passwords don't match.";
     return;
   }
 
-  const submitBtn = signUpForm.querySelector(".authSubmit");
-  submitBtn.disabled = true;
-  submitBtn.textContent = "Creating account...";
+  signupBtn.disabled = true;
+  signupMsg.style.color = "#ccc";
+  signupMsg.textContent = "Creating account...";
 
   try {
-    const usernameKey = username.toLowerCase();
-    const userRef = doc(db, "users", usernameKey);
-    const existing = await getDoc(userRef);
-
-    if (existing.exists()) {
-      showStatus("That username is already taken.", "error");
-      return;
-    }
-
-    // First user ever created becomes admin automatically
-    const usersSnap = await getDocs(collection(db, "users"));
-    const role = usersSnap.empty ? "admin" : "user";
-
-    const salt = randomSalt();
-    const passwordHash = await sha256Hex(salt + password);
-
-    await setDoc(userRef, {
-      username,
-      role,
-      salt,
-      passwordHash,
+    const newUser = {
+      username, // already lowercase
+      password,
+      role: "user",
+      photoURL: null,
       createdAt: Date.now()
+    };
+
+    // A plain "query, then addDoc if nothing found" has a race condition:
+    // two people submitting the same username at the same moment could both
+    // pass the check before either write lands, creating two accounts with
+    // the same name. To close that gap, "usernames" is used as a uniqueness
+    // lock: its document ID *is* the lowercase username, and the whole
+    // check-and-create runs inside one atomic transaction, so only one of
+    // two simultaneous signups can ever win.
+    const usernameLockRef = doc(db, "usernames", username);
+    let newUserId;
+
+    await runTransaction(db, async (transaction) => {
+      const lockSnap = await transaction.get(usernameLockRef);
+      if (lockSnap.exists()) {
+        throw new Error("USERNAME_TAKEN");
+      }
+
+      const newUserRef = doc(collection(db, "users"));
+      newUserId = newUserRef.id;
+
+      transaction.set(newUserRef, newUser);
+      transaction.set(usernameLockRef, {
+        userId: newUserRef.id,
+        createdAt: newUser.createdAt
+      });
     });
 
-    setSession({ id: usernameKey, username, role });
-    showStatus(role === "admin" ? "Account created! You're the first user, so you're the admin. Redirecting..." : "Account created! Redirecting...", "success");
-    setTimeout(() => { window.location.href = redirectTarget; }, 500);
+    setSession({
+      id: newUserId,
+      username: newUser.username,
+      role: newUser.role,
+      photoURL: null
+    });
+
+    signupMsg.style.color = "limegreen";
+    signupMsg.textContent = "Account created! Redirecting...";
+    window.location.href = redirectTarget;
   } catch (error) {
-    showStatus("Error creating account: " + error.message, "error");
+    if (error.message === "USERNAME_TAKEN") {
+      signupMsg.style.color = "#e1282d";
+      signupMsg.textContent = "That username is already taken.";
+    } else {
+      console.error("Error signing up:", error);
+      signupMsg.style.color = "#e1282d";
+      signupMsg.textContent = "Something went wrong. Please try again.";
+    }
   } finally {
-    submitBtn.disabled = false;
-    submitBtn.textContent = "Create Account";
+    signupBtn.disabled = false;
   }
+});
+
+[signupUsername, signupPassword, signupConfirm].forEach(input => {
+  input.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") signupBtn.click();
+  });
+});
+
+// ---- Continue as Guest ----
+// Guests get no session at all - the rest of the site already treats "no session"
+// as a guest: they can browse and read reviews, but the review form stays hidden.
+document.getElementById("guestBtn").addEventListener("click", () => {
+  window.location.href = redirectTarget === "admin.html" ? "index.html" : redirectTarget;
 });
 </script>
 
