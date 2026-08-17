@@ -1,4 +1,4 @@
-<!doctype html>
+\<!doctype html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -56,6 +56,31 @@ main {
   margin-bottom: 25px;
 }
 
+/* STEPS (main sign in/up, legacy username login, post-auth username setup) */
+.authStep { display: none; }
+.authStep.active { display: block; }
+
+/* GOOGLE BUTTON */
+.googleBtn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background: white;
+  color: #222;
+  border: none;
+  padding: 12px;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.googleBtn:hover { background: #eee; }
+.googleBtn:disabled { opacity: 0.6; cursor: not-allowed; }
+.googleBtn svg { width: 20px; height: 20px; flex-shrink: 0; }
+
 /* MODE TABS (Sign In / Sign Up) */
 .authTabs {
   display: flex;
@@ -90,7 +115,8 @@ label {
 }
 
 input[type="text"],
-input[type="password"] {
+input[type="password"],
+input[type="email"] {
   width: 100%;
   padding: 11px 13px;
   border-radius: 8px;
@@ -105,8 +131,9 @@ input[type="password"] {
 input:focus { outline: none; border-color: #e1282d; }
 
 /* usernames are stored/lowercase only - reflect that visually as the user types */
-#signinUsername,
-#signupUsername {
+#legacyUsername,
+#newUsernameInput,
+#migrateUsername {
   text-transform: lowercase;
 }
 
@@ -169,7 +196,7 @@ input:focus { outline: none; border-color: #e1282d; }
   display: flex;
   align-items: center;
   gap: 12px;
-  margin-bottom:25px;
+  margin: 20px 0;
   color: #555;
   font-size: 12px;
 }
@@ -198,6 +225,52 @@ input:focus { outline: none; border-color: #e1282d; }
 .formSection { display: none; }
 .formSection.active { display: block; }
 
+.forgotWrap {
+  text-align: right;
+  margin-top: 8px;
+  font-size: 12px;
+}
+.forgotWrap a { color: #888; text-decoration: none; }
+.forgotWrap a:hover { color: #e1282d; text-decoration: underline; }
+
+.legacyLink {
+  text-align: center;
+  margin-top: 18px;
+  font-size: 13px;
+  color: #888;
+}
+.legacyLink a { color: #e1282d; text-decoration: none; font-weight: bold; }
+.legacyLink a:hover { text-decoration: underline; }
+
+/* POST-AUTH PROFILE SETUP STEP */
+.avatarPickWrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+.avatarPreview {
+  width: 84px;
+  height: 84px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #e1282d;
+  background: #000;
+}
+.avatarUploadBtn {
+  display: inline-block;
+  padding: 8px 18px;
+  border: 2px solid #444;
+  border-radius: 8px;
+  color: #ccc;
+  font-size: 13px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.avatarUploadBtn:hover { border-color: #e1282d; color: white; }
+
 @media (max-width: 500px) {
   header { padding: 15px 20px; }
   header img { width: 90px; }
@@ -216,53 +289,170 @@ input:focus { outline: none; border-color: #e1282d; }
 
 <main>
   <div class="authCard">
-    <h1 id="authHeading">Welcome Surfer!</h1><br>
-    
 
-    <div class="authTabs">
-      <div class="authTab active" data-mode="signin">Log In</div>
-      <div class="authTab" data-mode="signup">Sign Up</div>
-    </div>
+    <!-- STEP 1: Google / Email sign in & sign up (primary flow) -->
+    <div class="authStep active" id="mainStep">
+      <h1 id="authHeading">Welcome Surfer!</h1>
+      <div class="authSubtitle" id="authSubtitle">Sign in to rate and review games</div>
 
-    <!-- SIGN IN -->
-    <div class="formSection active" id="signinSection">
-      <label for="signinUsername">Username</label>
-      <input type="text" id="signinUsername" placeholder="Your username" autocomplete="username">
+      <button type="button" class="googleBtn" id="googleBtn">
+        <svg viewBox="0 0 48 48">
+          <path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.6 29.3 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.1 8 3l5.7-5.7C34.5 6.1 29.5 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.7-.4-3.5z"/>
+          <path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 15.9 19 13 24 13c3.1 0 5.8 1.1 8 3l5.7-5.7C34.5 6.1 29.5 4 24 4c-7.7 0-14.4 4.4-17.7 10.7z"/>
+          <path fill="#4CAF50" d="M24 44c5.3 0 10.1-2 13.7-5.4l-6.3-5.3C29.4 35.1 26.8 36 24 36c-5.3 0-9.7-3.4-11.3-8.1l-6.6 5.1C9.5 39.6 16.2 44 24 44z"/>
+          <path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.3-2.3 4.3-4.3 5.7l6.3 5.3C39.9 37 44 31.5 44 24c0-1.3-.1-2.7-.4-3.5z"/>
+        </svg>
+        Continue with Google
+      </button>
+      <div class="authMsg" id="googleMsg"></div>
 
-      <label for="signinPassword">Password</label>
-      <div class="pwField">
-        <input type="password" id="signinPassword" placeholder="Your password" autocomplete="current-password">
-        <button type="button" class="pwToggle" id="signinPasswordToggle" aria-label="Show password"></button>
+      <div class="authDivider">OR</div>
+
+      <div class="authTabs">
+        <div class="authTab active" data-mode="signin">Log In</div>
+        <div class="authTab" data-mode="signup">Sign Up</div>
       </div>
 
-      <button class="authBtn" id="signinBtn">Sign In</button>
-      <div class="authMsg" id="signinMsg"></div>
-    </div>
+      <!-- SIGN IN (Firebase email/password) -->
+      <div class="formSection active" id="signinSection">
+        <label for="signinEmail">Email</label>
+        <input type="email" id="signinEmail" placeholder="you@example.com" autocomplete="email">
 
-    <!-- SIGN UP -->
-    <div class="formSection" id="signupSection">
-      <label for="signupUsername">Username</label>
-      <input type="text" id="signupUsername" placeholder="Pick a username" autocomplete="username">
+        <label for="signinPassword">Password</label>
+        <div class="pwField">
+          <input type="password" id="signinPassword" placeholder="Your password" autocomplete="current-password">
+          <button type="button" class="pwToggle" id="signinPasswordToggle" aria-label="Show password"></button>
+        </div>
+        <div class="forgotWrap"><a href="#" id="forgotLink">Forgot password?</a></div>
 
-      <label for="signupPassword">Password</label>
-      <div class="pwField">
-        <input type="password" id="signupPassword" placeholder="At least 6 characters" autocomplete="new-password">
-        <button type="button" class="pwToggle" id="signupPasswordToggle" aria-label="Show password"></button>
+        <button class="authBtn" id="signinBtn">Sign In</button>
+        <div class="authMsg" id="signinMsg"></div>
       </div>
 
-      <label for="signupConfirm">Confirm Password</label>
-      <div class="pwField">
-        <input type="password" id="signupConfirm" placeholder="Retype your password" autocomplete="new-password">
-        <button type="button" class="pwToggle" id="signupConfirmToggle" aria-label="Show password"></button>
+      <!-- SIGN UP (Firebase email/password) -->
+      <div class="formSection" id="signupSection">
+        <label for="signupEmail">Email</label>
+        <input type="email" id="signupEmail" placeholder="you@example.com" autocomplete="email">
+
+        <label for="signupPassword">Password</label>
+        <div class="pwField">
+          <input type="password" id="signupPassword" placeholder="At least 6 characters" autocomplete="new-password">
+          <button type="button" class="pwToggle" id="signupPasswordToggle" aria-label="Show password"></button>
+        </div>
+
+        <label for="signupConfirm">Confirm Password</label>
+        <div class="pwField">
+          <input type="password" id="signupConfirm" placeholder="Retype your password" autocomplete="new-password">
+          <button type="button" class="pwToggle" id="signupConfirmToggle" aria-label="Show password"></button>
+        </div>
+
+        <button class="authBtn" id="signupBtn">Create Account</button>
+        <div class="authMsg" id="signupMsg"></div>
       </div>
 
-      <button class="authBtn" id="signupBtn">Create Account</button>
-      <div class="authMsg" id="signupMsg"></div>
+      <div class="authDivider">OR</div>
+      <button class="guestBtn" id="guestBtn">Continue as Guest</button>
+
+      <div class="legacyLink">Had an account before? <a href="#" id="legacyToggle">Sign in with username</a></div>
     </div>
 
-    <div class="authDivider">OR</div>
-    <button class="guestBtn" id="guestBtn">Continue as Guest</button>
- 
+    <!-- STEP 2: legacy username/password sign in - preserved as-is for old accounts -->
+    <div class="authStep" id="legacyStep">
+      <h1>Welcome Back</h1>
+      <div class="authSubtitle">Sign in with your existing username</div>
+
+      <label for="legacyUsername">Username</label>
+      <input type="text" id="legacyUsername" placeholder="Your username" autocomplete="username">
+
+      <label for="legacyPassword">Password</label>
+      <div class="pwField">
+        <input type="password" id="legacyPassword" placeholder="Your password" autocomplete="current-password">
+        <button type="button" class="pwToggle" id="legacyPasswordToggle" aria-label="Show password"></button>
+      </div>
+
+      <button class="authBtn" id="legacySigninBtn">Sign In</button>
+      <div class="authMsg" id="legacyMsg"></div>
+
+      <div class="legacyLink"><a href="#" id="backToMainLink">&larr; Back</a></div>
+      <div class="legacyLink">Want to switch to Google or Email sign-in? <a href="#" id="migrateToggle">Migrate your account</a></div>
+    </div>
+
+    <!-- STEP: verify identity of an old username/password account before migrating it -->
+    <div class="authStep" id="migrateStep">
+      <h1>Migrate Your Account</h1>
+      <div class="authSubtitle">Enter your existing username and password to continue</div>
+
+      <label for="migrateUsername">Username</label>
+      <input type="text" id="migrateUsername" placeholder="Your username" autocomplete="username">
+
+      <label for="migratePassword">Password</label>
+      <div class="pwField">
+        <input type="password" id="migratePassword" placeholder="Your password" autocomplete="current-password">
+        <button type="button" class="pwToggle" id="migratePasswordToggle" aria-label="Show password"></button>
+      </div>
+
+      <button class="authBtn" id="migrateVerifyBtn">Verify</button>
+      <div class="authMsg" id="migrateMsg"></div>
+
+      <div class="legacyLink"><a href="#" id="migrateBackLink">&larr; Back</a></div>
+    </div>
+
+    <!-- STEP: pick Google or Email/Password to finish the migration -->
+    <div class="authStep" id="migrateChooseStep">
+      <h1>Almost done!</h1>
+      <div class="authSubtitle" id="migrateChooseSubtitle">Choose how you'll sign in from now on</div>
+
+      <button type="button" class="googleBtn" id="migrateGoogleBtn">
+        <svg viewBox="0 0 48 48">
+          <path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.6 29.3 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.1 8 3l5.7-5.7C34.5 6.1 29.5 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.7-.4-3.5z"/>
+          <path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 15.9 19 13 24 13c3.1 0 5.8 1.1 8 3l5.7-5.7C34.5 6.1 29.5 4 24 4c-7.7 0-14.4 4.4-17.7 10.7z"/>
+          <path fill="#4CAF50" d="M24 44c5.3 0 10.1-2 13.7-5.4l-6.3-5.3C29.4 35.1 26.8 36 24 36c-5.3 0-9.7-3.4-11.3-8.1l-6.6 5.1C9.5 39.6 16.2 44 24 44z"/>
+          <path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.3-2.3 4.3-4.3 5.7l6.3 5.3C39.9 37 44 31.5 44 24c0-1.3-.1-2.7-.4-3.5z"/>
+        </svg>
+        Continue with Google
+      </button>
+
+      <div class="authDivider">OR</div>
+
+      <label for="migrateEmail">Email</label>
+      <input type="email" id="migrateEmail" placeholder="you@example.com" autocomplete="email">
+
+      <label for="migrateNewPassword">New Password</label>
+      <div class="pwField">
+        <input type="password" id="migrateNewPassword" placeholder="At least 6 characters" autocomplete="new-password">
+        <button type="button" class="pwToggle" id="migrateNewPasswordToggle" aria-label="Show password"></button>
+      </div>
+
+      <label for="migrateConfirmPassword">Confirm Password</label>
+      <div class="pwField">
+        <input type="password" id="migrateConfirmPassword" placeholder="Retype your password" autocomplete="new-password">
+        <button type="button" class="pwToggle" id="migrateConfirmPasswordToggle" aria-label="Show password"></button>
+      </div>
+
+      <button class="authBtn" id="migrateEmailBtn">Set Email &amp; Password</button>
+      <div class="authMsg" id="migrateChooseMsg"></div>
+
+      <div class="legacyLink"><a href="#" id="migrateChooseBackLink">&larr; Back</a></div>
+    </div>
+
+    <!-- STEP 3: shown once, right after a brand-new Google/email sign-in -->
+    <div class="authStep" id="usernameStep">
+      <h1>Almost there!</h1>
+      <div class="authSubtitle">Set up your profile to finish signing in</div>
+
+      <div class="avatarPickWrap">
+        <img id="newAvatarPreview" class="avatarPreview" src="" alt="Profile preview">
+        <label class="avatarUploadBtn" for="newAvatarInput">Choose Photo (optional)</label>
+        <input type="file" id="newAvatarInput" accept="image/*" style="display:none;">
+      </div>
+
+      <label for="newUsernameInput">Username</label>
+      <input type="text" id="newUsernameInput" placeholder="pick-a-username" autocapitalize="off" autocorrect="off" spellcheck="false">
+
+      <button class="authBtn" id="finishSetupBtn">Continue</button>
+      <div class="authMsg" id="setupMsg"></div>
+    </div>
+
   </div>
 </main>
 
@@ -272,12 +462,21 @@ import {
   getFirestore,
   collection,
   doc,
-  addDoc,
   getDocs,
   query,
   where,
-  runTransaction
+  runTransaction,
+  updateDoc,
+  deleteField
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import {
+  getAuth,
+  GoogleAuthProvider,
+  signInWithPopup,
+  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
+  sendPasswordResetEmail
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyBoylOskSQPe1LiDehqp1gmSXfzzNNtRmY",
@@ -288,6 +487,17 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
+const auth = getAuth(app);
+const googleProvider = new GoogleAuthProvider();
+
+// Cloudinary (same account used for profile photos site-wide)
+const CLOUD_NAME = "dkwmnfnjf";
+const UPLOAD_PRESET = "yugwf5bd";
+
+// Simple default avatar (grey circle silhouette) - matches index.html
+const DEFAULT_AVATAR = "data:image/svg+xml;utf8," + encodeURIComponent(
+  '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" fill="#333"/><circle cx="50" cy="38" r="18" fill="#888"/><circle cx="50" cy="95" r="32" fill="#888"/></svg>'
+);
 
 // ---- Auth session helpers (shared pattern across index.html, login.html, admin.html) ----
 const AUTH_KEY = "pyshAuthUser";
@@ -317,7 +527,19 @@ if (existingSession) {
   window.location.href = redirectTarget;
 }
 
-// ---- Tab switching ----
+// ---- Step elements ----
+const mainStep = document.getElementById("mainStep");
+const legacyStep = document.getElementById("legacyStep");
+const usernameStep = document.getElementById("usernameStep");
+const migrateStep = document.getElementById("migrateStep");
+const migrateChooseStep = document.getElementById("migrateChooseStep");
+
+function showStep(step) {
+  [mainStep, legacyStep, usernameStep, migrateStep, migrateChooseStep].forEach(s => s.classList.remove("active"));
+  step.classList.add("active");
+}
+
+// ---- Tab switching (Log In / Sign Up within the main step) ----
 const tabs = document.querySelectorAll(".authTab");
 const signinSection = document.getElementById("signinSection");
 const signupSection = document.getElementById("signupSection");
@@ -343,8 +565,8 @@ tabs.forEach(tab => {
   });
 });
 
-// Force every username field to lowercase as the person types, so what they
-// see always matches what will actually be checked/stored.
+// Force username fields to lowercase as the person types, so what they see
+// always matches what will actually be checked/stored.
 function lowercaseAsYouType(input) {
   input.addEventListener("input", () => {
     const pos = input.selectionStart;
@@ -352,8 +574,9 @@ function lowercaseAsYouType(input) {
     input.setSelectionRange(pos, pos);
   });
 }
-lowercaseAsYouType(document.getElementById("signinUsername"));
-lowercaseAsYouType(document.getElementById("signupUsername"));
+lowercaseAsYouType(document.getElementById("legacyUsername"));
+lowercaseAsYouType(document.getElementById("newUsernameInput"));
+lowercaseAsYouType(document.getElementById("migrateUsername"));
 
 // ---- Password show/hide toggles ----
 const EYE_ICON = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.94 10.94 0 0 1 12 20c-7 0-11-8-11-8a21.3 21.3 0 0 1 5.06-6.06M9.9 4.24A10.94 10.94 0 0 1 12 4c7 0 11 8 11 8a21.32 21.32 0 0 1-3.22 4.39M14.12 14.12a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>`;
@@ -374,20 +597,114 @@ function wirePasswordToggle(inputId, toggleId) {
 wirePasswordToggle("signinPassword", "signinPasswordToggle");
 wirePasswordToggle("signupPassword", "signupPasswordToggle");
 wirePasswordToggle("signupConfirm", "signupConfirmToggle");
+wirePasswordToggle("legacyPassword", "legacyPasswordToggle");
+wirePasswordToggle("migratePassword", "migratePasswordToggle");
+wirePasswordToggle("migrateNewPassword", "migrateNewPasswordToggle");
+wirePasswordToggle("migrateConfirmPassword", "migrateConfirmPasswordToggle");
 
-// ---- Sign In ----
+// =========================================================================
+// SHARED: after ANY successful Firebase Auth sign-in (Google or email/pw),
+// find the matching Firestore profile by authUID. If one exists, log
+// straight in. If not, this is that person's first time through the new
+// auth system - send them to the username/photo setup step.
+// =========================================================================
+let pendingFbUser = null;
+let pendingPhotoURL = null;
+
+async function handleFirebaseUser(fbUser) {
+  const q = query(collection(db, "users"), where("authUID", "==", fbUser.uid));
+  const snapshot = await getDocs(q);
+
+  if (!snapshot.empty) {
+    const userDoc = snapshot.docs[0];
+    const userData = userDoc.data();
+    setSession({
+      id: userDoc.id,
+      username: userData.username,
+      role: userData.role || "user",
+      photoURL: userData.photoURL || null
+    });
+    window.location.href = redirectTarget;
+    return;
+  }
+
+  // Brand new account - collect a username (and optional photo) before we
+  // create their profile.
+  pendingFbUser = fbUser;
+  pendingPhotoURL = fbUser.photoURL || null;
+
+  const newAvatarPreview = document.getElementById("newAvatarPreview");
+  const newUsernameInput = document.getElementById("newUsernameInput");
+  const setupMsg = document.getElementById("setupMsg");
+
+  newAvatarPreview.src = pendingPhotoURL || DEFAULT_AVATAR;
+  setupMsg.textContent = "";
+
+  const suggestion = (fbUser.displayName || (fbUser.email ? fbUser.email.split("@")[0] : "surfer"))
+    .toLowerCase()
+    .replace(/[^a-z0-9_]/g, "")
+    .slice(0, 20) || "surfer";
+  newUsernameInput.value = suggestion;
+
+  showStep(usernameStep);
+}
+
+function friendlyAuthError(error, context) {
+  switch (error.code) {
+    case "auth/invalid-email":
+      return "Please enter a valid email address.";
+    case "auth/too-many-requests":
+      return "Too many attempts. Please try again later.";
+    case "auth/popup-closed-by-user":
+    case "auth/cancelled-popup-request":
+      return ""; // person just closed the popup - no need to scold them
+    case "auth/user-not-found":
+      return context === "signin" ? "No account found with that email. Try Sign Up instead." : "Something went wrong. Please try again.";
+    case "auth/wrong-password":
+    case "auth/invalid-credential":
+      return "Incorrect email or password.";
+    case "auth/email-already-in-use":
+      return "An account with that email already exists. Try Log In instead.";
+    case "auth/weak-password":
+      return "Password is too weak. Use at least 6 characters.";
+    default:
+      return "Something went wrong. Please try again.";
+  }
+}
+
+// ---- Continue with Google ----
+const googleBtn = document.getElementById("googleBtn");
+const googleMsg = document.getElementById("googleMsg");
+
+googleBtn.addEventListener("click", async () => {
+  googleBtn.disabled = true;
+  googleMsg.style.color = "#e1282d";
+  googleMsg.textContent = "";
+
+  try {
+    const result = await signInWithPopup(auth, googleProvider);
+    await handleFirebaseUser(result.user);
+  } catch (error) {
+    console.error("Error signing in with Google:", error);
+    googleMsg.textContent = friendlyAuthError(error, "signin");
+  } finally {
+    googleBtn.disabled = false;
+  }
+});
+
+// ---- Sign In (Firebase email/password) ----
 const signinBtn = document.getElementById("signinBtn");
-const signinUsername = document.getElementById("signinUsername");
+const signinEmail = document.getElementById("signinEmail");
 const signinPassword = document.getElementById("signinPassword");
 const signinMsg = document.getElementById("signinMsg");
 
 signinBtn.addEventListener("click", async () => {
-  const username = normalizeUsername(signinUsername.value);
+  const email = signinEmail.value.trim();
   const password = signinPassword.value;
 
-  if (!username || !password) {
+  if (!email || !password) {
     signinMsg.style.color = "#e1282d";
-    signinMsg.textContent = "Please enter your username and password.";
+    signinMsg.textContent = "Please enter your email and password.";
     return;
   }
 
@@ -396,64 +713,56 @@ signinBtn.addEventListener("click", async () => {
   signinMsg.textContent = "Signing in...";
 
   try {
-    // Usernames are always stored lowercase, so an exact match here is safe
-    // no matter how the person capitalized it while typing.
-    const q = query(collection(db, "users"), where("username", "==", username));
-    const snapshot = await getDocs(q);
-
-    if (snapshot.empty) {
-      signinMsg.style.color = "#e1282d";
-      signinMsg.textContent = "No account found with that username.";
-      return;
-    }
-
-    const userDoc = snapshot.docs[0];
-    const userData = userDoc.data();
-
-    if (userData.password !== password) {
-      signinMsg.style.color = "#e1282d";
-      signinMsg.textContent = "Incorrect password.";
-      return;
-    }
-
-    setSession({
-      id: userDoc.id,
-      username: userData.username,
-      role: userData.role || "user",
-      photoURL: userData.photoURL || null
-    });
-
-    signinMsg.style.color = "limegreen";
-    signinMsg.textContent = "success";
-    window.location.href = redirectTarget;
+    const cred = await signInWithEmailAndPassword(auth, email, password);
+    await handleFirebaseUser(cred.user);
   } catch (error) {
     console.error("Error signing in:", error);
     signinMsg.style.color = "#e1282d";
-    signinMsg.textContent = "Something went wrong. Please try again.";
+    signinMsg.textContent = friendlyAuthError(error, "signin");
   } finally {
     signinBtn.disabled = false;
   }
 });
 
-[signinUsername, signinPassword].forEach(input => {
+[signinEmail, signinPassword].forEach(input => {
   input.addEventListener("keydown", (e) => {
     if (e.key === "Enter") signinBtn.click();
   });
 });
 
-// ---- Sign Up ----
+// ---- Forgot password ----
+document.getElementById("forgotLink").addEventListener("click", async (e) => {
+  e.preventDefault();
+  const email = signinEmail.value.trim();
+  if (!email) {
+    signinMsg.style.color = "#e1282d";
+    signinMsg.textContent = "Enter your email above first.";
+    return;
+  }
+  try {
+    await sendPasswordResetEmail(auth, email);
+    signinMsg.style.color = "limegreen";
+    signinMsg.textContent = "Password reset email sent.";
+  } catch (error) {
+    console.error("Error sending reset email:", error);
+    signinMsg.style.color = "#e1282d";
+    signinMsg.textContent = friendlyAuthError(error, "signin");
+  }
+});
+
+// ---- Sign Up (Firebase email/password) ----
 const signupBtn = document.getElementById("signupBtn");
-const signupUsername = document.getElementById("signupUsername");
+const signupEmail = document.getElementById("signupEmail");
 const signupPassword = document.getElementById("signupPassword");
 const signupConfirm = document.getElementById("signupConfirm");
 const signupMsg = document.getElementById("signupMsg");
 
 signupBtn.addEventListener("click", async () => {
-  const username = normalizeUsername(signupUsername.value);
+  const email = signupEmail.value.trim();
   const password = signupPassword.value;
   const confirm = signupConfirm.value;
 
-  if (!username || !password || !confirm) {
+  if (!email || !password || !confirm) {
     signupMsg.style.color = "#e1282d";
     signupMsg.textContent = "Please fill in every field.";
     return;
@@ -471,26 +780,413 @@ signupBtn.addEventListener("click", async () => {
 
   signupBtn.disabled = true;
   signupMsg.style.color = "#ccc";
-  signupMsg.textContent = "Creating";
+  signupMsg.textContent = "Creating account...";
 
   try {
-    const newUser = {
-      username, // already lowercase
-      password,
-      role: "user",
-      photoURL: null,
-      createdAt: Date.now()
-    };
+    const cred = await createUserWithEmailAndPassword(auth, email, password);
+    await handleFirebaseUser(cred.user);
+  } catch (error) {
+    console.error("Error signing up:", error);
+    signupMsg.style.color = "#e1282d";
+    signupMsg.textContent = friendlyAuthError(error, "signup");
+  } finally {
+    signupBtn.disabled = false;
+  }
+});
 
-    // A plain "query, then addDoc if nothing found" has a race condition:
-    // two people submitting the same username at the same moment could both
-    // pass the check before either write lands, creating two accounts with
-    // the same name. To close that gap, "usernames" is used as a uniqueness
-    // lock: its document ID *is* the lowercase username, and the whole
-    // check-and-create runs inside one atomic transaction, so only one of
-    // two simultaneous signups can ever win.
+[signupEmail, signupPassword, signupConfirm].forEach(input => {
+  input.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") signupBtn.click();
+  });
+});
+
+// =========================================================================
+// LEGACY SIGN IN - untouched logic for accounts created before Google/email
+// auth existed. These accounts only ever lived in Firestore (username +
+// password field, no Firebase Auth record) and are kept working exactly as
+// before rather than being deleted or forced to migrate.
+// =========================================================================
+const legacyToggle = document.getElementById("legacyToggle");
+const backToMainLink = document.getElementById("backToMainLink");
+const legacySigninBtn = document.getElementById("legacySigninBtn");
+const legacyUsername = document.getElementById("legacyUsername");
+const legacyPassword = document.getElementById("legacyPassword");
+const legacyMsg = document.getElementById("legacyMsg");
+
+legacyToggle.addEventListener("click", (e) => {
+  e.preventDefault();
+  legacyMsg.textContent = "";
+  showStep(legacyStep);
+});
+
+backToMainLink.addEventListener("click", (e) => {
+  e.preventDefault();
+  showStep(mainStep);
+});
+
+legacySigninBtn.addEventListener("click", async () => {
+  const username = normalizeUsername(legacyUsername.value);
+  const password = legacyPassword.value;
+
+  if (!username || !password) {
+    legacyMsg.style.color = "#e1282d";
+    legacyMsg.textContent = "Please enter your username and password.";
+    return;
+  }
+
+  legacySigninBtn.disabled = true;
+  legacyMsg.style.color = "#ccc";
+  legacyMsg.textContent = "Signing in...";
+
+  try {
+    // Usernames are always stored lowercase, so an exact match here is safe
+    // no matter how the person capitalized it while typing.
+    const q = query(collection(db, "users"), where("username", "==", username));
+    const snapshot = await getDocs(q);
+
+    if (snapshot.empty) {
+      legacyMsg.style.color = "#e1282d";
+      legacyMsg.textContent = "No account found with that username.";
+      return;
+    }
+
+    const userDoc = snapshot.docs[0];
+    const userData = userDoc.data();
+
+    if (userData.password !== password) {
+      legacyMsg.style.color = "#e1282d";
+      legacyMsg.textContent = "Incorrect password.";
+      return;
+    }
+
+    setSession({
+      id: userDoc.id,
+      username: userData.username,
+      role: userData.role || "user",
+      photoURL: userData.photoURL || null
+    });
+
+    legacyMsg.style.color = "limegreen";
+    legacyMsg.textContent = "success";
+    window.location.href = redirectTarget;
+  } catch (error) {
+    console.error("Error signing in:", error);
+    legacyMsg.style.color = "#e1282d";
+    legacyMsg.textContent = "Something went wrong. Please try again.";
+  } finally {
+    legacySigninBtn.disabled = false;
+  }
+});
+
+[legacyUsername, legacyPassword].forEach(input => {
+  input.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") legacySigninBtn.click();
+  });
+});
+
+// =========================================================================
+// MIGRATE ACCOUNT - lets an old username/password holder convert to real
+// Firebase Auth (Google or Email/Password) while keeping the SAME Firestore
+// user doc ID, so every review/comment/reply they've ever posted (which
+// reference that doc ID as userId) still points at the right account.
+// Nothing is deleted; the old "password" field is cleared once a real
+// Firebase Auth credential is attached, since it's no longer needed.
+// =========================================================================
+const migrateToggle = document.getElementById("migrateToggle");
+const migrateBackLink = document.getElementById("migrateBackLink");
+const migrateVerifyBtn = document.getElementById("migrateVerifyBtn");
+const migrateUsername = document.getElementById("migrateUsername");
+const migratePassword = document.getElementById("migratePassword");
+const migrateMsg = document.getElementById("migrateMsg");
+
+const migrateChooseBackLink = document.getElementById("migrateChooseBackLink");
+const migrateChooseSubtitle = document.getElementById("migrateChooseSubtitle");
+const migrateChooseMsg = document.getElementById("migrateChooseMsg");
+const migrateGoogleBtn = document.getElementById("migrateGoogleBtn");
+const migrateEmail = document.getElementById("migrateEmail");
+const migrateNewPassword = document.getElementById("migrateNewPassword");
+const migrateConfirmPassword = document.getElementById("migrateConfirmPassword");
+const migrateEmailBtn = document.getElementById("migrateEmailBtn");
+
+// Identity of the legacy account being migrated, captured once verified
+let pendingMigrateUserId = null;
+let pendingMigrateUsername = null;
+let pendingMigrateRole = null;
+let pendingMigratePhotoURL = null;
+
+function resetMigrateState() {
+  pendingMigrateUserId = null;
+  pendingMigrateUsername = null;
+  pendingMigrateRole = null;
+  pendingMigratePhotoURL = null;
+  migrateUsername.value = "";
+  migratePassword.value = "";
+  migrateMsg.textContent = "";
+  migrateEmail.value = "";
+  migrateNewPassword.value = "";
+  migrateConfirmPassword.value = "";
+  migrateChooseMsg.textContent = "";
+}
+
+migrateToggle.addEventListener("click", (e) => {
+  e.preventDefault();
+  resetMigrateState();
+  showStep(migrateStep);
+});
+
+migrateBackLink.addEventListener("click", (e) => {
+  e.preventDefault();
+  showStep(legacyStep);
+});
+
+migrateChooseBackLink.addEventListener("click", (e) => {
+  e.preventDefault();
+  resetMigrateState();
+  showStep(legacyStep);
+});
+
+migrateVerifyBtn.addEventListener("click", async () => {
+  const username = normalizeUsername(migrateUsername.value);
+  const password = migratePassword.value;
+
+  if (!username || !password) {
+    migrateMsg.style.color = "#e1282d";
+    migrateMsg.textContent = "Please enter your username and password.";
+    return;
+  }
+
+  migrateVerifyBtn.disabled = true;
+  migrateMsg.style.color = "#ccc";
+  migrateMsg.textContent = "Verifying...";
+
+  try {
+    const q = query(collection(db, "users"), where("username", "==", username));
+    const snapshot = await getDocs(q);
+
+    if (snapshot.empty) {
+      migrateMsg.style.color = "#e1282d";
+      migrateMsg.textContent = "No account found with that username.";
+      return;
+    }
+
+    const userDoc = snapshot.docs[0];
+    const userData = userDoc.data();
+
+    if (userData.authUID) {
+      migrateMsg.style.color = "#e1282d";
+      migrateMsg.textContent = "This account already uses Google or Email sign-in. Just sign in normally.";
+      return;
+    }
+
+    if (userData.password !== password) {
+      migrateMsg.style.color = "#e1282d";
+      migrateMsg.textContent = "Incorrect password.";
+      return;
+    }
+
+    pendingMigrateUserId = userDoc.id;
+    pendingMigrateUsername = userData.username;
+    pendingMigrateRole = userData.role || "user";
+    pendingMigratePhotoURL = userData.photoURL || null;
+
+    migrateChooseSubtitle.textContent = `Choose how "${userData.username}" will sign in from now on`;
+    migrateChooseMsg.textContent = "";
+    showStep(migrateChooseStep);
+  } catch (error) {
+    console.error("Error verifying account for migration:", error);
+    migrateMsg.style.color = "#e1282d";
+    migrateMsg.textContent = "Something went wrong. Please try again.";
+  } finally {
+    migrateVerifyBtn.disabled = false;
+  }
+});
+
+[migrateUsername, migratePassword].forEach(input => {
+  input.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") migrateVerifyBtn.click();
+  });
+});
+
+// Attaches a freshly-created Firebase Auth credential to the existing
+// legacy user doc (same doc ID) instead of creating a new profile.
+async function completeMigration({ authUID, authProvider, email, googlePhoto }) {
+  const userRef = doc(db, "users", pendingMigrateUserId);
+
+  const updates = {
+    authUID,
+    authProvider,
+    email: email || null,
+    password: deleteField() // no longer needed once real auth is attached
+  };
+  // Only fill in a photo from Google if this account doesn't already have one
+  if (!pendingMigratePhotoURL && googlePhoto) {
+    updates.photoURL = googlePhoto;
+  }
+
+  await updateDoc(userRef, updates);
+
+  setSession({
+    id: pendingMigrateUserId,
+    username: pendingMigrateUsername,
+    role: pendingMigrateRole,
+    photoURL: pendingMigratePhotoURL || googlePhoto || null
+  });
+
+  window.location.href = redirectTarget;
+}
+
+migrateGoogleBtn.addEventListener("click", async () => {
+  if (!pendingMigrateUserId) return;
+
+  migrateGoogleBtn.disabled = true;
+  migrateChooseMsg.style.color = "#e1282d";
+  migrateChooseMsg.textContent = "";
+
+  try {
+    const result = await signInWithPopup(auth, googleProvider);
+    const fbUser = result.user;
+
+    // Make sure this Google account isn't already tied to a different Pysh account
+    const dupQ = query(collection(db, "users"), where("authUID", "==", fbUser.uid));
+    const dupSnap = await getDocs(dupQ);
+    const linkedElsewhere = dupSnap.docs.some(d => d.id !== pendingMigrateUserId);
+    if (linkedElsewhere) {
+      migrateChooseMsg.textContent = "That Google account is already linked to a different Pysh account.";
+      return;
+    }
+
+    await completeMigration({
+      authUID: fbUser.uid,
+      authProvider: "google",
+      email: fbUser.email || null,
+      googlePhoto: fbUser.photoURL || null
+    });
+  } catch (error) {
+    console.error("Error migrating with Google:", error);
+    migrateChooseMsg.textContent = friendlyAuthError(error, "signin");
+  } finally {
+    migrateGoogleBtn.disabled = false;
+  }
+});
+
+migrateEmailBtn.addEventListener("click", async () => {
+  if (!pendingMigrateUserId) return;
+
+  const email = migrateEmail.value.trim();
+  const password = migrateNewPassword.value;
+  const confirm = migrateConfirmPassword.value;
+
+  if (!email || !password || !confirm) {
+    migrateChooseMsg.style.color = "#e1282d";
+    migrateChooseMsg.textContent = "Please fill in every field.";
+    return;
+  }
+  if (password.length < 6) {
+    migrateChooseMsg.style.color = "#e1282d";
+    migrateChooseMsg.textContent = "Password must be at least 6 characters.";
+    return;
+  }
+  if (password !== confirm) {
+    migrateChooseMsg.style.color = "#e1282d";
+    migrateChooseMsg.textContent = "Passwords don't match.";
+    return;
+  }
+
+  migrateEmailBtn.disabled = true;
+  migrateChooseMsg.style.color = "#ccc";
+  migrateChooseMsg.textContent = "Setting up...";
+
+  try {
+    const cred = await createUserWithEmailAndPassword(auth, email, password);
+    await completeMigration({
+      authUID: cred.user.uid,
+      authProvider: "password",
+      email,
+      googlePhoto: null
+    });
+  } catch (error) {
+    console.error("Error migrating with email/password:", error);
+    migrateChooseMsg.style.color = "#e1282d";
+    migrateChooseMsg.textContent = friendlyAuthError(error, "signup");
+  } finally {
+    migrateEmailBtn.disabled = false;
+  }
+});
+
+[migrateEmail, migrateNewPassword, migrateConfirmPassword].forEach(input => {
+  input.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") migrateEmailBtn.click();
+  });
+});
+
+// =========================================================================
+// STEP 3: username + optional profile photo, shown once for brand-new
+// Google/email accounts right after their first successful sign-in.
+// =========================================================================
+const newAvatarInput = document.getElementById("newAvatarInput");
+const newAvatarPreview = document.getElementById("newAvatarPreview");
+const newUsernameInput = document.getElementById("newUsernameInput");
+const finishSetupBtn = document.getElementById("finishSetupBtn");
+const setupMsg = document.getElementById("setupMsg");
+
+newAvatarInput.addEventListener("change", async () => {
+  const file = newAvatarInput.files[0];
+  if (!file) return;
+
+  setupMsg.style.color = "#ccc";
+  setupMsg.textContent = "Uploading photo...";
+
+  try {
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("upload_preset", UPLOAD_PRESET);
+
+    const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`, {
+      method: "POST",
+      body: formData
+    });
+    if (!res.ok) throw new Error("Upload failed");
+    const data = await res.json();
+
+    pendingPhotoURL = data.secure_url;
+    newAvatarPreview.src = pendingPhotoURL;
+    setupMsg.textContent = "";
+  } catch (error) {
+    console.error("Error uploading profile photo:", error);
+    setupMsg.style.color = "#e1282d";
+    setupMsg.textContent = "Could not upload photo. You can skip this and add one later.";
+  }
+});
+
+finishSetupBtn.addEventListener("click", async () => {
+  if (!pendingFbUser) return;
+
+  const username = normalizeUsername(newUsernameInput.value);
+
+  if (!username) {
+    setupMsg.style.color = "#e1282d";
+    setupMsg.textContent = "Username can't be empty.";
+    return;
+  }
+  if (username.length < 3 || username.length > 20) {
+    setupMsg.style.color = "#e1282d";
+    setupMsg.textContent = "Username must be 3-20 characters.";
+    return;
+  }
+
+  finishSetupBtn.disabled = true;
+  setupMsg.style.color = "#ccc";
+  setupMsg.textContent = "Saving...";
+
+  try {
+    // Same uniqueness-lock pattern used by legacy sign-up: the "usernames"
+    // collection's doc ID *is* the lowercase username, and the whole
+    // check-and-create runs inside one atomic transaction so two people
+    // can't grab the same name at once.
     const usernameLockRef = doc(db, "usernames", username);
     let newUserId;
+
+    const providerId = pendingFbUser.providerData?.[0]?.providerId === "google.com" ? "google" : "password";
 
     await runTransaction(db, async (transaction) => {
       const lockSnap = await transaction.get(usernameLockRef);
@@ -501,41 +1197,47 @@ signupBtn.addEventListener("click", async () => {
       const newUserRef = doc(collection(db, "users"));
       newUserId = newUserRef.id;
 
-      transaction.set(newUserRef, newUser);
+      transaction.set(newUserRef, {
+        username,
+        authUID: pendingFbUser.uid,
+        authProvider: providerId,
+        email: pendingFbUser.email || null,
+        role: "user",
+        photoURL: pendingPhotoURL || null,
+        createdAt: Date.now()
+      });
       transaction.set(usernameLockRef, {
         userId: newUserRef.id,
-        createdAt: newUser.createdAt
+        createdAt: Date.now()
       });
     });
 
     setSession({
       id: newUserId,
-      username: newUser.username,
-      role: newUser.role,
-      photoURL: null
+      username,
+      role: "user",
+      photoURL: pendingPhotoURL || null
     });
 
-    signupMsg.style.color = "limegreen";
-    signupMsg.textContent = "Account created!";
+    setupMsg.style.color = "limegreen";
+    setupMsg.textContent = "All set!";
     window.location.href = redirectTarget;
   } catch (error) {
     if (error.message === "USERNAME_TAKEN") {
-      signupMsg.style.color = "#e1282d";
-      signupMsg.textContent = "That username is already taken.";
+      setupMsg.style.color = "#e1282d";
+      setupMsg.textContent = "That username is already taken.";
     } else {
-      console.error("Error signing up:", error);
-      signupMsg.style.color = "#e1282d";
-      signupMsg.textContent = "Something went wrong. Please try again.";
+      console.error("Error finishing setup:", error);
+      setupMsg.style.color = "#e1282d";
+      setupMsg.textContent = "Something went wrong. Please try again.";
     }
   } finally {
-    signupBtn.disabled = false;
+    finishSetupBtn.disabled = false;
   }
 });
 
-[signupUsername, signupPassword, signupConfirm].forEach(input => {
-  input.addEventListener("keydown", (e) => {
-    if (e.key === "Enter") signupBtn.click();
-  });
+newUsernameInput.addEventListener("keydown", (e) => {
+  if (e.key === "Enter") finishSetupBtn.click();
 });
 
 // ---- Continue as Guest ----
