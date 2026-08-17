@@ -1132,7 +1132,7 @@ footer { background-color: #111; padding-bottom: clamp(20px, 4vw, 30px); font-si
   <div id="usernameEditWrap" style="display:none;">
     <label for="usernameInput">New Username</label>
     <input type="text" id="usernameInput" placeholder="new-username" autocapitalize="off" autocorrect="off" spellcheck="false">
-    
+    <div class="usernameHint">Lowercase only — capital letters are converted automatically.</div>
     <div class="usernameEditActions">
       <button class="panelBtn" id="saveUsernameBtn">Save</button>
       <button class="panelBtn secondaryBtn" id="cancelUsernameBtn">Cancel</button>
@@ -1184,6 +1184,7 @@ import {
   updateDoc,
   deleteDoc
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
 // Cloudinary config (same account used in the admin panel) - used for profile photo uploads
 const CLOUD_NAME = "dkwmnfnjf";
@@ -1198,6 +1199,7 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
+const auth = getAuth(app);
 
 // ---- Auth session helpers (shared pattern across index.html, login.html, admin.html) ----
 const AUTH_KEY = "pyshAuthUser";
@@ -1304,9 +1306,13 @@ function initAuthUI() {
   }
 }
 
-// Logging out instantly sends the user back to the login page
+// Logging out instantly sends the user back to the login page.
+// Also signs out of Firebase Auth (Google/email accounts); legacy
+// username/password accounts never had a Firebase Auth session, so
+// this is a harmless no-op for them.
 function doLogout() {
   clearSession();
+  signOut(auth).catch(() => {});
   window.location.href = "login.html";
 }
 
