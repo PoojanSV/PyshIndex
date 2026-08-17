@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Game Reviews</title>
+<title>Pysh Index</title>
 <link rel="icon" type="image/jpeg" href="logo.jpg">
 
 <style>
@@ -934,22 +934,6 @@ footer { background-color: #111; padding-bottom: clamp(20px, 4vw, 30px); font-si
 .panelBtn.logoutBtn { background: #333; margin-top: auto; }
 .panelBtn.logoutBtn:hover { background: var(--red); color: white; }
 
-/* collapsible reset-password fields */
-#passwordSection {
-  max-height: 0;
-  opacity: 0;
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  transition: max-height 0.35s ease, opacity 0.3s ease, margin-top 0.35s ease;
-}
-#passwordSection.open {
-  max-height: 400px;
-  opacity: 1;
-  margin-top: 12px;
-}
-
 #profileMsg, #passwordMsg { margin-top: 4px; font-size: clamp(13px, 1vw, 16px); }
 
 /* Everything below this point relies on fluid clamp() sizing, so
@@ -1151,16 +1135,9 @@ footer { background-color: #111; padding-bottom: clamp(20px, 4vw, 30px); font-si
 
   <hr>
 
-  <div class="panelSection">
-    <button class="panelBtn secondaryBtn" id="togglePasswordBtn">Reset Password</button>
-    <div id="passwordSection">
-      <label for="currentPasswordInput">Current Password</label>
-      <input type="password" id="currentPasswordInput" placeholder="Current password">
-      <label for="newPasswordInput">New Password</label>
-      <input type="password" id="newPasswordInput" placeholder="New password">
-      <button class="panelBtn" id="changePasswordBtn">Update Password</button>
-      <div id="passwordMsg"></div>
-    </div>
+  <div class="panelSection" id="passwordPanelSection">
+    <button class="panelBtn secondaryBtn" id="sendResetBtn">Reset Password</button>
+    <div id="passwordMsg"></div>
   </div>
 
   <hr>
@@ -1184,7 +1161,7 @@ import {
   updateDoc,
   deleteDoc
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import { getAuth, signOut, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
 // Cloudinary config (same account used in the admin panel) - used for profile photo uploads
 const CLOUD_NAME = "dkwmnfnjf";
@@ -1271,11 +1248,8 @@ const saveUsernameBtn = document.getElementById("saveUsernameBtn");
 const cancelUsernameBtn = document.getElementById("cancelUsernameBtn");
 const usernameMsg = document.getElementById("usernameMsg");
 const panelRole = document.getElementById("panelRole");
-const togglePasswordBtn = document.getElementById("togglePasswordBtn");
-const passwordSection = document.getElementById("passwordSection");
-const currentPasswordInput = document.getElementById("currentPasswordInput");
-const newPasswordInput = document.getElementById("newPasswordInput");
-const changePasswordBtn = document.getElementById("changePasswordBtn");
+const passwordPanelSection = document.getElementById("passwordPanelSection");
+const sendResetBtn = document.getElementById("sendResetBtn");
 const passwordMsg = document.getElementById("passwordMsg");
 const panelLogoutBtn = document.getElementById("panelLogoutBtn");
 
@@ -1408,15 +1382,25 @@ function openProfilePanel() {
   panelAvatar.src = session.photoURL || DEFAULT_AVATAR;
   panelUsername.textContent = session.username;
   panelRole.textContent = session.role === "admin" ? "Admin" : "Member";
-  currentPasswordInput.value = "";
-  newPasswordInput.value = "";
   profileMsg.textContent = "";
   passwordMsg.textContent = "";
-  passwordSection.classList.remove("open");
-  togglePasswordBtn.classList.remove("open");
   usernameEditWrap.style.display = "none";
   usernameInput.value = "";
   usernameMsg.textContent = "";
+
+  // Only accounts that actually have a password provider linked (email/
+  // password sign-up, or a migrated account) can reset a password. Google
+  // accounts have nothing to reset, so hide the button entirely rather than
+  // showing an option that can never work for them. auth.currentUser is the
+  // real Firebase Auth session, so this reflects what's actually linked -
+  // not a guess based on how the person happened to sign in this time.
+  const providerIds = auth.currentUser
+    ? auth.currentUser.providerData.map(p => p.providerId)
+    : [];
+  passwordPanelSection.style.display = providerIds.includes("password") ? "" : "none";
+  sendResetBtn.disabled = false;
+  sendResetBtn.textContent = "Reset Password";
+
   profileOverlay.classList.add("open");
   profilePanel.classList.add("open");
 }
@@ -1430,12 +1414,28 @@ profileIcon.addEventListener("click", openProfilePanel);
 closePanelBtn.addEventListener("click", closeProfilePanel);
 profileOverlay.addEventListener("click", closeProfilePanel);
 
-// Reset Password reveals the current/new password fields instead of
-// showing them all the time, which was cluttering the panel.
-togglePasswordBtn.addEventListener("click", () => {
-  const isOpen = passwordSection.classList.toggle("open");
-  togglePasswordBtn.classList.toggle("open", isOpen);
-  togglePasswordBtn.textContent = isOpen ? "Cancel" : "Reset Password";
+// Sends a real Firebase password-reset email to the signed-in account's own
+// address - the same trusted flow as the "Forgot password?" link on
+// login.html, instead of the old pattern of comparing a plaintext password
+// field in Firestore (which no account still has once it's on Firebase Auth).
+sendResetBtn.addEventListener("click", async () => {
+  if (!auth.currentUser || !auth.currentUser.email) return;
+
+  sendResetBtn.disabled = true;
+  passwordMsg.style.color = "#ccc";
+  passwordMsg.textContent = "Sending...";
+
+  try {
+    await sendPasswordResetEmail(auth, auth.currentUser.email);
+    passwordMsg.style.color = "limegreen";
+    passwordMsg.textContent = "Reset link sent to " + auth.currentUser.email + ". Check your spam folder if it doesn't arrive shortly.";
+  } catch (error) {
+    console.error("Error sending reset email:", error);
+    passwordMsg.style.color = "#e1282d";
+    passwordMsg.textContent = "Could not send reset email. Please try again.";
+  } finally {
+    sendResetBtn.disabled = false;
+  }
 });
 
 profilePicInput.addEventListener("change", async () => {
@@ -1471,46 +1471,6 @@ profilePicInput.addEventListener("change", async () => {
     console.error("Error uploading profile photo:", error);
     profileMsg.style.color = "#e1282d";
     profileMsg.textContent = "Could not upload photo. Please try again.";
-  }
-});
-
-changePasswordBtn.addEventListener("click", async () => {
-  const session = getSession();
-  if (!session) return;
-
-  const currentPassword = currentPasswordInput.value;
-  const newPassword = newPasswordInput.value;
-
-  if (!currentPassword || !newPassword) {
-    passwordMsg.style.color = "#e1282d";
-    passwordMsg.textContent = "Please fill in both password fields.";
-    return;
-  }
-  if (newPassword.length < 6) {
-    passwordMsg.style.color = "#e1282d";
-    passwordMsg.textContent = "New password must be at least 6 characters.";
-    return;
-  }
-
-  passwordMsg.style.color = "#ccc";
-  passwordMsg.textContent = "Updating...";
-
-  try {
-    const userSnap = await getDoc(doc(db, "users", session.id));
-    if (!userSnap.exists() || userSnap.data().password !== currentPassword) {
-      passwordMsg.style.color = "#e1282d";
-      passwordMsg.textContent = "Current password is incorrect.";
-      return;
-    }
-    await updateDoc(doc(db, "users", session.id), { password: newPassword });
-    currentPasswordInput.value = "";
-    newPasswordInput.value = "";
-    passwordMsg.style.color = "limegreen";
-    passwordMsg.textContent = "Password updated!";
-  } catch (error) {
-    console.error("Error updating password:", error);
-    passwordMsg.style.color = "#e1282d";
-    passwordMsg.textContent = "Could not update password. Please try again.";
   }
 });
 
