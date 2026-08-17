@@ -216,7 +216,7 @@ input:focus { outline: none; border-color: #e1282d; }
 
 <main>
   <div class="authCard">
-    <h1 id="authHeading">Welcome Surfur!</h1><br>
+    <h1 id="authHeading">Welcome Surfer!</h1><br>
     
 
     <div class="authTabs">
@@ -424,7 +424,7 @@ signinBtn.addEventListener("click", async () => {
     });
 
     signinMsg.style.color = "limegreen";
-    signinMsg.textContent = "Signed in! Redirecting...";
+    signinMsg.textContent = "success";
     window.location.href = redirectTarget;
   } catch (error) {
     console.error("Error signing in:", error);
@@ -471,7 +471,7 @@ signupBtn.addEventListener("click", async () => {
 
   signupBtn.disabled = true;
   signupMsg.style.color = "#ccc";
-  signupMsg.textContent = "Creating account...";
+  signupMsg.textContent = "Creating";
 
   try {
     const newUser = {
@@ -516,7 +516,7 @@ signupBtn.addEventListener("click", async () => {
     });
 
     signupMsg.style.color = "limegreen";
-    signupMsg.textContent = "Account created! Redirecting...";
+    signupMsg.textContent = "Account created!";
     window.location.href = redirectTarget;
   } catch (error) {
     if (error.message === "USERNAME_TAKEN") {
