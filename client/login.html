@@ -742,7 +742,7 @@ document.getElementById("forgotLink").addEventListener("click", async (e) => {
   try {
     await sendPasswordResetEmail(auth, email);
     signinMsg.style.color = "limegreen";
-    signinMsg.textContent = "Password reset email sent.";
+    signinMsg.textContent = "Password reset email sent if account existed.";
   } catch (error) {
     console.error("Error sending reset email:", error);
     signinMsg.style.color = "#e1282d";
