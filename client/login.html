@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Sign In — Pysh Games</title>
+<title>Welcome to Pysh Index</title>
 <link rel="icon" type="image/jpeg" href="logo.jpg">
 
 <style>
@@ -131,7 +131,6 @@ input[type="email"] {
 input:focus { outline: none; border-color: #e1282d; }
 
 /* usernames are stored/lowercase only - reflect that visually as the user types */
-#legacyUsername,
 #newUsernameInput,
 #migrateUsername {
   text-transform: lowercase;
@@ -353,28 +352,7 @@ input:focus { outline: none; border-color: #e1282d; }
       <div class="authDivider">OR</div>
       <button class="guestBtn" id="guestBtn">Continue as Guest</button>
 
-      <div class="legacyLink">Had an account before? <a href="#" id="legacyToggle">Sign in with username</a></div>
-    </div>
-
-    <!-- STEP 2: legacy username/password sign in - preserved as-is for old accounts -->
-    <div class="authStep" id="legacyStep">
-      <h1>Welcome Back</h1>
-      <div class="authSubtitle">Sign in with your existing username</div>
-
-      <label for="legacyUsername">Username</label>
-      <input type="text" id="legacyUsername" placeholder="Your username" autocomplete="username">
-
-      <label for="legacyPassword">Password</label>
-      <div class="pwField">
-        <input type="password" id="legacyPassword" placeholder="Your password" autocomplete="current-password">
-        <button type="button" class="pwToggle" id="legacyPasswordToggle" aria-label="Show password"></button>
-      </div>
-
-      <button class="authBtn" id="legacySigninBtn">Sign In</button>
-      <div class="authMsg" id="legacyMsg"></div>
-
-      <div class="legacyLink"><a href="#" id="backToMainLink">&larr; Back</a></div>
-      <div class="legacyLink">Want to switch to Google or Email sign-in? <a href="#" id="migrateToggle">Migrate your account</a></div>
+      <div class="legacyLink">Had an account before? <a href="#" id="migrateToggle">Migrate your account</a></div>
     </div>
 
     <!-- STEP: verify identity of an old username/password account before migrating it -->
@@ -529,13 +507,12 @@ if (existingSession) {
 
 // ---- Step elements ----
 const mainStep = document.getElementById("mainStep");
-const legacyStep = document.getElementById("legacyStep");
 const usernameStep = document.getElementById("usernameStep");
 const migrateStep = document.getElementById("migrateStep");
 const migrateChooseStep = document.getElementById("migrateChooseStep");
 
 function showStep(step) {
-  [mainStep, legacyStep, usernameStep, migrateStep, migrateChooseStep].forEach(s => s.classList.remove("active"));
+  [mainStep, usernameStep, migrateStep, migrateChooseStep].forEach(s => s.classList.remove("active"));
   step.classList.add("active");
 }
 
@@ -574,7 +551,6 @@ function lowercaseAsYouType(input) {
     input.setSelectionRange(pos, pos);
   });
 }
-lowercaseAsYouType(document.getElementById("legacyUsername"));
 lowercaseAsYouType(document.getElementById("newUsernameInput"));
 lowercaseAsYouType(document.getElementById("migrateUsername"));
 
@@ -597,7 +573,6 @@ function wirePasswordToggle(inputId, toggleId) {
 wirePasswordToggle("signinPassword", "signinPasswordToggle");
 wirePasswordToggle("signupPassword", "signupPasswordToggle");
 wirePasswordToggle("signupConfirm", "signupConfirmToggle");
-wirePasswordToggle("legacyPassword", "legacyPasswordToggle");
 wirePasswordToggle("migratePassword", "migratePasswordToggle");
 wirePasswordToggle("migrateNewPassword", "migrateNewPasswordToggle");
 wirePasswordToggle("migrateConfirmPassword", "migrateConfirmPasswordToggle");
@@ -667,6 +642,12 @@ function friendlyAuthError(error, context) {
       return "An account with that email already exists. Try Log In instead.";
     case "auth/weak-password":
       return "Password is too weak. Use at least 6 characters.";
+    case "auth/unauthorized-domain":
+      return "This domain isn't authorized for Google sign-in yet. (Add it under Firebase Console \u2192 Authentication \u2192 Settings \u2192 Authorized domains.)";
+    case "auth/operation-not-allowed":
+      return "Google sign-in isn't enabled for this project yet. (Firebase Console \u2192 Authentication \u2192 Sign-in method \u2192 Google.)";
+    case "auth/popup-blocked":
+      return "Your browser blocked the sign-in popup. Please allow popups for this site and try again.";
     default:
       return "Something went wrong. Please try again.";
   }
@@ -731,6 +712,11 @@ signinBtn.addEventListener("click", async () => {
 });
 
 // ---- Forgot password ----
+// Before sending anything, check our own Firestore record for this email so
+// a Google-only account gets pointed at "Continue with Google" instead of a
+// password reset link it doesn't need (Firebase Auth will happily email a
+// reset link for a Google-only account too - clicking it just bolts a
+// password onto that account, which isn't what anyone here wants).
 document.getElementById("forgotLink").addEventListener("click", async (e) => {
   e.preventDefault();
   const email = signinEmail.value.trim();
@@ -739,10 +725,23 @@ document.getElementById("forgotLink").addEventListener("click", async (e) => {
     signinMsg.textContent = "Enter your email above first.";
     return;
   }
+
+  signinMsg.style.color = "#ccc";
+  signinMsg.textContent = "Please wait...";
+
   try {
+    const q = query(collection(db, "users"), where("email", "==", email.toLowerCase()));
+    const snapshot = await getDocs(q);
+
+    if (!snapshot.empty && snapshot.docs[0].data().authProvider === "google") {
+      signinMsg.style.color = "#e1282d";
+      signinMsg.textContent = "This account uses Google Sign-In and has no password to reset. Use \u201cContinue with Google\u201d instead.";
+      return;
+    }
+
     await sendPasswordResetEmail(auth, email);
     signinMsg.style.color = "limegreen";
-    signinMsg.textContent = "Password reset email sent if account existed.";
+    signinMsg.textContent = "If an account exists for that email, a reset link has been sent. Check your spam folder if it doesn't arrive in a few minutes.";
   } catch (error) {
     console.error("Error sending reset email:", error);
     signinMsg.style.color = "#e1282d";
@@ -801,90 +800,6 @@ signupBtn.addEventListener("click", async () => {
 });
 
 // =========================================================================
-// LEGACY SIGN IN - untouched logic for accounts created before Google/email
-// auth existed. These accounts only ever lived in Firestore (username +
-// password field, no Firebase Auth record) and are kept working exactly as
-// before rather than being deleted or forced to migrate.
-// =========================================================================
-const legacyToggle = document.getElementById("legacyToggle");
-const backToMainLink = document.getElementById("backToMainLink");
-const legacySigninBtn = document.getElementById("legacySigninBtn");
-const legacyUsername = document.getElementById("legacyUsername");
-const legacyPassword = document.getElementById("legacyPassword");
-const legacyMsg = document.getElementById("legacyMsg");
-
-legacyToggle.addEventListener("click", (e) => {
-  e.preventDefault();
-  legacyMsg.textContent = "";
-  showStep(legacyStep);
-});
-
-backToMainLink.addEventListener("click", (e) => {
-  e.preventDefault();
-  showStep(mainStep);
-});
-
-legacySigninBtn.addEventListener("click", async () => {
-  const username = normalizeUsername(legacyUsername.value);
-  const password = legacyPassword.value;
-
-  if (!username || !password) {
-    legacyMsg.style.color = "#e1282d";
-    legacyMsg.textContent = "Please enter your username and password.";
-    return;
-  }
-
-  legacySigninBtn.disabled = true;
-  legacyMsg.style.color = "#ccc";
-  legacyMsg.textContent = "Signing in...";
-
-  try {
-    // Usernames are always stored lowercase, so an exact match here is safe
-    // no matter how the person capitalized it while typing.
-    const q = query(collection(db, "users"), where("username", "==", username));
-    const snapshot = await getDocs(q);
-
-    if (snapshot.empty) {
-      legacyMsg.style.color = "#e1282d";
-      legacyMsg.textContent = "No account found with that username.";
-      return;
-    }
-
-    const userDoc = snapshot.docs[0];
-    const userData = userDoc.data();
-
-    if (userData.password !== password) {
-      legacyMsg.style.color = "#e1282d";
-      legacyMsg.textContent = "Incorrect password.";
-      return;
-    }
-
-    setSession({
-      id: userDoc.id,
-      username: userData.username,
-      role: userData.role || "user",
-      photoURL: userData.photoURL || null
-    });
-
-    legacyMsg.style.color = "limegreen";
-    legacyMsg.textContent = "success";
-    window.location.href = redirectTarget;
-  } catch (error) {
-    console.error("Error signing in:", error);
-    legacyMsg.style.color = "#e1282d";
-    legacyMsg.textContent = "Something went wrong. Please try again.";
-  } finally {
-    legacySigninBtn.disabled = false;
-  }
-});
-
-[legacyUsername, legacyPassword].forEach(input => {
-  input.addEventListener("keydown", (e) => {
-    if (e.key === "Enter") legacySigninBtn.click();
-  });
-});
-
-// =========================================================================
 // MIGRATE ACCOUNT - lets an old username/password holder convert to real
 // Firebase Auth (Google or Email/Password) while keeping the SAME Firestore
 // user doc ID, so every review/comment/reply they've ever posted (which
@@ -936,13 +851,13 @@ migrateToggle.addEventListener("click", (e) => {
 
 migrateBackLink.addEventListener("click", (e) => {
   e.preventDefault();
-  showStep(legacyStep);
+  showStep(mainStep);
 });
 
 migrateChooseBackLink.addEventListener("click", (e) => {
   e.preventDefault();
   resetMigrateState();
-  showStep(legacyStep);
+  showStep(mainStep);
 });
 
 migrateVerifyBtn.addEventListener("click", async () => {
