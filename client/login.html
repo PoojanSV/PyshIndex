@@ -131,8 +131,7 @@ input[type="email"] {
 input:focus { outline: none; border-color: #e1282d; }
 
 /* usernames are stored/lowercase only - reflect that visually as the user types */
-#newUsernameInput,
-#migrateUsername {
+#newUsernameInput {
   text-transform: lowercase;
 }
 
@@ -351,66 +350,6 @@ input:focus { outline: none; border-color: #e1282d; }
 
       <div class="authDivider">OR</div>
       <button class="guestBtn" id="guestBtn">Continue as Guest</button>
-
-      <div class="legacyLink">Had an account before? <a href="#" id="migrateToggle">Migrate your account</a></div>
-    </div>
-
-    <!-- STEP: verify identity of an old username/password account before migrating it -->
-    <div class="authStep" id="migrateStep">
-      <h1>Migrate Your Account</h1>
-      <div class="authSubtitle">Enter your existing username and password to continue</div>
-
-      <label for="migrateUsername">Username</label>
-      <input type="text" id="migrateUsername" placeholder="Your username" autocomplete="username">
-
-      <label for="migratePassword">Password</label>
-      <div class="pwField">
-        <input type="password" id="migratePassword" placeholder="Your password" autocomplete="current-password">
-        <button type="button" class="pwToggle" id="migratePasswordToggle" aria-label="Show password"></button>
-      </div>
-
-      <button class="authBtn" id="migrateVerifyBtn">Verify</button>
-      <div class="authMsg" id="migrateMsg"></div>
-
-      <div class="legacyLink"><a href="#" id="migrateBackLink">&larr; Back</a></div>
-    </div>
-
-    <!-- STEP: pick Google or Email/Password to finish the migration -->
-    <div class="authStep" id="migrateChooseStep">
-      <h1>Almost done!</h1>
-      <div class="authSubtitle" id="migrateChooseSubtitle">Choose how you'll sign in from now on</div>
-
-      <button type="button" class="googleBtn" id="migrateGoogleBtn">
-        <svg viewBox="0 0 48 48">
-          <path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.6 29.3 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.1 8 3l5.7-5.7C34.5 6.1 29.5 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.7-.4-3.5z"/>
-          <path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 15.9 19 13 24 13c3.1 0 5.8 1.1 8 3l5.7-5.7C34.5 6.1 29.5 4 24 4c-7.7 0-14.4 4.4-17.7 10.7z"/>
-          <path fill="#4CAF50" d="M24 44c5.3 0 10.1-2 13.7-5.4l-6.3-5.3C29.4 35.1 26.8 36 24 36c-5.3 0-9.7-3.4-11.3-8.1l-6.6 5.1C9.5 39.6 16.2 44 24 44z"/>
-          <path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.3-2.3 4.3-4.3 5.7l6.3 5.3C39.9 37 44 31.5 44 24c0-1.3-.1-2.7-.4-3.5z"/>
-        </svg>
-        Continue with Google
-      </button>
-
-      <div class="authDivider">OR</div>
-
-      <label for="migrateEmail">Email</label>
-      <input type="email" id="migrateEmail" placeholder="you@example.com" autocomplete="email">
-
-      <label for="migrateNewPassword">New Password</label>
-      <div class="pwField">
-        <input type="password" id="migrateNewPassword" placeholder="At least 6 characters" autocomplete="new-password">
-        <button type="button" class="pwToggle" id="migrateNewPasswordToggle" aria-label="Show password"></button>
-      </div>
-
-      <label for="migrateConfirmPassword">Confirm Password</label>
-      <div class="pwField">
-        <input type="password" id="migrateConfirmPassword" placeholder="Retype your password" autocomplete="new-password">
-        <button type="button" class="pwToggle" id="migrateConfirmPasswordToggle" aria-label="Show password"></button>
-      </div>
-
-      <button class="authBtn" id="migrateEmailBtn">Set Email &amp; Password</button>
-      <div class="authMsg" id="migrateChooseMsg"></div>
-
-      <div class="legacyLink"><a href="#" id="migrateChooseBackLink">&larr; Back</a></div>
     </div>
 
     <!-- STEP 3: shown once, right after a brand-new Google/email sign-in -->
@@ -444,8 +383,7 @@ import {
   query,
   where,
   runTransaction,
-  updateDoc,
-  deleteField
+  updateDoc
 } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 import {
   getAuth,
@@ -508,11 +446,9 @@ if (existingSession) {
 // ---- Step elements ----
 const mainStep = document.getElementById("mainStep");
 const usernameStep = document.getElementById("usernameStep");
-const migrateStep = document.getElementById("migrateStep");
-const migrateChooseStep = document.getElementById("migrateChooseStep");
 
 function showStep(step) {
-  [mainStep, usernameStep, migrateStep, migrateChooseStep].forEach(s => s.classList.remove("active"));
+  [mainStep, usernameStep].forEach(s => s.classList.remove("active"));
   step.classList.add("active");
 }
 
@@ -552,7 +488,6 @@ function lowercaseAsYouType(input) {
   });
 }
 lowercaseAsYouType(document.getElementById("newUsernameInput"));
-lowercaseAsYouType(document.getElementById("migrateUsername"));
 
 // ---- Password show/hide toggles ----
 const EYE_ICON = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.94 10.94 0 0 1 12 20c-7 0-11-8-11-8a21.3 21.3 0 0 1 5.06-6.06M9.9 4.24A10.94 10.94 0 0 1 12 4c7 0 11 8 11 8a21.32 21.32 0 0 1-3.22 4.39M14.12 14.12a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>`;
@@ -573,9 +508,6 @@ function wirePasswordToggle(inputId, toggleId) {
 wirePasswordToggle("signinPassword", "signinPasswordToggle");
 wirePasswordToggle("signupPassword", "signupPasswordToggle");
 wirePasswordToggle("signupConfirm", "signupConfirmToggle");
-wirePasswordToggle("migratePassword", "migratePasswordToggle");
-wirePasswordToggle("migrateNewPassword", "migrateNewPasswordToggle");
-wirePasswordToggle("migrateConfirmPassword", "migrateConfirmPasswordToggle");
 
 // =========================================================================
 // SHARED: after ANY successful Firebase Auth sign-in (Google or email/pw),
@@ -796,241 +728,6 @@ signupBtn.addEventListener("click", async () => {
 [signupEmail, signupPassword, signupConfirm].forEach(input => {
   input.addEventListener("keydown", (e) => {
     if (e.key === "Enter") signupBtn.click();
-  });
-});
-
-// =========================================================================
-// MIGRATE ACCOUNT - lets an old username/password holder convert to real
-// Firebase Auth (Google or Email/Password) while keeping the SAME Firestore
-// user doc ID, so every review/comment/reply they've ever posted (which
-// reference that doc ID as userId) still points at the right account.
-// Nothing is deleted; the old "password" field is cleared once a real
-// Firebase Auth credential is attached, since it's no longer needed.
-// =========================================================================
-const migrateToggle = document.getElementById("migrateToggle");
-const migrateBackLink = document.getElementById("migrateBackLink");
-const migrateVerifyBtn = document.getElementById("migrateVerifyBtn");
-const migrateUsername = document.getElementById("migrateUsername");
-const migratePassword = document.getElementById("migratePassword");
-const migrateMsg = document.getElementById("migrateMsg");
-
-const migrateChooseBackLink = document.getElementById("migrateChooseBackLink");
-const migrateChooseSubtitle = document.getElementById("migrateChooseSubtitle");
-const migrateChooseMsg = document.getElementById("migrateChooseMsg");
-const migrateGoogleBtn = document.getElementById("migrateGoogleBtn");
-const migrateEmail = document.getElementById("migrateEmail");
-const migrateNewPassword = document.getElementById("migrateNewPassword");
-const migrateConfirmPassword = document.getElementById("migrateConfirmPassword");
-const migrateEmailBtn = document.getElementById("migrateEmailBtn");
-
-// Identity of the legacy account being migrated, captured once verified
-let pendingMigrateUserId = null;
-let pendingMigrateUsername = null;
-let pendingMigrateRole = null;
-let pendingMigratePhotoURL = null;
-
-function resetMigrateState() {
-  pendingMigrateUserId = null;
-  pendingMigrateUsername = null;
-  pendingMigrateRole = null;
-  pendingMigratePhotoURL = null;
-  migrateUsername.value = "";
-  migratePassword.value = "";
-  migrateMsg.textContent = "";
-  migrateEmail.value = "";
-  migrateNewPassword.value = "";
-  migrateConfirmPassword.value = "";
-  migrateChooseMsg.textContent = "";
-}
-
-migrateToggle.addEventListener("click", (e) => {
-  e.preventDefault();
-  resetMigrateState();
-  showStep(migrateStep);
-});
-
-migrateBackLink.addEventListener("click", (e) => {
-  e.preventDefault();
-  showStep(mainStep);
-});
-
-migrateChooseBackLink.addEventListener("click", (e) => {
-  e.preventDefault();
-  resetMigrateState();
-  showStep(mainStep);
-});
-
-migrateVerifyBtn.addEventListener("click", async () => {
-  const username = normalizeUsername(migrateUsername.value);
-  const password = migratePassword.value;
-
-  if (!username || !password) {
-    migrateMsg.style.color = "#e1282d";
-    migrateMsg.textContent = "Please enter your username and password.";
-    return;
-  }
-
-  migrateVerifyBtn.disabled = true;
-  migrateMsg.style.color = "#ccc";
-  migrateMsg.textContent = "Verifying...";
-
-  try {
-    const q = query(collection(db, "users"), where("username", "==", username));
-    const snapshot = await getDocs(q);
-
-    if (snapshot.empty) {
-      migrateMsg.style.color = "#e1282d";
-      migrateMsg.textContent = "No account found with that username.";
-      return;
-    }
-
-    const userDoc = snapshot.docs[0];
-    const userData = userDoc.data();
-
-    if (userData.authUID) {
-      migrateMsg.style.color = "#e1282d";
-      migrateMsg.textContent = "This account already uses Google or Email sign-in. Just sign in normally.";
-      return;
-    }
-
-    if (userData.password !== password) {
-      migrateMsg.style.color = "#e1282d";
-      migrateMsg.textContent = "Incorrect password.";
-      return;
-    }
-
-    pendingMigrateUserId = userDoc.id;
-    pendingMigrateUsername = userData.username;
-    pendingMigrateRole = userData.role || "user";
-    pendingMigratePhotoURL = userData.photoURL || null;
-
-    migrateChooseSubtitle.textContent = `Choose how "${userData.username}" will sign in from now on`;
-    migrateChooseMsg.textContent = "";
-    showStep(migrateChooseStep);
-  } catch (error) {
-    console.error("Error verifying account for migration:", error);
-    migrateMsg.style.color = "#e1282d";
-    migrateMsg.textContent = "Something went wrong. Please try again.";
-  } finally {
-    migrateVerifyBtn.disabled = false;
-  }
-});
-
-[migrateUsername, migratePassword].forEach(input => {
-  input.addEventListener("keydown", (e) => {
-    if (e.key === "Enter") migrateVerifyBtn.click();
-  });
-});
-
-// Attaches a freshly-created Firebase Auth credential to the existing
-// legacy user doc (same doc ID) instead of creating a new profile.
-async function completeMigration({ authUID, authProvider, email, googlePhoto }) {
-  const userRef = doc(db, "users", pendingMigrateUserId);
-
-  const updates = {
-    authUID,
-    authProvider,
-    email: email || null,
-    password: deleteField() // no longer needed once real auth is attached
-  };
-  // Only fill in a photo from Google if this account doesn't already have one
-  if (!pendingMigratePhotoURL && googlePhoto) {
-    updates.photoURL = googlePhoto;
-  }
-
-  await updateDoc(userRef, updates);
-
-  setSession({
-    id: pendingMigrateUserId,
-    username: pendingMigrateUsername,
-    role: pendingMigrateRole,
-    photoURL: pendingMigratePhotoURL || googlePhoto || null
-  });
-
-  window.location.href = redirectTarget;
-}
-
-migrateGoogleBtn.addEventListener("click", async () => {
-  if (!pendingMigrateUserId) return;
-
-  migrateGoogleBtn.disabled = true;
-  migrateChooseMsg.style.color = "#e1282d";
-  migrateChooseMsg.textContent = "";
-
-  try {
-    const result = await signInWithPopup(auth, googleProvider);
-    const fbUser = result.user;
-
-    // Make sure this Google account isn't already tied to a different Pysh account
-    const dupQ = query(collection(db, "users"), where("authUID", "==", fbUser.uid));
-    const dupSnap = await getDocs(dupQ);
-    const linkedElsewhere = dupSnap.docs.some(d => d.id !== pendingMigrateUserId);
-    if (linkedElsewhere) {
-      migrateChooseMsg.textContent = "That Google account is already linked to a different Pysh account.";
-      return;
-    }
-
-    await completeMigration({
-      authUID: fbUser.uid,
-      authProvider: "google",
-      email: fbUser.email || null,
-      googlePhoto: fbUser.photoURL || null
-    });
-  } catch (error) {
-    console.error("Error migrating with Google:", error);
-    migrateChooseMsg.textContent = friendlyAuthError(error, "signin");
-  } finally {
-    migrateGoogleBtn.disabled = false;
-  }
-});
-
-migrateEmailBtn.addEventListener("click", async () => {
-  if (!pendingMigrateUserId) return;
-
-  const email = migrateEmail.value.trim();
-  const password = migrateNewPassword.value;
-  const confirm = migrateConfirmPassword.value;
-
-  if (!email || !password || !confirm) {
-    migrateChooseMsg.style.color = "#e1282d";
-    migrateChooseMsg.textContent = "Please fill in every field.";
-    return;
-  }
-  if (password.length < 6) {
-    migrateChooseMsg.style.color = "#e1282d";
-    migrateChooseMsg.textContent = "Password must be at least 6 characters.";
-    return;
-  }
-  if (password !== confirm) {
-    migrateChooseMsg.style.color = "#e1282d";
-    migrateChooseMsg.textContent = "Passwords don't match.";
-    return;
-  }
-
-  migrateEmailBtn.disabled = true;
-  migrateChooseMsg.style.color = "#ccc";
-  migrateChooseMsg.textContent = "Setting up...";
-
-  try {
-    const cred = await createUserWithEmailAndPassword(auth, email, password);
-    await completeMigration({
-      authUID: cred.user.uid,
-      authProvider: "password",
-      email,
-      googlePhoto: null
-    });
-  } catch (error) {
-    console.error("Error migrating with email/password:", error);
-    migrateChooseMsg.style.color = "#e1282d";
-    migrateChooseMsg.textContent = friendlyAuthError(error, "signup");
-  } finally {
-    migrateEmailBtn.disabled = false;
-  }
-});
-
-[migrateEmail, migrateNewPassword, migrateConfirmPassword].forEach(input => {
-  input.addEventListener("keydown", (e) => {
-    if (e.key === "Enter") migrateEmailBtn.click();
   });
 });
 
