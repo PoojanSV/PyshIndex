@@ -1,0 +1,864 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Welcome to Pysh Index</title>
+<link rel="icon" type="image/jpeg" href="logo.jpg">
+
+<style>
+body {
+  background: black;
+  font-family: Arial, sans-serif;
+  margin: 0;
+  color: white;
+  min-height: 100vh;
+}
+
+header {
+  background-color: #111;
+  padding: 15px 50px;
+  text-align: center;
+}
+
+header a { display: inline-block; }
+header img { width: 130px; height: auto; }
+
+hr { background-color: #e1282d; height: 5px; border: solid #e1282d; margin: 0; }
+
+main {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 60px 20px;
+}
+
+.authCard {
+  background: #111;
+  border: 3px solid #e1282d;
+  border-radius: 25px;
+  padding: 35px 40px;
+  width: 100%;
+  max-width: 400px;
+}
+
+.authCard h1 {
+  font-size: 30px;
+  text-align: center;
+  margin: 0 0 5px;
+}
+
+.authSubtitle {
+  text-align: center;
+  color: #888;
+  font-size: 14px;
+  margin-bottom: 25px;
+}
+
+/* STEPS (main sign in/up, legacy username login, post-auth username setup) */
+.authStep { display: none; }
+.authStep.active { display: block; }
+
+/* GOOGLE BUTTON */
+.googleBtn {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background: white;
+  color: #222;
+  border: none;
+  padding: 12px;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.googleBtn:hover { background: #eee; }
+.googleBtn:disabled { opacity: 0.6; cursor: not-allowed; }
+.googleBtn svg { width: 20px; height: 20px; flex-shrink: 0; }
+
+/* MODE TABS (Sign In / Sign Up) */
+.authTabs {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 25px;
+}
+
+.authTab {
+  flex: 1;
+  text-align: center;
+  padding: 10px;
+  border: 2px solid #e1282d;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: bold;
+  color: #ccc;
+  transition: all 0.2s ease;
+}
+
+.authTab.active {
+  background: #e1282d;
+  color: white;
+}
+
+.authTab:hover:not(.active) { background: rgba(225,40,45,0.15); }
+
+label {
+  display: block;
+  margin: 14px 0 6px;
+  color: #ccc;
+  font-size: 14px;
+}
+
+input[type="text"],
+input[type="password"],
+input[type="email"] {
+  width: 100%;
+  padding: 11px 13px;
+  border-radius: 8px;
+  border: 1px solid #444;
+  background: #000;
+  color: white;
+  font-family: inherit;
+  font-size: 15px;
+  box-sizing: border-box;
+}
+
+input:focus { outline: none; border-color: #e1282d; }
+
+/* usernames are stored/lowercase only - reflect that visually as the user types */
+#newUsernameInput {
+  text-transform: lowercase;
+}
+
+/* Password field + show/hide toggle */
+.pwField {
+  position: relative;
+}
+
+.pwField input[type="password"],
+.pwField input[type="text"] {
+  padding-right: 44px;
+}
+
+.pwToggle {
+  position: absolute;
+  top: 50%;
+  right: 6px;
+  transform: translateY(-50%);
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  border-radius: 6px;
+  color: #888;
+  cursor: pointer;
+  padding: 0;
+}
+
+.pwToggle:hover { color: #e1282d; }
+.pwToggle svg { width: 20px; height: 20px; pointer-events: none; }
+
+.authBtn {
+  width: 100%;
+  margin-top: 22px;
+  background: #e1282d;
+  color: white;
+  border: none;
+  padding: 13px;
+  border-radius: 10px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.authBtn:hover { background: white; color: #e1282d; }
+.authBtn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+.authMsg {
+  margin-top: 14px;
+  font-size: 14px;
+  text-align: center;
+  min-height: 18px;
+}
+
+.authDivider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 20px 0;
+  color: #555;
+  font-size: 12px;
+}
+.authDivider::before, .authDivider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: #333;
+}
+
+.guestBtn {
+  width: 100%;
+  background: transparent;
+  color: #ccc;
+  border: 2px solid #444;
+  padding: 12px;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.guestBtn:hover { border-color: #e1282d; color: white; }
+
+.formSection { display: none; }
+.formSection.active { display: block; }
+
+.forgotWrap {
+  text-align: right;
+  margin-top: 8px;
+  font-size: 12px;
+}
+.forgotWrap a { color: #888; text-decoration: none; }
+.forgotWrap a:hover { color: #e1282d; text-decoration: underline; }
+
+.legacyLink {
+  text-align: center;
+  margin-top: 18px;
+  font-size: 13px;
+  color: #888;
+}
+.legacyLink a { color: #e1282d; text-decoration: none; font-weight: bold; }
+.legacyLink a:hover { text-decoration: underline; }
+
+/* POST-AUTH PROFILE SETUP STEP */
+.avatarPickWrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+.avatarPreview {
+  width: 84px;
+  height: 84px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 3px solid #e1282d;
+  background: #000;
+}
+.avatarUploadBtn {
+  display: inline-block;
+  padding: 8px 18px;
+  border: 2px solid #444;
+  border-radius: 8px;
+  color: #ccc;
+  font-size: 13px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+.avatarUploadBtn:hover { border-color: #e1282d; color: white; }
+
+@media (max-width: 500px) {
+  header { padding: 15px 20px; }
+  header img { width: 90px; }
+  .authCard { padding: 25px 22px; border-radius: 18px; }
+  .authCard h1 { font-size: 24px; }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <a href="index.html"><img src="logo.png" alt="Pysh Games logo"></a>
+</header>
+<hr>
+
+<main>
+  <div class="authCard">
+
+    <!-- STEP 1: Google / Email sign in & sign up (primary flow) -->
+    <div class="authStep active" id="mainStep">
+      <h1 id="authHeading">Welcome Surfer!</h1>
+      <div class="authSubtitle" id="authSubtitle">Sign in to rate and review games</div>
+
+      <button type="button" class="googleBtn" id="googleBtn">
+        <svg viewBox="0 0 48 48">
+          <path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.6 29.3 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.1 8 3l5.7-5.7C34.5 6.1 29.5 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.7-.4-3.5z"/>
+          <path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 15.9 19 13 24 13c3.1 0 5.8 1.1 8 3l5.7-5.7C34.5 6.1 29.5 4 24 4c-7.7 0-14.4 4.4-17.7 10.7z"/>
+          <path fill="#4CAF50" d="M24 44c5.3 0 10.1-2 13.7-5.4l-6.3-5.3C29.4 35.1 26.8 36 24 36c-5.3 0-9.7-3.4-11.3-8.1l-6.6 5.1C9.5 39.6 16.2 44 24 44z"/>
+          <path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.3-2.3 4.3-4.3 5.7l6.3 5.3C39.9 37 44 31.5 44 24c0-1.3-.1-2.7-.4-3.5z"/>
+        </svg>
+        Continue with Google
+      </button>
+      <div class="authMsg" id="googleMsg"></div>
+
+      <div class="authDivider">OR</div>
+
+      <div class="authTabs">
+        <div class="authTab active" data-mode="signin">Log In</div>
+        <div class="authTab" data-mode="signup">Sign Up</div>
+      </div>
+
+      <!-- SIGN IN (Firebase email/password) -->
+      <div class="formSection active" id="signinSection">
+        <label for="signinEmail">Email</label>
+        <input type="email" id="signinEmail" placeholder="you@example.com" autocomplete="email">
+
+        <label for="signinPassword">Password</label>
+        <div class="pwField">
+          <input type="password" id="signinPassword" placeholder="Your password" autocomplete="current-password">
+          <button type="button" class="pwToggle" id="signinPasswordToggle" aria-label="Show password"></button>
+        </div>
+        <div class="forgotWrap"><a href="#" id="forgotLink">Forgot password?</a></div>
+
+        <button class="authBtn" id="signinBtn">Sign In</button>
+        <div class="authMsg" id="signinMsg"></div>
+      </div>
+
+      <!-- SIGN UP (Firebase email/password) -->
+      <div class="formSection" id="signupSection">
+        <label for="signupEmail">Email</label>
+        <input type="email" id="signupEmail" placeholder="you@example.com" autocomplete="email">
+
+        <label for="signupPassword">Password</label>
+        <div class="pwField">
+          <input type="password" id="signupPassword" placeholder="At least 6 characters" autocomplete="new-password">
+          <button type="button" class="pwToggle" id="signupPasswordToggle" aria-label="Show password"></button>
+        </div>
+
+        <label for="signupConfirm">Confirm Password</label>
+        <div class="pwField">
+          <input type="password" id="signupConfirm" placeholder="Retype your password" autocomplete="new-password">
+          <button type="button" class="pwToggle" id="signupConfirmToggle" aria-label="Show password"></button>
+        </div>
+
+        <button class="authBtn" id="signupBtn">Create Account</button>
+        <div class="authMsg" id="signupMsg"></div>
+      </div>
+
+      <div class="authDivider">OR</div>
+      <button class="guestBtn" id="guestBtn">Continue as Guest</button>
+    </div>
+
+    <!-- STEP 3: shown once, right after a brand-new Google/email sign-in -->
+    <div class="authStep" id="usernameStep">
+      <h1>Almost there!</h1>
+      <div class="authSubtitle">Set up your profile to finish signing in</div>
+
+      <div class="avatarPickWrap">
+        <img id="newAvatarPreview" class="avatarPreview" src="" alt="Profile preview">
+        <label class="avatarUploadBtn" for="newAvatarInput">Choose Photo (optional)</label>
+        <input type="file" id="newAvatarInput" accept="image/*" style="display:none;">
+      </div>
+
+      <label for="newUsernameInput">Username</label>
+      <input type="text" id="newUsernameInput" placeholder="pick-a-username" autocapitalize="off" autocorrect="off" spellcheck="false">
+
+      <button class="authBtn" id="finishSetupBtn">Continue</button>
+      <div class="authMsg" id="setupMsg"></div>
+    </div>
+
+  </div>
+</main>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import {
+  getFirestore,
+  collection,
+  doc,
+  getDocs,
+  query,
+  where,
+  runTransaction,
+  updateDoc
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import {
+  getAuth,
+  GoogleAuthProvider,
+  signInWithPopup,
+  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
+  sendPasswordResetEmail
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBoylOskSQPe1LiDehqp1gmSXfzzNNtRmY",
+  authDomain: "pysh-index.firebaseapp.com",
+  projectId: "pysh-index",
+  appId: "1:263831699229:web:f514a3d8388868f6c9ebf4"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const auth = getAuth(app);
+const googleProvider = new GoogleAuthProvider();
+
+// Cloudinary (same account used for profile photos site-wide)
+const CLOUD_NAME = "dkwmnfnjf";
+const UPLOAD_PRESET = "yugwf5bd";
+
+// Simple default avatar (grey circle silhouette) - matches index.html
+const DEFAULT_AVATAR = "data:image/svg+xml;utf8," + encodeURIComponent(
+  '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" fill="#333"/><circle cx="50" cy="38" r="18" fill="#888"/><circle cx="50" cy="95" r="32" fill="#888"/></svg>'
+);
+
+// ---- Auth session helpers (shared pattern across index.html, login.html, admin.html) ----
+const AUTH_KEY = "pyshAuthUser";
+function getSession() {
+  try {
+    return JSON.parse(localStorage.getItem(AUTH_KEY));
+  } catch {
+    return null;
+  }
+}
+function setSession(session) {
+  localStorage.setItem(AUTH_KEY, JSON.stringify(session));
+}
+
+// Normalize every username the same way, everywhere: trimmed, lowercase only.
+function normalizeUsername(raw) {
+  return raw.trim().toLowerCase();
+}
+
+// Where to go after a successful sign in / guest continue
+const params = new URLSearchParams(window.location.search);
+const redirectTarget = params.get("redirect") || "index.html";
+
+// Already signed in? Skip straight through.
+const existingSession = getSession();
+if (existingSession) {
+  window.location.href = redirectTarget;
+}
+
+// ---- Step elements ----
+const mainStep = document.getElementById("mainStep");
+const usernameStep = document.getElementById("usernameStep");
+
+function showStep(step) {
+  [mainStep, usernameStep].forEach(s => s.classList.remove("active"));
+  step.classList.add("active");
+}
+
+// ---- Tab switching (Log In / Sign Up within the main step) ----
+const tabs = document.querySelectorAll(".authTab");
+const signinSection = document.getElementById("signinSection");
+const signupSection = document.getElementById("signupSection");
+const authHeading = document.getElementById("authHeading");
+const authSubtitle = document.getElementById("authSubtitle");
+
+tabs.forEach(tab => {
+  tab.addEventListener("click", () => {
+    tabs.forEach(t => t.classList.remove("active"));
+    tab.classList.add("active");
+    const mode = tab.dataset.mode;
+    if (mode === "signin") {
+      signinSection.classList.add("active");
+      signupSection.classList.remove("active");
+      authHeading.textContent = "Welcome Surfer!";
+      authSubtitle.textContent = "Sign in to rate and review games";
+    } else {
+      signupSection.classList.add("active");
+      signinSection.classList.remove("active");
+      authHeading.textContent = "Become a Surfer!";
+      authSubtitle.textContent = "Join the community and start rating games";
+    }
+  });
+});
+
+// Force username fields to lowercase as the person types, so what they see
+// always matches what will actually be checked/stored.
+function lowercaseAsYouType(input) {
+  input.addEventListener("input", () => {
+    const pos = input.selectionStart;
+    input.value = input.value.toLowerCase();
+    input.setSelectionRange(pos, pos);
+  });
+}
+lowercaseAsYouType(document.getElementById("newUsernameInput"));
+
+// ---- Password show/hide toggles ----
+const EYE_ICON = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.94 10.94 0 0 1 12 20c-7 0-11-8-11-8a21.3 21.3 0 0 1 5.06-6.06M9.9 4.24A10.94 10.94 0 0 1 12 4c7 0 11 8 11 8a21.32 21.32 0 0 1-3.22 4.39M14.12 14.12a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>`;
+const EYE_OFF_ICON = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>`;
+
+function wirePasswordToggle(inputId, toggleId) {
+  const input = document.getElementById(inputId);
+  const toggle = document.getElementById(toggleId);
+  toggle.innerHTML = EYE_ICON;
+  toggle.addEventListener("click", () => {
+    const isHidden = input.type === "password";
+    input.type = isHidden ? "text" : "password";
+    toggle.innerHTML = isHidden ? EYE_OFF_ICON : EYE_ICON;
+    toggle.setAttribute("aria-label", isHidden ? "Hide password" : "Show password");
+  });
+}
+
+wirePasswordToggle("signinPassword", "signinPasswordToggle");
+wirePasswordToggle("signupPassword", "signupPasswordToggle");
+wirePasswordToggle("signupConfirm", "signupConfirmToggle");
+
+// =========================================================================
+// SHARED: after ANY successful Firebase Auth sign-in (Google or email/pw),
+// find the matching Firestore profile by authUID. If one exists, log
+// straight in. If not, this is that person's first time through the new
+// auth system - send them to the username/photo setup step.
+// =========================================================================
+let pendingFbUser = null;
+let pendingPhotoURL = null;
+
+async function handleFirebaseUser(fbUser) {
+  const q = query(collection(db, "users"), where("authUID", "==", fbUser.uid));
+  const snapshot = await getDocs(q);
+
+  if (!snapshot.empty) {
+    const userDoc = snapshot.docs[0];
+    const userData = userDoc.data();
+    setSession({
+      id: userDoc.id,
+      username: userData.username,
+      role: userData.role || "user",
+      photoURL: userData.photoURL || null
+    });
+    window.location.href = redirectTarget;
+    return;
+  }
+
+  // Brand new account - collect a username (and optional photo) before we
+  // create their profile.
+  pendingFbUser = fbUser;
+  pendingPhotoURL = fbUser.photoURL || null;
+
+  const newAvatarPreview = document.getElementById("newAvatarPreview");
+  const newUsernameInput = document.getElementById("newUsernameInput");
+  const setupMsg = document.getElementById("setupMsg");
+
+  newAvatarPreview.src = pendingPhotoURL || DEFAULT_AVATAR;
+  setupMsg.textContent = "";
+
+  const suggestion = (fbUser.displayName || (fbUser.email ? fbUser.email.split("@")[0] : "surfer"))
+    .toLowerCase()
+    .replace(/[^a-z0-9_]/g, "")
+    .slice(0, 20) || "surfer";
+  newUsernameInput.value = suggestion;
+
+  showStep(usernameStep);
+}
+
+function friendlyAuthError(error, context) {
+  switch (error.code) {
+    case "auth/invalid-email":
+      return "Please enter a valid email address.";
+    case "auth/too-many-requests":
+      return "Too many attempts. Please try again later.";
+    case "auth/popup-closed-by-user":
+    case "auth/cancelled-popup-request":
+      return ""; // person just closed the popup - no need to scold them
+    case "auth/user-not-found":
+      return context === "signin" ? "No account found with that email. Try Sign Up instead." : "Something went wrong. Please try again.";
+    case "auth/wrong-password":
+    case "auth/invalid-credential":
+      return "Incorrect email or password.";
+    case "auth/email-already-in-use":
+      return "An account with that email already exists. Try Log In instead.";
+    case "auth/weak-password":
+      return "Password is too weak. Use at least 6 characters.";
+    case "auth/unauthorized-domain":
+      return "This domain isn't authorized for Google sign-in yet. (Add it under Firebase Console \u2192 Authentication \u2192 Settings \u2192 Authorized domains.)";
+    case "auth/operation-not-allowed":
+      return "Google sign-in isn't enabled for this project yet. (Firebase Console \u2192 Authentication \u2192 Sign-in method \u2192 Google.)";
+    case "auth/popup-blocked":
+      return "Your browser blocked the sign-in popup. Please allow popups for this site and try again.";
+    default:
+      return "Something went wrong. Please try again.";
+  }
+}
+
+// ---- Continue with Google ----
+const googleBtn = document.getElementById("googleBtn");
+const googleMsg = document.getElementById("googleMsg");
+
+googleBtn.addEventListener("click", async () => {
+  googleBtn.disabled = true;
+  googleMsg.style.color = "#e1282d";
+  googleMsg.textContent = "";
+
+  try {
+    const result = await signInWithPopup(auth, googleProvider);
+    await handleFirebaseUser(result.user);
+  } catch (error) {
+    console.error("Error signing in with Google:", error);
+    googleMsg.textContent = friendlyAuthError(error, "signin");
+  } finally {
+    googleBtn.disabled = false;
+  }
+});
+
+// ---- Sign In (Firebase email/password) ----
+const signinBtn = document.getElementById("signinBtn");
+const signinEmail = document.getElementById("signinEmail");
+const signinPassword = document.getElementById("signinPassword");
+const signinMsg = document.getElementById("signinMsg");
+
+signinBtn.addEventListener("click", async () => {
+  const email = signinEmail.value.trim();
+  const password = signinPassword.value;
+
+  if (!email || !password) {
+    signinMsg.style.color = "#e1282d";
+    signinMsg.textContent = "Please enter your email and password.";
+    return;
+  }
+
+  signinBtn.disabled = true;
+  signinMsg.style.color = "#ccc";
+  signinMsg.textContent = "Signing in...";
+
+  try {
+    const cred = await signInWithEmailAndPassword(auth, email, password);
+    await handleFirebaseUser(cred.user);
+  } catch (error) {
+    console.error("Error signing in:", error);
+    signinMsg.style.color = "#e1282d";
+    signinMsg.textContent = friendlyAuthError(error, "signin");
+  } finally {
+    signinBtn.disabled = false;
+  }
+});
+
+[signinEmail, signinPassword].forEach(input => {
+  input.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") signinBtn.click();
+  });
+});
+
+// ---- Forgot password ----
+// Before sending anything, check our own Firestore record for this email so
+// a Google-only account gets pointed at "Continue with Google" instead of a
+// password reset link it doesn't need (Firebase Auth will happily email a
+// reset link for a Google-only account too - clicking it just bolts a
+// password onto that account, which isn't what anyone here wants).
+document.getElementById("forgotLink").addEventListener("click", async (e) => {
+  e.preventDefault();
+  const email = signinEmail.value.trim();
+  if (!email) {
+    signinMsg.style.color = "#e1282d";
+    signinMsg.textContent = "Enter your email above first.";
+    return;
+  }
+
+  signinMsg.style.color = "#ccc";
+  signinMsg.textContent = "Please wait...";
+
+  try {
+    const q = query(collection(db, "users"), where("email", "==", email.toLowerCase()));
+    const snapshot = await getDocs(q);
+
+    if (!snapshot.empty && snapshot.docs[0].data().authProvider === "google") {
+      signinMsg.style.color = "#e1282d";
+      signinMsg.textContent = "This account uses Google Sign-In and has no password to reset. Use \u201cContinue with Google\u201d instead.";
+      return;
+    }
+
+    await sendPasswordResetEmail(auth, email);
+    signinMsg.style.color = "limegreen";
+    signinMsg.textContent = "If an account exists for that email, a reset link has been sent. Check your spam folder if it doesn't arrive in a few minutes.";
+  } catch (error) {
+    console.error("Error sending reset email:", error);
+    signinMsg.style.color = "#e1282d";
+    signinMsg.textContent = friendlyAuthError(error, "signin");
+  }
+});
+
+// ---- Sign Up (Firebase email/password) ----
+const signupBtn = document.getElementById("signupBtn");
+const signupEmail = document.getElementById("signupEmail");
+const signupPassword = document.getElementById("signupPassword");
+const signupConfirm = document.getElementById("signupConfirm");
+const signupMsg = document.getElementById("signupMsg");
+
+signupBtn.addEventListener("click", async () => {
+  const email = signupEmail.value.trim();
+  const password = signupPassword.value;
+  const confirm = signupConfirm.value;
+
+  if (!email || !password || !confirm) {
+    signupMsg.style.color = "#e1282d";
+    signupMsg.textContent = "Please fill in every field.";
+    return;
+  }
+  if (password.length < 6) {
+    signupMsg.style.color = "#e1282d";
+    signupMsg.textContent = "Password must be at least 6 characters.";
+    return;
+  }
+  if (password !== confirm) {
+    signupMsg.style.color = "#e1282d";
+    signupMsg.textContent = "Passwords don't match.";
+    return;
+  }
+
+  signupBtn.disabled = true;
+  signupMsg.style.color = "#ccc";
+  signupMsg.textContent = "Creating account...";
+
+  try {
+    const cred = await createUserWithEmailAndPassword(auth, email, password);
+    await handleFirebaseUser(cred.user);
+  } catch (error) {
+    console.error("Error signing up:", error);
+    signupMsg.style.color = "#e1282d";
+    signupMsg.textContent = friendlyAuthError(error, "signup");
+  } finally {
+    signupBtn.disabled = false;
+  }
+});
+
+[signupEmail, signupPassword, signupConfirm].forEach(input => {
+  input.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") signupBtn.click();
+  });
+});
+
+// =========================================================================
+// STEP 3: username + optional profile photo, shown once for brand-new
+// Google/email accounts right after their first successful sign-in.
+// =========================================================================
+const newAvatarInput = document.getElementById("newAvatarInput");
+const newAvatarPreview = document.getElementById("newAvatarPreview");
+const newUsernameInput = document.getElementById("newUsernameInput");
+const finishSetupBtn = document.getElementById("finishSetupBtn");
+const setupMsg = document.getElementById("setupMsg");
+
+newAvatarInput.addEventListener("change", async () => {
+  const file = newAvatarInput.files[0];
+  if (!file) return;
+
+  setupMsg.style.color = "#ccc";
+  setupMsg.textContent = "Uploading photo...";
+
+  try {
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("upload_preset", UPLOAD_PRESET);
+
+    const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`, {
+      method: "POST",
+      body: formData
+    });
+    if (!res.ok) throw new Error("Upload failed");
+    const data = await res.json();
+
+    pendingPhotoURL = data.secure_url;
+    newAvatarPreview.src = pendingPhotoURL;
+    setupMsg.textContent = "";
+  } catch (error) {
+    console.error("Error uploading profile photo:", error);
+    setupMsg.style.color = "#e1282d";
+    setupMsg.textContent = "Could not upload photo. You can skip this and add one later.";
+  }
+});
+
+finishSetupBtn.addEventListener("click", async () => {
+  if (!pendingFbUser) return;
+
+  const username = normalizeUsername(newUsernameInput.value);
+
+  if (!username) {
+    setupMsg.style.color = "#e1282d";
+    setupMsg.textContent = "Username can't be empty.";
+    return;
+  }
+  if (username.length < 3 || username.length > 20) {
+    setupMsg.style.color = "#e1282d";
+    setupMsg.textContent = "Username must be 3-20 characters.";
+    return;
+  }
+
+  finishSetupBtn.disabled = true;
+  setupMsg.style.color = "#ccc";
+  setupMsg.textContent = "Saving...";
+
+  try {
+    // Same uniqueness-lock pattern used by legacy sign-up: the "usernames"
+    // collection's doc ID *is* the lowercase username, and the whole
+    // check-and-create runs inside one atomic transaction so two people
+    // can't grab the same name at once.
+    const usernameLockRef = doc(db, "usernames", username);
+    let newUserId;
+
+    const providerId = pendingFbUser.providerData?.[0]?.providerId === "google.com" ? "google" : "password";
+
+    await runTransaction(db, async (transaction) => {
+      const lockSnap = await transaction.get(usernameLockRef);
+      if (lockSnap.exists()) {
+        throw new Error("USERNAME_TAKEN");
+      }
+
+      const newUserRef = doc(collection(db, "users"));
+      newUserId = newUserRef.id;
+
+      transaction.set(newUserRef, {
+        username,
+        authUID: pendingFbUser.uid,
+        authProvider: providerId,
+        email: pendingFbUser.email || null,
+        role: "user",
+        photoURL: pendingPhotoURL || null,
+        createdAt: Date.now()
+      });
+      transaction.set(usernameLockRef, {
+        userId: newUserRef.id,
+        createdAt: Date.now()
+      });
+    });
+
+    setSession({
+      id: newUserId,
+      username,
+      role: "user",
+      photoURL: pendingPhotoURL || null
+    });
+
+    setupMsg.style.color = "limegreen";
+    setupMsg.textContent = "All set!";
+    window.location.href = redirectTarget;
+  } catch (error) {
+    if (error.message === "USERNAME_TAKEN") {
+      setupMsg.style.color = "#e1282d";
+      setupMsg.textContent = "That username is already taken.";
+    } else {
+      console.error("Error finishing setup:", error);
+      setupMsg.style.color = "#e1282d";
+      setupMsg.textContent = "Something went wrong. Please try again.";
+    }
+  } finally {
+    finishSetupBtn.disabled = false;
+  }
+});
+
+newUsernameInput.addEventListener("keydown", (e) => {
+  if (e.key === "Enter") finishSetupBtn.click();
+});
+
+// ---- Continue as Guest ----
+// Guests get no session at all - the rest of the site already treats "no session"
+// as a guest: they can browse and read reviews, but the review form stays hidden.
+document.getElementById("guestBtn").addEventListener("click", () => {
+  window.location.href = redirectTarget === "admin.html" ? "index.html" : redirectTarget;
+});
+</script>
+
+</body>
+</html>
