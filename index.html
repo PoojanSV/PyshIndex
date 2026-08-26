@@ -1,11 +1,72 @@
-<!doctype html>
+-<!doctype html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Pysh Index</title>
+<title>Pysh Index - Game Reviews, Ratings & Community Verdicts</title>
+<meta name="description" content="Pysh Index' home for honest game reviews. Browse Dropped, Good, and Goated verdicts, rate games yourself, and see what the community really thinks.">
+<meta name="keywords" content="pysh, pysh index, pysh games, game reviews, video game ratings, community game verdicts">
+<meta name="author" content="Pysh Index">
+<meta name="robots" content="index, follow, max-image-preview:large">
+<link rel="canonical" href="https://pysh.site/">
+
+<!-- Open Graph / Facebook / Discord -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Pysh Index">
+<meta property="og:title" content="Pysh Index - Game Reviews, Ratings & Community Verdicts">
+<meta property="og:description" content="Honest, community-driven game reviews. Browse Dropped, Good, and Goated verdicts on Pysh Index and add your own.">
+<meta property="og:url" content="https://pysh.site/">
+<meta property="og:image" content="https://pysh.site/logo.png">
+<meta property="og:locale" content="en_US">
+
+<!-- Twitter / X Card -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Pysh Index - Game Reviews, Ratings & Community Verdicts">
+<meta name="twitter:description" content="Honest, community-driven game reviews. Browse Dropped, Good, and Goated verdicts on Pysh Index and add your own.">
+<meta name="twitter:image" content="https://pysh.site/logo.png">
+<meta name="twitter:site" content="@pyshgames">
+
 <link rel="icon" type="image/jpeg" href="logo.jpg">
+<link rel="apple-touch-icon" href="logo.png">
+<meta name="theme-color" content="#e1282d">
+
+<!-- Speed up the connection to Firebase/Firestore before the app JS needs it -->
+<link rel="preconnect" href="https://www.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://firestore.googleapis.com" crossorigin>
+<link rel="dns-prefetch" href="https://www.gstatic.com">
+
+<!-- Structured data: tells Google this IS the Pysh / Pysh Index / Pysh Games entity,
+     and enables a sitelinks searchbox in results for brand searches. -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": "Pysh Index",
+  "alternateName": ["Pysh", "Pysh Games"],
+  "url": "https://pysh.site/",
+  "description": "Pysh Index is Pysh Games' home for honest, community-driven game reviews, ratings, and verdicts.",
+  "publisher": {
+    "@type": "Organization",
+    "name": "Pysh Games",
+    "url": "https://pysh.site/",
+    "logo": "https://pysh.site/logo.png",
+    "sameAs": [
+      "https://www.youtube.com/pyshgames",
+      "https://www.instagram.com/pyshgames",
+      "https://www.x.com/pyshgames"
+    ]
+  },
+  "potentialAction": {
+    "@type": "SearchAction",
+    "target": {
+      "@type": "EntryPoint",
+      "urlTemplate": "https://pysh.site/?q={search_term_string}"
+    },
+    "query-input": "required name=search_term_string"
+  }
+}
+</script>
 
 <style>
 /* =========================================================
@@ -961,6 +1022,13 @@ footer { background-color: #111; padding-bottom: clamp(20px, 4vw, 30px); font-si
 
 <body>
 
+<noscript>
+  <div style="max-width:600px;margin:60px auto;text-align:center;color:#ccc;font-family:Arial,sans-serif;">
+    <h1 style="color:#fff;">Pysh Index &mdash; Game Reviews by Pysh Games</h1>
+    <p>Pysh Index is a community-driven game review site. Please enable JavaScript to browse Dropped, Good, and Goated verdicts and post your own reviews.</p>
+  </div>
+</noscript>
+
 <header>
 <nav>
   <div id="navLeft">
@@ -983,6 +1051,15 @@ footer { background-color: #111; padding-bottom: clamp(20px, 4vw, 30px); font-si
 <hr>
 
 <main>
+<div id="seoIntro" style="width:var(--container-w);margin:clamp(20px,3vw,36px) auto 0;text-align:center;">
+  <h1 style="white-space:normal;font-size:clamp(22px,3vw,42px);margin:0 0 10px;">Pysh Index: Game Reviews, Ratings &amp; Community Verdicts</h1>
+  <p style="color:var(--muted);font-size:clamp(14px,1.1vw,18px);max-width:820px;margin:0 auto;line-height:1.5;">
+    Pysh Index is Pysh Games' home for honest, no-filler game reviews. Every game gets sorted into one of three community verdicts &mdash;
+    <strong style="color:#fff;">Dropped</strong>, <strong style="color:#fff;">Good</strong>, or <strong style="color:#fff;">Goated</strong> &mdash;
+    based on real player ratings. Sign in to leave your own review, or browse the index below.
+  </p>
+</div>
+
 <div id="titleRow">
   <div class="btnGroup">
     <button class="boxBtn" onclick="filterCategory('Dropped')">Dropped</button>
