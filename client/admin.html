@@ -1,0 +1,2196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pysh Games Admin</title>
+<link rel="icon" type="image/jpeg" href="logo.jpg">
+
+<style>
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  padding: 20px;
+  background: #111;
+  color: white;
+  margin: 0;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+h1, h2, h3 {
+  color: #e1282d;
+  border-bottom: 2px solid #e1282d;
+  padding-bottom: 10px;
+  margin-top: 30px;
+}
+
+/* TABS */
+.tabs {
+  display: flex;
+  gap: 10px;
+  margin: 20px 0;
+  flex-wrap: wrap;
+}
+
+.tab {
+  background: #222;
+  color: white;
+  border: 2px solid #e1282d;
+  padding: 10px 20px;
+  cursor: pointer;
+  border-radius: 5px;
+  font-weight: bold;
+  transition: all 0.3s;
+}
+
+.tab:hover {
+  background: #e1282d;
+}
+
+.tab.active {
+  background: #e1282d;
+  color: white;
+}
+
+/* FORMS */
+.form-section {
+  background: #222;
+  padding: 20px;
+  border-radius: 10px;
+  margin: 20px 0;
+  border: 1px solid #333;
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 5px;
+  color: #ccc;
+}
+
+textarea, input[type="text"], input[type="file"], select {
+  width: 100%;
+  max-width: 400px;
+  padding: 8px;
+  margin-bottom: 10px;
+  border-radius: 5px;
+  border: 1px solid #444;
+  background: #111;
+  color: white;
+}
+
+textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+/* TOP 10 RANK SELECTOR */
+.rank-selector {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin: 15px 0;
+}
+
+.rank-selector select {
+  width: auto;
+  min-width: 80px;
+}
+
+.rank-indicator {
+  background: gold;
+  color: black;
+  padding: 3px 10px;
+  border-radius: 15px;
+  font-size: 14px;
+  font-weight: bold;
+  display: inline-block;
+}
+
+/* BUTTONS */
+button {
+  background: #e1282d;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  cursor: pointer;
+  border-radius: 5px;
+  margin-right: 10px;
+  transition: all 0.3s;
+  font-weight: bold;
+}
+
+button:hover {
+  background: white;
+  color: #e1282d;
+}
+
+button.secondary {
+  background: #444;
+}
+
+button.secondary:hover {
+  background: #666;
+}
+
+button.small {
+  padding: 4px 8px;
+  font-size: 12px;
+}
+
+/* ITEMS LISTS */
+.items-list {
+  display: grid;
+  gap: 15px;
+  margin-top: 20px;
+}
+
+.item {
+  background: #222;
+  border: 1px solid #333;
+  padding: 15px;
+  border-radius: 10px;
+  display: flex;
+  align-items: flex-start;
+  gap: 20px;
+  transition: all 0.3s;
+}
+
+.item:hover {
+  border-color: #e1282d;
+  transform: translateY(-2px);
+}
+
+.item img {
+  width: 150px;
+  height: 150px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 2px solid #444;
+}
+
+.item-info {
+  flex: 1;
+}
+
+.item-title {
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 5px;
+  color: white;
+}
+
+.item-category {
+  display: inline-block;
+  padding: 3px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.category-Goated {
+  background: rgba(50, 205, 50, 0.2);
+  color: limegreen;
+}
+
+.category-Good {
+  background: rgba(0, 0, 255, 0.2);
+  color: dodgerblue;
+}
+
+.category-Dropped {
+  background: rgba(255, 255, 0, 0.2);
+  color: yellow;
+}
+
+.item-caption {
+  color: #ccc;
+  font-size: 14px;
+  margin-bottom: 10px;
+  max-height: 60px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.item-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+/* EDIT MODAL */
+.modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.8);
+  z-index: 1000;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-content {
+  background: #222;
+  padding: 30px;
+  border-radius: 10px;
+  width: 90%;
+  max-width: 500px;
+  border: 2px solid #e1282d;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.close-modal {
+  float: right;
+  font-size: 24px;
+  cursor: pointer;
+  color: #ccc;
+}
+
+.close-modal:hover {
+  color: #e1282d;
+}
+
+/* IMAGE UPLOAD PREVIEW */
+.image-preview {
+  margin: 15px 0;
+  text-align: center;
+}
+
+.image-preview img {
+  max-width: 200px;
+  max-height: 200px;
+  border-radius: 8px;
+  border: 2px solid #444;
+}
+
+/* SEARCH AND FILTER */
+.search-filter {
+  background: #222;
+  padding: 15px;
+  border-radius: 10px;
+  margin: 20px 0;
+  display: flex;
+  gap: 15px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.search-filter input {
+  flex: 1;
+  min-width: 200px;
+}
+
+.search-filter select {
+  width: auto;
+}
+
+/* STATUS MESSAGES */
+.status {
+  padding: 10px;
+  border-radius: 5px;
+  margin: 10px 0;
+  display: none;
+}
+
+.status.success {
+  background: rgba(50, 205, 50, 0.2);
+  border: 1px solid limegreen;
+  color: limegreen;
+  display: block;
+}
+
+.status.error {
+  background: rgba(255, 0, 0, 0.2);
+  border: 1px solid red;
+  color: red;
+  display: block;
+}
+
+/* TRANSFER BUTTON */
+.transfer-btn {
+  background: rgba(50, 205, 50, 0.3);
+  border: 1px solid limegreen;
+}
+
+.transfer-btn:hover {
+  background: limegreen;
+  color: black;
+}
+
+/* TAB CONTENT */
+.tab-content {
+  display: none;
+}
+
+.tab-content.active {
+  display: block;
+}
+
+/* LOADER */
+.loader {
+  border: 3px solid #333;
+  border-top: 3px solid #e1282d;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  animation: spin 1s linear infinite;
+  margin: 20px auto;
+  display: none;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* TOP 10 SPECIFIC STYLES */
+.top10-indicator {
+  background: linear-gradient(45deg, #FFD700, #FFA500);
+  color: black;
+  padding: 5px 15px;
+  border-radius: 20px;
+  font-weight: bold;
+  font-size: 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin-left: 10px;
+}
+
+.top10-indicator i {
+  font-style: normal;
+  font-weight: bold;
+}
+
+/* TOP BAR */
+#adminTopBar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  background: #222;
+  border: 1px solid #333;
+  border-radius: 10px;
+  padding: 12px 20px;
+  margin-bottom: 10px;
+}
+
+#adminWelcome {
+  color: #ccc;
+  font-size: 15px;
+}
+
+#adminWelcome strong { color: #e1282d; }
+
+#adminTopBar a.viewSiteLink {
+  color: #e1282d;
+  text-decoration: none;
+  font-weight: bold;
+  margin-right: 15px;
+}
+
+#adminTopBar a.viewSiteLink:hover { text-decoration: underline; }
+
+/* ROLE BADGES */
+.role-admin {
+  background: rgba(225, 40, 45, 0.2);
+  color: #e1282d;
+}
+
+.role-user {
+  background: rgba(255, 255, 255, 0.15);
+  color: #ccc;
+}
+
+/* COMMUNITY REVIEWS (per-game user reviews managed from admin) */
+.comment-item {
+  background: #1a1a1a;
+  border: 1px solid #333;
+  border-radius: 8px;
+  padding: 12px 15px;
+  margin-bottom: 12px;
+}
+
+.comment-item .comment-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.comment-item .comment-name-rating {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.comment-item .comment-name { font-weight: bold; color: white; }
+.comment-item .comment-name.owner { color: #e1282d; }
+
+.comment-item .comment-rating {
+  font-size: 11px;
+  font-weight: bold;
+  padding: 3px 10px;
+  border-radius: 10px;
+}
+
+.comment-item .comment-text {
+  color: #ccc;
+  font-size: 14px;
+  margin-top: 4px;
+  line-height: 1.4;
+}
+
+#commentsAvg {
+  margin: 10px 0 20px;
+  font-size: 15px;
+  color: #ccc;
+}
+
+#commentsAvg span {
+  font-weight: bold;
+  padding: 3px 10px;
+  border-radius: 6px;
+  margin-left: 5px;
+}
+
+/* MOBILE RESPONSIVE */
+@media (max-width: 768px) {
+  .item {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+  
+  .item img {
+    width: 100%;
+    max-width: 300px;
+    height: auto;
+  }
+  
+  .search-filter {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .search-filter input,
+  .search-filter select {
+    width: 100%;
+  }
+  
+  .rank-selector {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+</style>
+</head>
+
+<body>
+<div class="container">
+  <div id="adminTopBar">
+    <div id="adminWelcome"></div>
+    <div>
+      <a href="../client/index.html" class="viewSiteLink">View Site</a>
+      <button id="logoutBtn" class="secondary">Logout</button>
+    </div>
+  </div>
+
+  <h1>Pysh Games Admin Panel</h1>
+  
+  <!-- Tabs Navigation -->
+  <div class="tabs">
+    <div class="tab active" data-tab="reviews">Reviews</div>
+    <div class="tab" data-tab="wishlist">Wishlist</div>
+    <div class="tab" data-tab="addReview">Add New Review</div>
+    <div class="tab" data-tab="addWishlist">Add to Wishlist</div>
+    <div class="tab" data-tab="top10">Top 10</div>
+    <div class="tab" data-tab="users">Users</div>
+  </div>
+  
+  <!-- Status Messages -->
+  <div id="status" class="status"></div>
+  
+  <!-- Loader -->
+  <div id="loader" class="loader"></div>
+  
+  <!-- Tab: Reviews Management -->
+  <div id="reviews" class="tab-content active">
+    <h2>Manage Reviews</h2>
+    
+    <!-- Search and Filter -->
+    <div class="search-filter">
+      <input type="text" id="searchReviews" placeholder="Search reviews...">
+      <select id="filterCategory">
+        <option value="">All Categories</option>
+        <option value="Goated">Goated</option>
+        <option value="Good">Good</option>
+        <option value="Dropped">Dropped</option>
+      </select>
+      <button id="refreshReviews">Refresh</button>
+    </div>
+    
+    <!-- Reviews List -->
+    <div id="reviewsList" class="items-list">
+      <!-- Reviews will be loaded here -->
+    </div>
+  </div>
+  
+  <!-- Tab: Wishlist Management -->
+  <div id="wishlist" class="tab-content">
+    <h2>Manage Wishlist</h2>
+    
+    <!-- Search and Filter for Wishlist -->
+    <div class="search-filter">
+      <input type="text" id="searchWishlist" placeholder="Search wishlist...">
+      <button id="refreshWishlist">Refresh</button>
+    </div>
+    
+    <!-- Wishlist List -->
+    <div id="wishlistList" class="items-list">
+      <!-- Wishlist items will be loaded here -->
+    </div>
+  </div>
+  
+  <!-- Tab: Add New Review -->
+  <div id="addReview" class="tab-content">
+    <h2>Add New Review</h2>
+    
+    <div class="form-section">
+      <div class="form-group">
+        <label>Game Title:</label>
+        <input type="text" id="reviewTitle" placeholder="Enter game title">
+      </div>
+      
+      <div class="form-group">
+        <label>Category:</label>
+        <select id="reviewCategory">
+          <option value="">Select Category</option>
+          <option value="Dropped">Dropped</option>
+          <option value="Good">Good</option>
+          <option value="Goated">Goated</option>
+        </select>
+      </div>
+      
+      <div class="form-group">
+        <label>Game Description:</label>
+        <textarea id="reviewDescription" placeholder="A short description of the game (shown beside the cover photo)..."></textarea>
+      </div>
+
+      <div class="form-group">
+        <label>Review/Caption (posts as "Pysh" in the community verdict):</label>
+        <textarea id="reviewCaption" placeholder="Write your review..."></textarea>
+      </div>
+      
+      <div class="form-group">
+        <label>Top 10 Rank (optional):</label>
+        <div class="rank-selector">
+          <select id="reviewRank">
+            <option value="">Not in Top 10</option>
+            <option value="1">#1</option>
+            <option value="2">#2</option>
+            <option value="3">#3</option>
+            <option value="4">#4</option>
+            <option value="5">#5</option>
+            <option value="6">#6</option>
+            <option value="7">#7</option>
+            <option value="8">#8</option>
+            <option value="9">#9</option>
+            <option value="10">#10</option>
+          </select>
+          <span id="rankStatus"></span>
+        </div>
+      </div>
+      
+      <div class="form-group">
+        <label>Game Image:</label>
+        <input type="file" id="reviewImage" accept="image/*">
+      </div>
+      
+      <!-- Image Preview -->
+      <div id="reviewImagePreview" class="image-preview"></div>
+      
+      <button id="addReviewBtn">Add Review</button>
+      <button id="clearReviewBtn" class="secondary">Clear Form</button>
+    </div>
+  </div>
+  
+  <!-- Tab: Add to Wishlist -->
+  <div id="addWishlist" class="tab-content">
+    <h2>Add to Wishlist</h2>
+    
+    <div class="form-section">
+      <div class="form-group">
+        <label>Game Title:</label>
+        <input type="text" id="wishlistTitle" placeholder="Enter game title">
+      </div>
+      
+      <div class="form-group">
+        <label>Notes/Description:</label>
+        <textarea id="wishlistNotes" placeholder="Add notes about this game..."></textarea>
+      </div>
+      
+      <div class="form-group">
+        <label>Game Image:</label>
+        <input type="file" id="wishlistImage" accept="image/*">
+      </div>
+      
+      <!-- Image Preview -->
+      <div id="wishlistImagePreview" class="image-preview"></div>
+      
+      <button id="addWishlistBtn">Add to Wishlist</button>
+      <button id="clearWishlistBtn" class="secondary">Clear Form</button>
+    </div>
+  </div>
+  
+  <!-- Tab: Top 10 Management -->
+  <div id="top10" class="tab-content">
+    <h2>Top 10 Games</h2>
+    <p style="color: #ccc; margin-bottom: 20px;">
+      Manage the Top 10 ranking. Each rank can only have one game. 
+      Use the dropdown in the review edit form to assign ranks.
+    </p>
+    
+    <!-- Current Top 10 Display -->
+    <div class="form-section">
+      <h3>Current Top 10 Rankings</h3>
+      <div id="top10List" class="items-list">
+        <!-- Top 10 items will be loaded here -->
+      </div>
+    </div>
+    
+    <!-- Available Reviews for Top 10 -->
+    <div class="form-section">
+      <h3>Available Reviews</h3>
+      <div class="search-filter">
+        <input type="text" id="searchAvailableReviews" placeholder="Search reviews...">
+      </div>
+      <div id="availableReviewsList" class="items-list">
+        <!-- Available reviews for Top 10 assignment -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Tab: Users Management -->
+  <div id="users" class="tab-content">
+    <h2>Manage Users</h2>
+    <p style="color: #ccc; margin-bottom: 20px;">
+      Sign-ups happen on the public sign-in page. From here you can promote/demote roles or remove accounts.
+      The last remaining admin can't be deleted or demoted, so the site is never left without one.
+    </p>
+
+    <div class="search-filter">
+      <input type="text" id="searchUsers" placeholder="Search users...">
+      <button id="refreshUsers">Refresh</button>
+    </div>
+
+    <div id="usersList" class="items-list">
+      <!-- Users will be loaded here -->
+    </div>
+  </div>
+</div>
+
+<!-- Edit Modal -->
+<div id="editModal" class="modal">
+  <div class="modal-content">
+    <span class="close-modal" id="closeModalBtn">&times;</span>
+    <h3>Edit Item</h3>
+    
+    <div class="form-group">
+      <label>Title:</label>
+      <input type="text" id="editTitle">
+    </div>
+    
+    <div class="form-group">
+      <label>Category:</label>
+      <select id="editCategory">
+        <option value="Dropped">Dropped</option>
+        <option value="Good">Good</option>
+        <option value="Goated">Goated</option>
+      </select>
+    </div>
+    
+    <div class="form-group">
+      <label>Game Description: <small style="color:#888;">(reviews only, shown beside the cover photo)</small></label>
+      <textarea id="editDescription"></textarea>
+    </div>
+
+    <div class="form-group">
+      <label>Caption/Notes:</label>
+      <textarea id="editCaption"></textarea>
+    </div>
+    
+    <div class="form-group">
+      <label>Top 10 Rank:</label>
+      <div class="rank-selector">
+        <select id="editRank">
+          <option value="">Not in Top 10</option>
+          <option value="1">#1</option>
+          <option value="2">#2</option>
+          <option value="3">#3</option>
+          <option value="4">#4</option>
+          <option value="5">#5</option>
+          <option value="6">#6</option>
+          <option value="7">#7</option>
+          <option value="8">#8</option>
+          <option value="9">#9</option>
+          <option value="10">#10</option>
+        </select>
+        <span id="editRankStatus"></span>
+      </div>
+      <small style="color: #888; font-size: 12px;">Note: Each rank can only be assigned to one game.</small>
+    </div>
+    
+    <div class="form-group">
+      <label>Current Image:</label>
+      <div id="currentImagePreview" class="image-preview"></div>
+    </div>
+    
+    <div class="form-group">
+      <label>Replace Image (optional):</label>
+      <input type="file" id="editImage" accept="image/*">
+    </div>
+    
+    <!-- New Image Preview -->
+    <div id="editImagePreview" class="image-preview"></div>
+    
+    <input type="hidden" id="editItemId">
+    <input type="hidden" id="editItemType">
+    
+    <button id="saveEditBtn">Save Changes</button>
+    <button id="cancelEditBtn" class="secondary">Cancel</button>
+  </div>
+</div>
+
+<!-- Community Reviews Modal -->
+<div id="commentsModal" class="modal">
+  <div class="modal-content">
+    <span class="close-modal" id="closeCommentsModalBtn">&times;</span>
+    <h3 id="commentsModalTitle">Community Reviews</h3>
+
+    <div id="commentsAvg"></div>
+
+    <div id="commentsModalList" class="items-list"></div>
+
+    <h3 style="margin-top:30px;">Post as Pysh (Official)</h3>
+    <p style="color:#888; font-size:13px; margin-top:-10px;">This posts as "Pysh" in red, as the owner's official verdict.</p>
+
+    <div class="form-group">
+      <label>Rating:</label>
+      <select id="pyshRating">
+        <option value="">Select Rating</option>
+        <option value="Dropped">Dropped</option>
+        <option value="Good">Good</option>
+        <option value="Goated">Goated</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label>Review Text:</label>
+      <textarea id="pyshText" placeholder="Write the official Pysh review..."></textarea>
+    </div>
+
+    <button id="postPyshBtn">Post as Pysh</button>
+  </div>
+</div>
+
+<script type="module">
+// Import Firebase modules
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import {
+  getFirestore,
+  collection,
+  addDoc,
+  getDocs,
+  deleteDoc,
+  doc,
+  getDoc,
+  setDoc,
+  updateDoc,
+  query,
+  orderBy,
+  where,
+  writeBatch
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+// Firebase Configuration
+const firebaseConfig = {
+  apiKey: "AIzaSyBoylOskSQPe1LiDehqp1gmSXfzzNNtRmY",
+  authDomain: "pysh-index.firebaseapp.com",
+  projectId: "pysh-index",
+  appId: "1:263831699229:web:f514a3d8388868f6c9ebf4"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const auth = getAuth(app);
+
+// ---- Auth session helpers (shared pattern across index.html, login.html, admin.html) ----
+const AUTH_KEY = "pyshAuthUser";
+function getSession() {
+  try {
+    return JSON.parse(localStorage.getItem(AUTH_KEY));
+  } catch {
+    return null;
+  }
+}
+function clearSession() {
+  localStorage.removeItem(AUTH_KEY);
+}
+
+// ---- Auth guard: redirect immediately if not logged in as admin ----
+const session = getSession();
+if (!session || session.role !== "admin") {
+  window.location.href = "login.html?redirect=admin.html";
+  throw new Error("Not authorized - redirecting to login.");
+}
+
+// Re-verify against Firestore in case this admin was demoted/removed
+// since they last logged in (role changes don't retroactively update localStorage).
+(async () => {
+  try {
+    const freshSnap = await getDoc(doc(db, "users", session.id));
+    if (!freshSnap.exists() || freshSnap.data().role !== "admin") {
+      clearSession();
+      window.location.href = "login.html?redirect=admin.html";
+    }
+  } catch (error) {
+    console.error("Error re-verifying admin session:", error);
+  }
+})();
+
+// Escapes user-submitted text before it's dropped into innerHTML anywhere
+// in this panel (review names/text are written by site visitors, not just
+// admins, so they must never be trusted as raw HTML).
+function escapeHtml(str) {
+  const div = document.createElement("div");
+  div.textContent = str || "";
+  return div.innerHTML;
+}
+
+// Cloudinary Configuration
+const CLOUD_NAME = "dkwmnfnjf";
+const UPLOAD_PRESET = "yugwf5bd";
+
+// Global State
+let currentReviews = [];
+let currentWishlist = [];
+let currentUsers = [];
+let currentEditItem = null;
+let top10Rankings = {};
+
+// DOM Elements
+const elements = {
+  // Tabs
+  tabs: document.querySelectorAll('.tab'),
+  tabContents: document.querySelectorAll('.tab-content'),
+  
+  // Status and Loader
+  status: document.getElementById('status'),
+  loader: document.getElementById('loader'),
+  
+  // Review Tab Elements
+  searchReviews: document.getElementById('searchReviews'),
+  filterCategory: document.getElementById('filterCategory'),
+  refreshReviews: document.getElementById('refreshReviews'),
+  reviewsList: document.getElementById('reviewsList'),
+  
+  // Wishlist Tab Elements
+  searchWishlist: document.getElementById('searchWishlist'),
+  refreshWishlist: document.getElementById('refreshWishlist'),
+  wishlistList: document.getElementById('wishlistList'),
+  
+  // Add Review Form Elements
+  reviewTitle: document.getElementById('reviewTitle'),
+  reviewCategory: document.getElementById('reviewCategory'),
+  reviewDescription: document.getElementById('reviewDescription'),
+  reviewCaption: document.getElementById('reviewCaption'),
+  reviewRank: document.getElementById('reviewRank'),
+  rankStatus: document.getElementById('rankStatus'),
+  reviewImage: document.getElementById('reviewImage'),
+  reviewImagePreview: document.getElementById('reviewImagePreview'),
+  addReviewBtn: document.getElementById('addReviewBtn'),
+  clearReviewBtn: document.getElementById('clearReviewBtn'),
+  
+  // Add Wishlist Form Elements
+  wishlistTitle: document.getElementById('wishlistTitle'),
+  wishlistNotes: document.getElementById('wishlistNotes'),
+  wishlistImage: document.getElementById('wishlistImage'),
+  wishlistImagePreview: document.getElementById('wishlistImagePreview'),
+  addWishlistBtn: document.getElementById('addWishlistBtn'),
+  clearWishlistBtn: document.getElementById('clearWishlistBtn'),
+  
+  // Top 10 Tab Elements
+  searchAvailableReviews: document.getElementById('searchAvailableReviews'),
+  top10List: document.getElementById('top10List'),
+  availableReviewsList: document.getElementById('availableReviewsList'),
+  
+  // Top Bar Elements
+  adminWelcome: document.getElementById('adminWelcome'),
+  logoutBtn: document.getElementById('logoutBtn'),
+
+  // Users Tab Elements
+  searchUsers: document.getElementById('searchUsers'),
+  refreshUsers: document.getElementById('refreshUsers'),
+  usersList: document.getElementById('usersList'),
+
+  // Edit Modal Elements
+  editModal: document.getElementById('editModal'),
+  closeModalBtn: document.getElementById('closeModalBtn'),
+  editTitle: document.getElementById('editTitle'),
+  editCategory: document.getElementById('editCategory'),
+  editDescription: document.getElementById('editDescription'),
+  editCaption: document.getElementById('editCaption'),
+  editRank: document.getElementById('editRank'),
+  editRankStatus: document.getElementById('editRankStatus'),
+  editImage: document.getElementById('editImage'),
+  currentImagePreview: document.getElementById('currentImagePreview'),
+  editImagePreview: document.getElementById('editImagePreview'),
+  editItemId: document.getElementById('editItemId'),
+  editItemType: document.getElementById('editItemType'),
+  saveEditBtn: document.getElementById('saveEditBtn'),
+  cancelEditBtn: document.getElementById('cancelEditBtn'),
+
+  // Community Reviews Modal Elements
+  commentsModal: document.getElementById('commentsModal'),
+  closeCommentsModalBtn: document.getElementById('closeCommentsModalBtn'),
+  commentsModalTitle: document.getElementById('commentsModalTitle'),
+  commentsAvg: document.getElementById('commentsAvg'),
+  commentsModalList: document.getElementById('commentsModalList'),
+  pyshRating: document.getElementById('pyshRating'),
+  pyshText: document.getElementById('pyshText'),
+  postPyshBtn: document.getElementById('postPyshBtn')
+};
+
+// Initialize the application
+document.addEventListener('DOMContentLoaded', function() {
+  elements.adminWelcome.innerHTML = `Logged in as <strong>${session.username}</strong> (Admin)`;
+  setupEventListeners();
+  loadReviews();
+  loadWishlist();
+  loadTop10Rankings();
+});
+
+// Setup all event listeners
+function setupEventListeners() {
+  // Tab switching (data-tab attribute - previously this parsed an inline
+  // onclick attribute that no longer existed on the tab elsewhere in the HTML,
+  // which silently threw a console error on every click)
+  elements.tabs.forEach(tab => {
+    tab.addEventListener('click', function() {
+      switchTab(this.dataset.tab);
+    });
+  });
+
+  // Top bar
+  elements.logoutBtn.addEventListener('click', () => {
+    clearSession();
+    signOut(auth).catch(() => {});
+    window.location.href = '../client/login.html';
+  });
+
+  // Users tab events
+  elements.searchUsers.addEventListener('input', () => searchUsers());
+  elements.refreshUsers.addEventListener('click', loadUsers);
+
+  // Review tab events
+  elements.searchReviews.addEventListener('input', () => searchItems('reviews'));
+  elements.filterCategory.addEventListener('change', () => filterItems('reviews'));
+  elements.refreshReviews.addEventListener('click', loadReviews);
+  
+  // Wishlist tab events
+  elements.searchWishlist.addEventListener('input', () => searchItems('wishlist'));
+  elements.refreshWishlist.addEventListener('click', loadWishlist);
+  
+  // Add review form events
+  elements.reviewImage.addEventListener('change', (e) => previewImage(e, 'review'));
+  elements.addReviewBtn.addEventListener('click', addNewReview);
+  elements.clearReviewBtn.addEventListener('click', clearReviewForm);
+  
+  // Top 10 form events
+  elements.reviewRank.addEventListener('change', validateRank);
+  elements.editRank.addEventListener('change', validateEditRank);
+  
+  // Top 10 tab events
+  elements.searchAvailableReviews.addEventListener('input', () => searchAvailableReviews());
+  
+  // Add wishlist form events
+  elements.wishlistImage.addEventListener('change', (e) => previewImage(e, 'wishlist'));
+  elements.addWishlistBtn.addEventListener('click', addToWishlist);
+  elements.clearWishlistBtn.addEventListener('click', clearWishlistForm);
+  
+  // Edit modal events
+  elements.closeModalBtn.addEventListener('click', closeModal);
+  elements.cancelEditBtn.addEventListener('click', closeModal);
+  elements.saveEditBtn.addEventListener('click', saveEdit);
+  elements.editImage.addEventListener('change', (e) => previewImage(e, 'edit'));
+  
+  // Close modal when clicking outside
+  window.addEventListener('click', (event) => {
+    if (event.target === elements.editModal) {
+      closeModal();
+    }
+    if (event.target === elements.commentsModal) {
+      closeCommentsModal();
+    }
+  });
+
+  // Community Reviews modal events
+  elements.closeCommentsModalBtn.addEventListener('click', closeCommentsModal);
+  elements.postPyshBtn.addEventListener('click', postPyshReview);
+}
+
+// Tab Switching
+function switchTab(tabName) {
+  // Update active tab
+  elements.tabs.forEach(tab => tab.classList.remove('active'));
+  elements.tabContents.forEach(content => content.classList.remove('active'));
+  
+  document.querySelector(`.tab[data-tab="${tabName}"]`).classList.add('active');
+  document.getElementById(tabName).classList.add('active');
+  
+  // Load top 10 when switching to that tab
+  if (tabName === 'top10') {
+    loadTop10Rankings();
+    loadAvailableReviews();
+  }
+
+  // Load users when switching to that tab
+  if (tabName === 'users') {
+    loadUsers();
+  }
+}
+
+// Validate rank selection
+function validateRank() {
+  const selectedRank = elements.reviewRank.value;
+  if (selectedRank && top10Rankings[selectedRank]) {
+    elements.rankStatus.textContent = `Currently assigned to: ${top10Rankings[selectedRank]}`;
+    elements.rankStatus.style.color = '#e1282d';
+  } else {
+    elements.rankStatus.textContent = selectedRank ? 'Available' : '';
+    elements.rankStatus.style.color = 'limegreen';
+  }
+}
+
+function validateEditRank() {
+  const selectedRank = elements.editRank.value;
+  const currentItemId = elements.editItemId.value;
+  
+  // Get current review to check if it already has this rank
+  let currentItemHasRank = false;
+  if (currentEditItem && currentEditItem.rank === selectedRank) {
+    currentItemHasRank = true;
+  }
+  
+  if (selectedRank && top10Rankings[selectedRank] && !currentItemHasRank) {
+    elements.editRankStatus.textContent = `Currently assigned to: ${top10Rankings[selectedRank]}`;
+    elements.editRankStatus.style.color = '#e1282d';
+  } else {
+    elements.editRankStatus.textContent = selectedRank ? 'Available' : '';
+    elements.editRankStatus.style.color = 'limegreen';
+  }
+}
+
+// Load Top 10 rankings
+async function loadTop10Rankings() {
+  try {
+    const q = query(collection(db, "reviews"), where("rank", ">=", 1));
+    const snapshot = await getDocs(q);
+    
+    top10Rankings = {};
+    snapshot.forEach(doc => {
+      const review = { id: doc.id, ...doc.data() };
+      if (review.rank) {
+        top10Rankings[review.rank] = review.title;
+      }
+    });
+    
+    renderTop10List();
+  } catch (error) {
+    console.error('Error loading top 10 rankings:', error);
+  }
+}
+
+// Render Top 10 list
+function renderTop10List() {
+  if (Object.keys(top10Rankings).length === 0) {
+    elements.top10List.innerHTML = '<p>No games in Top 10 yet. Add ranks to reviews.</p>';
+    return;
+  }
+  
+  // Create array of rankings
+  const rankings = [];
+  for (let i = 1; i <= 10; i++) {
+    rankings.push({
+      rank: i,
+      title: top10Rankings[i] || 'Not assigned',
+      hasGame: !!top10Rankings[i]
+    });
+  }
+  
+  elements.top10List.innerHTML = rankings.map(item => `
+    <div class="item" style="background: ${item.hasGame ? '#1a1a1a' : '#222'};">
+      <div style="font-size: 24px; font-weight: bold; color: gold; min-width: 50px; text-align: center;">
+        #${item.rank}
+      </div>
+      <div class="item-info">
+        <div class="item-title">${item.title}</div>
+        <div class="item-actions">
+          ${item.hasGame ? 
+            `<button onclick="findAndEditReviewByRank(${item.rank})">Edit</button>
+             <button onclick="removeRank(${item.rank})" class="secondary">Remove Rank</button>` :
+            '<span style="color: #888;">Available</span>'
+          }
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+// Load available reviews for Top 10
+async function loadAvailableReviews(searchTerm = '') {
+  try {
+    const q = query(collection(db, "reviews"), orderBy("createdAt", "desc"));
+    const snapshot = await getDocs(q);
+    
+    const availableReviews = [];
+    snapshot.forEach(doc => {
+      const review = { id: doc.id, ...doc.data() };
+      // Only show reviews without a rank
+      if (!review.rank && (!searchTerm || review.title.toLowerCase().includes(searchTerm))) {
+        availableReviews.push(review);
+      }
+    });
+    
+    renderAvailableReviews(availableReviews);
+  } catch (error) {
+    console.error('Error loading available reviews:', error);
+  }
+}
+
+// Render available reviews
+function renderAvailableReviews(reviews) {
+  if (reviews.length === 0) {
+    elements.availableReviewsList.innerHTML = '<p>No available reviews. All reviews already have ranks.</p>';
+    return;
+  }
+  
+  elements.availableReviewsList.innerHTML = reviews.map(review => `
+    <div class="item">
+      <img src="${review.imageUrl}" alt="${review.title}" onerror="this.src='https://via.placeholder.com/150'">
+      <div class="item-info">
+        <div class="item-title">${review.title}</div>
+        <div class="item-category category-${review.category}">${review.category}</div>
+        <div class="item-caption">${review.caption.length > 100 ? review.caption.substring(0, 100) + '...' : review.caption}</div>
+        <div class="item-actions">
+          <button onclick="assignTop10Rank('${review.id}')">Add to Top 10</button>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+// Search available reviews
+function searchAvailableReviews() {
+  const searchTerm = elements.searchAvailableReviews.value.toLowerCase();
+  loadAvailableReviews(searchTerm);
+}
+
+// Assign Top 10 rank to a review
+async function assignTop10Rank(reviewId) {
+  // Open the edit modal for this review
+  const review = currentReviews.find(r => r.id === reviewId);
+  if (!review) {
+    showStatus('Review not found', 'error');
+    return;
+  }
+  
+  currentEditItem = { ...review, type: 'review' };
+  
+  // Fill form with review data
+  elements.editTitle.value = review.title;
+  elements.editCaption.value = review.caption;
+  elements.editCategory.value = review.category;
+  elements.editRank.value = review.rank || '';
+  elements.editItemId.value = reviewId;
+  elements.editItemType.value = 'review';
+  
+  // Show current image
+  elements.currentImagePreview.innerHTML = `
+    <img src="${review.imageUrl}" alt="${review.title}" onerror="this.src='https://via.placeholder.com/150'">
+  `;
+  
+  // Clear new image preview
+  elements.editImagePreview.innerHTML = '';
+  elements.editImage.value = '';
+  
+  // Validate rank
+  validateEditRank();
+  
+  // Open modal
+  elements.editModal.style.display = 'flex';
+}
+
+// Find and edit review by rank
+async function findAndEditReviewByRank(rank) {
+  try {
+    const q = query(collection(db, "reviews"), where("rank", "==", parseInt(rank)));
+    const snapshot = await getDocs(q);
+    
+    if (snapshot.empty) {
+      showStatus('No review found with this rank', 'error');
+      return;
+    }
+    
+    const doc = snapshot.docs[0];
+    const review = { id: doc.id, ...doc.data() };
+    
+    // Open edit modal
+    openEditModal(review.id, 'review');
+  } catch (error) {
+    showStatus('Error finding review: ' + error.message, 'error');
+  }
+}
+
+// Remove rank from a review
+async function removeRank(rank) {
+  try {
+    const q = query(collection(db, "reviews"), where("rank", "==", parseInt(rank)));
+    const snapshot = await getDocs(q);
+    
+    if (snapshot.empty) {
+      showStatus('No review found with this rank', 'error');
+      return;
+    }
+    
+    const doc = snapshot.docs[0];
+    
+    // Remove rank from review
+    await updateDoc(doc.ref, {
+      rank: null
+    });
+    
+    showStatus(`Rank #${rank} removed successfully`, 'success');
+    loadTop10Rankings();
+    loadReviews();
+    loadAvailableReviews();
+  } catch (error) {
+    showStatus('Error removing rank: ' + error.message, 'error');
+  }
+}
+
+// Image Upload Function
+async function uploadImage(file) {
+  if (!file) return null;
+  
+  const formData = new FormData();
+  formData.append("file", file);
+  formData.append("upload_preset", UPLOAD_PRESET);
+  
+  try {
+    showLoader();
+    const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`, {
+      method: "POST",
+      body: formData
+    });
+    
+    if (!res.ok) throw new Error('Image upload failed');
+    
+    const data = await res.json();
+    hideLoader();
+    return data.secure_url;
+  } catch (error) {
+    hideLoader();
+    showStatus('Error uploading image: ' + error.message, 'error');
+    return null;
+  }
+}
+
+// Image Preview Function
+function previewImage(event, type) {
+  const file = event.target.files[0];
+  if (!file) return;
+  
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    if (type === 'review') {
+      elements.reviewImagePreview.innerHTML = `<img src="${e.target.result}" alt="Preview">`;
+    } else if (type === 'wishlist') {
+      elements.wishlistImagePreview.innerHTML = `<img src="${e.target.result}" alt="Preview">`;
+    } else if (type === 'edit') {
+      elements.editImagePreview.innerHTML = `<img src="${e.target.result}" alt="Preview">`;
+    }
+  };
+  reader.readAsDataURL(file);
+}
+
+// Load Reviews from Firebase
+async function loadReviews() {
+  showLoader();
+  try {
+    const q = query(collection(db, "reviews"), orderBy("createdAt", "desc"));
+    const snapshot = await getDocs(q);
+    
+    currentReviews = [];
+    snapshot.forEach(doc => {
+      currentReviews.push({ id: doc.id, ...doc.data() });
+    });
+    
+    renderReviews(currentReviews);
+    hideLoader();
+  } catch (error) {
+    hideLoader();
+    showStatus('Error loading reviews: ' + error.message, 'error');
+  }
+}
+
+// Render Reviews to the DOM
+function renderReviews(reviews) {
+  if (reviews.length === 0) {
+    elements.reviewsList.innerHTML = '<p>No reviews found. Add your first review!</p>';
+    return;
+  }
+  
+  elements.reviewsList.innerHTML = reviews.map(review => `
+    <div class="item" data-id="${review.id}">
+      <img src="${review.imageUrl}" alt="${review.title}" onerror="this.src='https://via.placeholder.com/150'">
+      <div class="item-info">
+        <div class="item-title">${review.title}
+          ${review.rank ? `<span class="top10-indicator">Top 10 #${review.rank}</span>` : ''}
+        </div>
+        <div class="item-category category-${review.category}">${review.category}</div>
+        ${review.description ? `<div class="item-caption" style="color:#888;"><em>Description:</em> ${review.description}</div>` : ''}
+        <div class="item-caption">${review.caption}</div>
+        <div class="item-actions">
+          <button onclick="openEditModal('${review.id}', 'review')">Edit</button>
+          <button onclick="deleteItem('${review.id}', 'review')" class="secondary">Delete</button>
+          <button onclick="reuploadImage('${review.id}', 'review')">Change Image</button>
+          <button onclick="openCommentsModal('${review.id}')" class="secondary">Community Reviews</button>
+          ${review.rank ? 
+            `<button onclick="removeRankFromReview('${review.id}')" style="background: #888;">Remove Rank</button>` :
+            `<button onclick="assignTop10Rank('${review.id}')" style="background: gold; color: black;">Add to Top 10</button>`
+          }
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+// ---- Community Reviews (per-game user reviews) ----
+
+let currentCommentsReviewId = null;
+let currentCommentsList = [];
+
+async function openCommentsModal(reviewId) {
+  const review = currentReviews.find(r => r.id === reviewId);
+  currentCommentsReviewId = reviewId;
+  elements.commentsModalTitle.textContent = 'Community Reviews' + (review ? ' — ' + review.title : '');
+  elements.pyshRating.value = '';
+  elements.pyshText.value = '';
+  elements.commentsModal.style.display = 'flex';
+  await loadComments(reviewId);
+}
+
+function closeCommentsModal() {
+  elements.commentsModal.style.display = 'none';
+  currentCommentsReviewId = null;
+  currentCommentsList = [];
+}
+
+async function loadComments(reviewId) {
+  elements.commentsModalList.innerHTML = '<p>Loading...</p>';
+  try {
+    const q = query(collection(db, "reviews", reviewId, "comments"), orderBy("createdAt", "desc"));
+    const snapshot = await getDocs(q);
+    currentCommentsList = [];
+    snapshot.forEach(d => currentCommentsList.push({ id: d.id, ...d.data() }));
+    renderCommentsModal();
+  } catch (error) {
+    elements.commentsModalList.innerHTML = '<p>Error loading community reviews.</p>';
+    console.error('Error loading community reviews:', error);
+  }
+}
+
+function renderCommentsModal() {
+  // Average verdict badge
+  if (currentCommentsList.length === 0) {
+    elements.commentsAvg.innerHTML = 'No community reviews yet.';
+  } else {
+    const values = { Dropped: 1, Good: 2, Goated: 3 };
+    const order = ['Dropped', 'Good', 'Goated'];
+    const mean = currentCommentsList.reduce((s, c) => s + (values[c.rating] || 2), 0) / currentCommentsList.length;
+    const idx = Math.max(0, Math.min(2, Math.round(mean) - 1));
+    const cat = order[idx];
+    elements.commentsAvg.innerHTML = `Average from ${currentCommentsList.length} review(s): <span class="category-${cat}">${cat}</span>`;
+  }
+
+  // List
+  if (currentCommentsList.length === 0) {
+    elements.commentsModalList.innerHTML = '<p>No community reviews yet.</p>';
+    return;
+  }
+
+  elements.commentsModalList.innerHTML = currentCommentsList.map(c => `
+    <div class="comment-item">
+      <div class="comment-head">
+        <div class="comment-name-rating">
+          <span class="comment-name ${c.isOwner ? 'owner' : ''}">${c.isOwner ? 'Pysh' : escapeHtml(c.name)}</span>
+          <span class="comment-rating category-${c.rating}">${c.rating}</span>
+        </div>
+        <button class="small secondary" onclick="deleteComment('${c.id}')">Delete</button>
+      </div>
+      <div class="comment-text">${escapeHtml(c.text)}</div>
+    </div>
+  `).join('');
+}
+
+async function deleteComment(commentId) {
+  if (!currentCommentsReviewId) return;
+  if (!confirm('Delete this community review?')) return;
+
+  try {
+    await deleteDoc(doc(db, "reviews", currentCommentsReviewId, "comments", commentId));
+    showStatus('Community review deleted.', 'success');
+    loadComments(currentCommentsReviewId);
+  } catch (error) {
+    showStatus('Error deleting review: ' + error.message, 'error');
+  }
+}
+
+async function postPyshReview() {
+  if (!currentCommentsReviewId) return;
+
+  const rating = elements.pyshRating.value;
+  const text = elements.pyshText.value.trim();
+
+  if (!rating || !text) {
+    showStatus('Select a rating and write a review before posting.', 'error');
+    return;
+  }
+
+  showLoader();
+  try {
+    await addDoc(collection(db, "reviews", currentCommentsReviewId, "comments"), {
+      name: 'Pysh',
+      rating,
+      text,
+      isOwner: true,
+      createdAt: Date.now()
+    });
+
+    elements.pyshRating.value = '';
+    elements.pyshText.value = '';
+    showStatus('Posted as Pysh!', 'success');
+    loadComments(currentCommentsReviewId);
+  } catch (error) {
+    showStatus('Error posting review: ' + error.message, 'error');
+  } finally {
+    hideLoader();
+  }
+}
+
+// Remove rank from a specific review
+async function removeRankFromReview(reviewId) {
+  if (!confirm('Remove this game from Top 10?')) return;
+  
+  try {
+    await updateDoc(doc(db, "reviews", reviewId), {
+      rank: null
+    });
+    
+    showStatus('Rank removed successfully', 'success');
+    loadReviews();
+    loadTop10Rankings();
+    loadAvailableReviews();
+  } catch (error) {
+    showStatus('Error removing rank: ' + error.message, 'error');
+  }
+}
+
+// Load Wishlist from Firebase
+async function loadWishlist() {
+  showLoader();
+  try {
+    const q = query(collection(db, "wishlist"), orderBy("addedAt", "desc"));
+    const snapshot = await getDocs(q);
+    
+    currentWishlist = [];
+    snapshot.forEach(doc => {
+      currentWishlist.push({ id: doc.id, ...doc.data() });
+    });
+    
+    renderWishlist(currentWishlist);
+    hideLoader();
+  } catch (error) {
+    hideLoader();
+    showStatus('Error loading wishlist: ' + error.message, 'error');
+  }
+}
+
+// Render Wishlist to the DOM
+function renderWishlist(items) {
+  if (items.length === 0) {
+    elements.wishlistList.innerHTML = '<p>Wishlist is empty. Add some games you want to review!</p>';
+    return;
+  }
+  
+  elements.wishlistList.innerHTML = items.map(item => `
+    <div class="item" data-id="${item.id}">
+      <img src="${item.imageUrl}" alt="${item.title}" onerror="this.src='https://via.placeholder.com/150'">
+      <div class="item-info">
+        <div class="item-title">${item.title}</div>
+        <div class="item-caption">${item.notes || 'No notes provided'}</div>
+        <div class="item-actions">
+          <button onclick="openEditModal('${item.id}', 'wishlist')">Edit</button>
+          <button onclick="deleteItem('${item.id}', 'wishlist')" class="secondary">Delete</button>
+          <button onclick="transferToReviews('${item.id}')" class="transfer-btn">Convert to Review</button>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+// Load Users from Firebase
+async function loadUsers() {
+  showLoader();
+  try {
+    const snapshot = await getDocs(collection(db, "users"));
+    currentUsers = [];
+    snapshot.forEach(d => {
+      currentUsers.push({ id: d.id, ...d.data() });
+    });
+    currentUsers.sort((a, b) => (a.createdAt || 0) - (b.createdAt || 0));
+    renderUsers(currentUsers);
+    hideLoader();
+  } catch (error) {
+    hideLoader();
+    showStatus('Error loading users: ' + error.message, 'error');
+  }
+}
+
+// Render Users to the DOM
+function renderUsers(users) {
+  if (users.length === 0) {
+    elements.usersList.innerHTML = '<p>No users found.</p>';
+    return;
+  }
+
+  const adminCount = currentUsers.filter(u => u.role === 'admin').length;
+
+  elements.usersList.innerHTML = users.map(user => {
+    const isSelf = user.id === session.id;
+    const isLastAdmin = user.role === 'admin' && adminCount <= 1;
+    const created = user.createdAt ? new Date(user.createdAt).toLocaleDateString() : 'Unknown';
+
+    return `
+    <div class="item" data-id="${user.id}">
+      <div class="item-info">
+        <div class="item-title">${escapeHtml(user.username)}${isSelf ? ' <span style="color:#888;font-size:12px;">(you)</span>' : ''}</div>
+        <div class="item-category role-${user.role}">${user.role.toUpperCase()}</div>
+        <div class="item-caption">Joined ${created}</div>
+        <div class="item-actions">
+          <button onclick="toggleRole('${user.id}', '${user.role}')" ${isLastAdmin ? 'disabled title="Cannot demote the last remaining admin"' : ''}>
+            ${user.role === 'admin' ? 'Demote to User' : 'Promote to Admin'}
+          </button>
+          <button onclick="deleteUser('${user.id}', '${user.role}')" class="secondary" ${(isSelf || isLastAdmin) ? 'disabled title="' + (isSelf ? 'Cannot delete your own account' : 'Cannot delete the last remaining admin') + '"' : ''}>
+            Delete
+          </button>
+        </div>
+      </div>
+    </div>
+  `;
+  }).join('');
+}
+
+// Search users
+function searchUsers() {
+  const term = elements.searchUsers.value.toLowerCase();
+  const filtered = currentUsers.filter(u => u.username.toLowerCase().includes(term));
+  renderUsers(filtered);
+}
+
+// Toggle a user's role between admin and user
+async function toggleRole(userId, currentRole) {
+  const adminCount = currentUsers.filter(u => u.role === 'admin').length;
+
+  if (currentRole === 'admin' && adminCount <= 1) {
+    showStatus('Cannot demote the last remaining admin.', 'error');
+    return;
+  }
+
+  const newRole = currentRole === 'admin' ? 'user' : 'admin';
+  const targetUser = currentUsers.find(u => u.id === userId);
+
+  // The Firestore rules trust the "admins/{authUID}" marker collection, not
+  // this role field, to decide who can do admin things - so a user with no
+  // real Firebase Auth account linked (no authUID) can be labeled "admin"
+  // here but still won't be able to do anything admin-only.
+  if (newRole === 'admin' && !(targetUser && targetUser.authUID)) {
+    showStatus('This account has no Google/email sign-in linked yet, so it can\'t be made an admin. Ask them to sign in on the login page first.', 'error');
+    return;
+  }
+
+  if (!confirm(`Change this user's role to ${newRole}?`)) return;
+
+  showLoader();
+  try {
+    await updateDoc(doc(db, "users", userId), { role: newRole });
+
+    if (targetUser && targetUser.authUID) {
+      const markerRef = doc(db, "admins", targetUser.authUID);
+      if (newRole === 'admin') {
+        await setDoc(markerRef, { since: Date.now() });
+      } else {
+        await deleteDoc(markerRef).catch(() => {});
+      }
+    }
+
+    showStatus(`User is now ${newRole}.`, 'success');
+    loadUsers();
+  } catch (error) {
+    showStatus('Error updating role: ' + error.message, 'error');
+  } finally {
+    hideLoader();
+  }
+}
+
+// Delete a user account
+async function deleteUser(userId, role) {
+  if (userId === session.id) {
+    showStatus("You can't delete your own account while logged in as it.", 'error');
+    return;
+  }
+
+  const adminCount = currentUsers.filter(u => u.role === 'admin').length;
+  if (role === 'admin' && adminCount <= 1) {
+    showStatus('Cannot delete the last remaining admin.', 'error');
+    return;
+  }
+
+  if (!confirm(`Delete user "${userId}"? This cannot be undone.`)) return;
+
+  showLoader();
+  try {
+    const targetUser = currentUsers.find(u => u.id === userId);
+    if (targetUser && targetUser.role === 'admin' && targetUser.authUID) {
+      await deleteDoc(doc(db, "admins", targetUser.authUID)).catch(() => {});
+    }
+    await deleteDoc(doc(db, "users", userId));
+    showStatus('User deleted successfully.', 'success');
+    loadUsers();
+  } catch (error) {
+    showStatus('Error deleting user: ' + error.message, 'error');
+  } finally {
+    hideLoader();
+  }
+}
+
+// Add New Review with Top 10 rank
+async function addNewReview() {
+  const title = elements.reviewTitle.value.trim();
+  const category = elements.reviewCategory.value;
+  const description = elements.reviewDescription.value.trim();
+  const caption = elements.reviewCaption.value.trim();
+  const rank = elements.reviewRank.value;
+  const imageFile = elements.reviewImage.files[0];
+  
+  if (!title || !category || !caption || !imageFile) {
+    showStatus('Please fill all required fields and select an image', 'error');
+    return;
+  }
+  
+  // Validate rank
+  if (rank && top10Rankings[rank]) {
+    showStatus(`Rank #${rank} is already assigned to: ${top10Rankings[rank]}`, 'error');
+    return;
+  }
+  
+  showLoader();
+  try {
+    const imageUrl = await uploadImage(imageFile);
+    if (!imageUrl) return;
+    
+    const reviewData = {
+      title,
+      category,
+      description,
+      caption,
+      imageUrl,
+      createdAt: Date.now()
+    };
+    
+    // Add rank if selected
+    if (rank) {
+      reviewData.rank = parseInt(rank);
+    }
+    
+    await addDoc(collection(db, "reviews"), reviewData);
+    
+    showStatus('Review added successfully!' + (rank ? ` (Ranked #${rank} in Top 10)` : ''), 'success');
+    clearReviewForm();
+    loadReviews();
+    loadTop10Rankings();
+    switchTab('reviews');
+  } catch (error) {
+    showStatus('Error adding review: ' + error.message, 'error');
+  } finally {
+    hideLoader();
+  }
+}
+
+// Add to Wishlist
+async function addToWishlist() {
+  const title = elements.wishlistTitle.value.trim();
+  const notes = elements.wishlistNotes.value.trim();
+  const imageFile = elements.wishlistImage.files[0];
+  
+  if (!title || !imageFile) {
+    showStatus('Title and image are required', 'error');
+    return;
+  }
+  
+  showLoader();
+  try {
+    const imageUrl = await uploadImage(imageFile);
+    if (!imageUrl) return;
+    
+    await addDoc(collection(db, "wishlist"), {
+      title,
+      notes,
+      imageUrl,
+      addedAt: Date.now()
+    });
+    
+    showStatus('Added to wishlist!', 'success');
+    clearWishlistForm();
+    loadWishlist();
+    switchTab('wishlist');
+  } catch (error) {
+    showStatus('Error adding to wishlist: ' + error.message, 'error');
+  } finally {
+    hideLoader();
+  }
+}
+
+// Transfer Wishlist Item to Reviews
+async function transferToReviews(wishlistId) {
+  const item = currentWishlist.find(item => item.id === wishlistId);
+  if (!item) {
+    showStatus('Item not found', 'error');
+    return;
+  }
+  
+  // Store the wishlist item for later use
+  currentEditItem = { ...item, type: 'wishlist' };
+  
+  // Fill the edit modal with wishlist data
+  elements.editTitle.value = item.title;
+  elements.editCaption.value = item.notes || '';
+  elements.editDescription.value = '';
+  elements.editItemId.value = wishlistId;
+  elements.editItemType.value = 'wishlist';
+  
+  // Show current image
+  elements.currentImagePreview.innerHTML = `
+    <img src="${item.imageUrl}" alt="${item.title}" onerror="this.src='https://via.placeholder.com/150'">
+  `;
+  
+  // Clear new image input
+  elements.editImage.value = '';
+  elements.editImagePreview.innerHTML = '';
+  
+  // Show transfer message
+  document.querySelector('.modal-content h3').textContent = 'Convert to Review';
+  document.querySelector('.modal-content h3').innerHTML += '<br><small style="color: #e1282d; font-size: 14px;">Add category and review to complete transfer</small>';
+  
+  // Open modal
+  elements.editModal.style.display = 'flex';
+}
+
+// Open Edit Modal
+async function openEditModal(itemId, type) {
+  let item;
+  if (type === 'review') {
+    item = currentReviews.find(r => r.id === itemId);
+    currentEditItem = { ...item, type: 'review' };
+  } else {
+    item = currentWishlist.find(w => w.id === itemId);
+    currentEditItem = { ...item, type: 'wishlist' };
+  }
+  
+  if (!item) {
+    showStatus('Item not found', 'error');
+    return;
+  }
+  
+  // Fill form with item data
+  elements.editTitle.value = item.title;
+  elements.editCaption.value = type === 'review' ? item.caption : (item.notes || '');
+  elements.editItemId.value = itemId;
+  elements.editItemType.value = type;
+  
+  // Set category and description for reviews
+  if (type === 'review') {
+    elements.editCategory.value = item.category;
+    elements.editRank.value = item.rank || '';
+    elements.editDescription.value = item.description || '';
+  } else {
+    elements.editDescription.value = '';
+  }
+  
+  // Show current image
+  elements.currentImagePreview.innerHTML = `
+    <img src="${item.imageUrl}" alt="${item.title}" onerror="this.src='https://via.placeholder.com/150'">
+  `;
+  
+  // Clear new image preview
+  elements.editImagePreview.innerHTML = '';
+  elements.editImage.value = '';
+  
+  // Reset modal title
+  document.querySelector('.modal-content h3').textContent = 'Edit Item';
+  
+  // Validate rank for reviews
+  if (type === 'review') {
+    validateEditRank();
+  }
+  
+  // Open modal
+  elements.editModal.style.display = 'flex';
+}
+
+// Save Edit with Top 10 rank handling
+async function saveEdit() {
+  const itemId = elements.editItemId.value;
+  const itemType = elements.editItemType.value;
+  const title = elements.editTitle.value.trim();
+  const caption = elements.editCaption.value.trim();
+  const category = elements.editCategory.value;
+  const description = elements.editDescription.value.trim();
+  const rank = elements.editRank.value;
+  const imageFile = elements.editImage.files[0];
+  
+  if (!title) {
+    showStatus('Title is required', 'error');
+    return;
+  }
+  
+  if (itemType === 'review' && !category) {
+    showStatus('Category is required for reviews', 'error');
+    return;
+  }
+  
+  // Validate rank
+  if (rank) {
+    // Check if rank is already taken by another review
+    const currentItemHasRank = currentEditItem && currentEditItem.rank === parseInt(rank);
+    if (top10Rankings[rank] && !currentItemHasRank) {
+      showStatus(`Rank #${rank} is already assigned to: ${top10Rankings[rank]}`, 'error');
+      return;
+    }
+  }
+  
+  showLoader();
+  try {
+    let imageUrl = null;
+    
+    // Upload new image if provided
+    if (imageFile) {
+      imageUrl = await uploadImage(imageFile);
+      if (!imageUrl) return;
+    }
+    
+    const updateData = { title };
+    
+    if (itemType === 'review') {
+      updateData.caption = caption;
+      updateData.category = category;
+      updateData.description = description;
+      
+      // Handle rank
+      if (rank) {
+        updateData.rank = parseInt(rank);
+      } else {
+        updateData.rank = null;
+      }
+    } else {
+      updateData.notes = caption;
+    }
+    
+    // Add image URL if new image was uploaded
+    if (imageUrl) {
+      updateData.imageUrl = imageUrl;
+    }
+    
+    // Determine collection
+    const collectionName = itemType === 'review' ? 'reviews' : 'wishlist';
+    
+    // If transferring from wishlist to reviews AND category is provided
+    if (itemType === 'wishlist' && category && caption) {
+      const item = currentWishlist.find(w => w.id === itemId);
+      
+      // Prepare review data
+      const reviewData = {
+        title,
+        caption,
+        category,
+        description,
+        imageUrl: imageUrl || item.imageUrl,
+        createdAt: Date.now()
+      };
+      
+      // Add rank if selected
+      if (rank) {
+        reviewData.rank = parseInt(rank);
+      }
+      
+      // Add to reviews collection
+      await addDoc(collection(db, "reviews"), reviewData);
+      
+      // Remove from wishlist
+      await deleteDoc(doc(db, "wishlist", itemId));
+      
+      showStatus('Item transferred to reviews successfully!' + (rank ? ` (Ranked #${rank} in Top 10)` : ''), 'success');
+      loadReviews();
+      loadWishlist();
+      loadTop10Rankings();
+    } else {
+      // Handle rank conflict: If this review is taking a rank from another review
+      if (itemType === 'review' && rank && currentEditItem) {
+        const oldRank = currentEditItem.rank;
+        if (oldRank !== parseInt(rank)) {
+          // Remove rank from previous review if it had one
+          if (oldRank) {
+            // Find review with this rank and remove it
+            const q = query(collection(db, "reviews"), where("rank", "==", oldRank));
+            const snapshot = await getDocs(q);
+            if (!snapshot.empty) {
+              const oldReviewDoc = snapshot.docs[0];
+              if (oldReviewDoc.id !== itemId) {
+                await updateDoc(doc(db, "reviews", oldReviewDoc.id), {
+                  rank: null
+                });
+              }
+            }
+          }
+        }
+      }
+      
+      await updateDoc(doc(db, collectionName, itemId), updateData);
+      
+      showStatus('Item updated successfully!' + (rank ? ` (Ranked #${rank} in Top 10)` : ''), 'success');
+      
+      // Refresh appropriate lists
+      if (itemType === 'review') {
+        loadReviews();
+        loadTop10Rankings();
+        loadAvailableReviews();
+      } else {
+        loadWishlist();
+      }
+    }
+    
+    closeModal();
+  } catch (error) {
+    showStatus('Error saving changes: ' + error.message, 'error');
+  } finally {
+    hideLoader();
+  }
+}
+
+// Delete Item
+async function deleteItem(itemId, type) {
+  if (!confirm(`Are you sure you want to delete this ${type}?`)) return;
+  
+  showLoader();
+  try {
+    const collectionName = type === 'review' ? 'reviews' : 'wishlist';
+    await deleteDoc(doc(db, collectionName, itemId));
+    
+    showStatus('Item deleted successfully!', 'success');
+    
+    // Refresh appropriate list
+    if (type === 'review') {
+      loadReviews();
+      loadTop10Rankings();
+      loadAvailableReviews();
+    } else {
+      loadWishlist();
+    }
+  } catch (error) {
+    showStatus('Error deleting item: ' + error.message, 'error');
+  } finally {
+    hideLoader();
+  }
+}
+
+// Reupload Image
+async function reuploadImage(itemId, type) {
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = 'image/*';
+  
+  input.onchange = async function(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    
+    if (!confirm('Upload new image for this item?')) return;
+    
+    showLoader();
+    try {
+      const imageUrl = await uploadImage(file);
+      if (!imageUrl) return;
+      
+      const collectionName = type === 'review' ? 'reviews' : 'wishlist';
+      await updateDoc(doc(db, collectionName, itemId), {
+        imageUrl: imageUrl
+      });
+      
+      showStatus('Image updated successfully!', 'success');
+      
+      // Refresh appropriate list
+      if (type === 'review') {
+        loadReviews();
+      } else {
+        loadWishlist();
+      }
+    } catch (error) {
+      showStatus('Error updating image: ' + error.message, 'error');
+    } finally {
+      hideLoader();
+    }
+  };
+  
+  input.click();
+}
+
+// Search and Filter
+function searchItems(type) {
+  let searchTerm, items;
+  
+  if (type === 'reviews') {
+    searchTerm = elements.searchReviews.value.toLowerCase();
+    items = currentReviews.filter(item => 
+      item.title.toLowerCase().includes(searchTerm) ||
+      (item.caption && item.caption.toLowerCase().includes(searchTerm)) ||
+      (item.description && item.description.toLowerCase().includes(searchTerm))
+    );
+  } else {
+    searchTerm = elements.searchWishlist.value.toLowerCase();
+    items = currentWishlist.filter(item => 
+      item.title.toLowerCase().includes(searchTerm) ||
+      (item.notes && item.notes.toLowerCase().includes(searchTerm))
+    );
+  }
+  
+  // Apply category filter for reviews
+  if (type === 'reviews') {
+    const categoryFilter = elements.filterCategory.value;
+    if (categoryFilter) {
+      items = items.filter(item => item.category === categoryFilter);
+    }
+  }
+  
+  if (type === 'reviews') {
+    renderReviews(items);
+  } else {
+    renderWishlist(items);
+  }
+}
+
+function filterItems(type) {
+  if (type === 'reviews') {
+    searchItems('reviews');
+  }
+}
+
+// Clear Forms
+function clearReviewForm() {
+  elements.reviewTitle.value = '';
+  elements.reviewCategory.selectedIndex = 0;
+  elements.reviewDescription.value = '';
+  elements.reviewCaption.value = '';
+  elements.reviewRank.selectedIndex = 0;
+  elements.rankStatus.textContent = '';
+  elements.reviewImage.value = '';
+  elements.reviewImagePreview.innerHTML = '';
+}
+
+function clearWishlistForm() {
+  elements.wishlistTitle.value = '';
+  elements.wishlistNotes.value = '';
+  elements.wishlistImage.value = '';
+  elements.wishlistImagePreview.innerHTML = '';
+}
+
+// Modal Functions
+function closeModal() {
+  elements.editModal.style.display = 'none';
+  currentEditItem = null;
+  elements.editItemId.value = '';
+  elements.editItemType.value = '';
+  elements.editRankStatus.textContent = '';
+}
+
+// Status Messages
+function showStatus(message, type = 'success') {
+  elements.status.textContent = message;
+  elements.status.className = 'status ' + type;
+  elements.status.style.display = 'block';
+  
+  // Auto-hide success messages after 3 seconds
+  if (type === 'success') {
+    setTimeout(() => {
+      elements.status.style.display = 'none';
+    }, 3000);
+  }
+}
+
+// Loader Functions
+function showLoader() {
+  elements.loader.style.display = 'block';
+}
+
+function hideLoader() {
+  elements.loader.style.display = 'none';
+}
+
+// Make functions available globally for onclick handlers
+window.openEditModal = openEditModal;
+window.deleteItem = deleteItem;
+window.reuploadImage = reuploadImage;
+window.transferToReviews = transferToReviews;
+window.assignTop10Rank = assignTop10Rank;
+window.findAndEditReviewByRank = findAndEditReviewByRank;
+window.removeRank = removeRank;
+window.removeRankFromReview = removeRankFromReview;
+window.toggleRole = toggleRole;
+window.deleteUser = deleteUser;
+window.openCommentsModal = openCommentsModal;
+window.deleteComment = deleteComment;
+</script>
+
+</body>
+</html>
