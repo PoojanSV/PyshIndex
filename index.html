@@ -1,2423 +1,2863 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>Pysh Index - Game Reviews, Ratings & Community Verdicts</title>
-<meta name="description" content="Pysh Index' home for honest game reviews. Browse Dropped, Good, and Goated verdicts, rate games yourself, and see what the community really thinks.">
-<meta name="keywords" content="pysh, pysh index, pysh games, game reviews, video game ratings, community game verdicts">
-<meta name="author" content="Pysh Index">
-<meta name="robots" content="index, follow, max-image-preview:large">
-<link rel="canonical" href="https://pysh.site/">
-
-<!-- Open Graph / Facebook / Discord -->
-<meta property="og:type" content="website">
-<meta property="og:site_name" content="Pysh Index">
-<meta property="og:title" content="Pysh Index - Game Reviews, Ratings & Community Verdicts">
-<meta property="og:description" content="Honest, community-driven game reviews. Browse Dropped, Good, and Goated verdicts on Pysh Index and add your own.">
-<meta property="og:url" content="https://pysh.site/">
-<meta property="og:image" content="https://pysh.site/logo.png">
-<meta property="og:locale" content="en_US">
-
-<!-- Twitter / X Card -->
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Pysh Index - Game Reviews, Ratings & Community Verdicts">
-<meta name="twitter:description" content="Honest, community-driven game reviews. Browse Dropped, Good, and Goated verdicts on Pysh Index and add your own.">
-<meta name="twitter:image" content="https://pysh.site/logo.png">
-<meta name="twitter:site" content="@pyshgames">
-
-<link rel="icon" type="image/jpeg" href="logo.jpg">
-<link rel="apple-touch-icon" href="logo.png">
-<meta name="theme-color" content="#e1282d">
-
-<!-- Speed up the connection to Firebase/Firestore before the app JS needs it -->
-<link rel="preconnect" href="https://www.gstatic.com" crossorigin>
-<link rel="preconnect" href="https://firestore.googleapis.com" crossorigin>
-<link rel="dns-prefetch" href="https://www.gstatic.com">
-
-<!-- Structured data: tells Google this IS the Pysh / Pysh Index / Pysh Games entity,
-     and enables a sitelinks searchbox in results for brand searches. -->
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "WebSite",
-  "name": "Pysh Index",
-  "alternateName": ["Pysh", "Pysh Games"],
-  "url": "https://pysh.site/",
-  "description": "Pysh Index is Pysh Games' home for honest, community-driven game reviews, ratings, and verdicts.",
-  "publisher": {
-    "@type": "Organization",
-    "name": "Pysh Games",
-    "url": "https://pysh.site/",
-    "logo": "https://pysh.site/logo.png",
-    "sameAs": [
-      "https://www.youtube.com/pyshgames",
-      "https://www.instagram.com/pyshgames",
-      "https://www.x.com/pyshgames"
-    ]
-  },
-  "potentialAction": {
-    "@type": "SearchAction",
-    "target": {
-      "@type": "EntryPoint",
-      "urlTemplate": "https://pysh.site/?q={search_term_string}"
-    },
-    "query-input": "required name=search_term_string"
-  }
-}
-</script>
-
-<style>
-/* =========================================================
-   ROOT / SCALE
-   All spacing, radii and most font-sizes use clamp() so the
-   whole layout scales smoothly with the viewport instead of
-   jumping at fixed breakpoints.
-   ========================================================= */
-*, *::before, *::after { box-sizing: border-box; }
-
-:root {
-  --red: #e1282d;
-  --bg: #000;
-  --panel: #111;
-  --muted: #ccc;
-
-  --container-w: min(1400px, 94vw);
-
-  --gap: clamp(8px, 2.2vw, 32px);
-  --gap-sm: clamp(6px, 1.2vw, 18px);
-
-  --radius-lg: clamp(14px, 2vw, 30px);
-  --radius-md: clamp(10px, 1.3vw, 20px);
-  --radius-sm: clamp(8px, 1vw, 15px);
-}
-
-html { scroll-behavior: smooth; }
-
-body {
-  background: var(--bg);
-  font-family: Arial, sans-serif;
-  margin: 0;
-  color: white;
-  overflow-x: hidden;
-}
-
-/* HEADER */
-header {
-  padding: clamp(8px, 1.2vw, 16px) 0;
-  background-color: #111;
-}
-
-nav {
-  display: grid;
-  grid-template-columns: 1fr auto 1fr;
-  align-items: center;
-  width: var(--container-w);
-  margin: 0 auto;
-  gap: var(--gap-sm);
-}
-
-nav a {
-  color: white;
-  text-decoration: none;
-  font-size: clamp(16px, 2.4vw, 35px);
-  padding: clamp(6px, 1.2vw, 20px);
-}
-
-nav a:hover { color: var(--red); }
-
-nav > a:first-of-type { justify-self: center; }
-
-#l { width: clamp(90px, 12vw, 250px); height: auto; display: block; }
-
-#navLeft {
-  
-  display: flex;
-  align-items: center;
-}
-
-#right {
-  margin-left:45%;
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: clamp(4px, 0.8vw, 10px);
-}
-
-/* SEARCH TOGGLE ICON (nav) */
-.searchIcon {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: clamp(30px, 3vw, 44px);
-  height: clamp(30px, 3vw, 44px);
-  color: var(--muted);
-  cursor: pointer;
-  margin-right: clamp(2px, 0.6vw, 8px);
-  background: none;
-  border: none;
-  padding: 0;
-}
-.searchIcon svg { width: 60%; height: 60%; pointer-events: none; }
-.searchIcon:hover { color: var(--red); }
-
-/* =========================================================
-   SEARCH SIDE PANEL
-   Mirrors the profile side panel, but anchored to the right.
-   ========================================================= */
-#searchOverlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.6);
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.35s ease;
-  z-index: 1999;
-}
-#searchOverlay.open { opacity: 1; pointer-events: auto; }
-
-#searchPanel {
-  position: fixed;
-  top: 0;
-  right: 0;
-  height: 100vh;
-  width: min(100vw, max(380px, 33vw));
-  background: #111;
-
-  overflow-y: auto;
-  transform: translateX(100%);
-  transition: transform 0.35s ease;
-  z-index: 2000;
-
-  display: flex;
-  flex-direction: column;
-  padding: clamp(24px, 3vw, 48px) clamp(24px, 3vw, 44px);
-}
-
-#searchPanel.open { transform: translateX(0); }
-
-.searchInputWrap {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  background: #000;
-  border: 2px solid var(--red);
-  border-radius: var(--radius-sm);
-  padding: clamp(10px, 1.1vw, 16px) clamp(14px, 1.4vw, 20px);
-  margin: 6px 0 24px;
-}
-.searchInputWrap svg { width: clamp(20px, 1.6vw, 26px); height: clamp(20px, 1.6vw, 26px); color: var(--muted); flex-shrink: 0; pointer-events: none; }
-
-.searchPanelInput {
-  flex: 1;
-  min-width: 0;
-  border: none;
-  background: transparent;
-  color: white;
-  font-family: inherit;
-  font-size: clamp(16px, 1.3vw, 20px);
-}
-.searchPanelInput:focus { outline: none; }
-
-.searchResultsPanel {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.searchResultItem {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-  padding: clamp(10px, 1vw, 14px);
-  border-radius: 10px;
-  cursor: pointer;
-}
-.searchResultItem:hover { background: rgba(225,40,45,0.15); }
-.searchResultItem img {
-  width: clamp(50px, 4.2vw, 68px);
-  height: clamp(64px, 5.4vw, 86px);
-  object-fit: cover;
-  border-radius: 8px;
-  flex-shrink: 0;
-}
-.searchResultItem span { color: white; font-size: clamp(16px, 1.3vw, 20px); }
-.searchNoResults, .searchHint { color: #888; font-size: clamp(14px, 1.1vw, 17px); padding: 24px 10px; text-align: center; }
-
-/* AUTH NAV */
-nav a.nav-auth {
-  font-size: clamp(16px, 1.1vw, 24px);
-  padding: clamp(6px, 0.8vw, 10px) clamp(8px, 1.2vw, 15px);
-  border: 2px solid var(--red);
-  border-radius: var(--radius-sm);
-  white-space: nowrap;
-  margin-left:24%;
-}
-#right a.nav-auth { margin-left: clamp(4px, 0.6vw, 10px); }
-nav a.nav-auth:hover { background: var(--red); color: white; }
-
-hr { background-color: var(--red); height: 5px; border: solid var(--red); }
-
-/* LOADER */
-#loader {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: clamp(30px, 5vw, 60px);
-}
-
-.spinner-logo {
-  width: clamp(40px, 5vw, 60px);
-  height: clamp(54px, 6.6vw, 80px);
-  animation: spin 1.5s linear infinite;
-  transform-origin: center center;
-}
-
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
-
-.loader-text {
-  font-size: clamp(16px, 2vw, 24px);
-  color: var(--red);
-}
-
-/* TITLE ROW / FILTER BUTTONS
-   This row is locked to the same width as the card grid below it,
-   and its 3 buttons split that width equally so their outer edges
-   line up exactly with the edges of the card grid. */
-#titleRow {
-  width: var(--container-w);
-  margin: clamp(24px, 4vw, 40px) auto;
-  display: flex;
-  justify-content: center;
-}
-
-.btnGroup {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: var(--gap);
-  width: 100%;
-}
-
-.boxBtn {
-  background: #111;
-  border: 3px solid var(--red);
-  color: white;
-  width: 100%;
-  margin: 0;
-  padding: clamp(10px, 1.4vw, 14px) clamp(10px, 1.6vw, 20px);
-  font-size: clamp(14px, 1.8vw, 26px);
-  border-radius: var(--radius-sm);
-  cursor: pointer;
-}
-
-.boxBtn:hover { background: var(--red); }
-
-h1 { font-size: clamp(28px, 5vw, 60px); margin: 0 clamp(10px, 2vw, 30px); white-space: nowrap; }
-
-/* REVIEWS / WISHLIST GRID
-   CSS grid with a fixed column count so the row layout stays
-   consistent (3 up, 2 on mobile) while each card's own size still
-   flows fluidly with the viewport width in between. */
-#reviews,
-#wishlist {
-  display: none; /* JS sets this to "grid" when shown */
-  grid-template-columns: repeat(3, 1fr);
-  gap: var(--gap);
-  width: var(--container-w);
-  margin: clamp(30px, 5vw, 50px) auto;
-  perspective: 1200px;
-}
-
-/* CARD */
-.card {
-  background: #111;
-  border: 3px solid var(--red);
-  border-radius: var(--radius-lg);
-  padding: clamp(10px, 1.6vw, 20px);
-  text-align: center;
-  transition: transform 0.35s ease;
-  overflow: visible;
-  position: relative;
-  display: flex;
-  flex-direction: column;
-}
-
-/* WISHLIST CARD SPECIFIC */
-.wishlist-card { border-color: var(--red); }
-
-.wishlist-badge {
-  position: absolute;
-  top: clamp(6px, 0.8vw, 10px);
-  right: clamp(6px, 0.8vw, 10px);
-  background: gold;
-  color: black;
-  padding: clamp(3px, 0.5vw, 5px) clamp(6px, 0.9vw, 10px);
-  border-radius: var(--radius-sm);
-  font-size: clamp(9px, 1vw, 14px);
-  font-weight: bold;
-  z-index: 10;
-}
-
-.imgWrap {
-  position: relative;
-  overflow: hidden;
-  border-radius: var(--radius-md);
-}
-
-.card img {
-  width: 100%;
-  aspect-ratio: 7 / 9;
-  object-fit: cover;
-  cursor: pointer;
-  transition: transform 0.35s ease, box-shadow 0.35s ease;
-  display: block;
-  margin: auto;
-  position: relative;
-  z-index: 1;
-}
-
-/* Wishlist images are not clickable */
-.wishlist-card img { cursor: default; }
-
-/* CLICK ANIMATION - brief pulse/flash when a game card is opened */
-@keyframes cardClickPulse {
-  0%   { transform: scale(1); filter: brightness(1); }
-  35%  { transform: scale(0.94); filter: brightness(1.25); }
-  100% { transform: scale(1); filter: brightness(1); }
-}
-
-.imgWrap.clicked img { animation: cardClickPulse 0.4s ease; }
-
-.imgWrap::before {
-  content: '';
-  position: absolute;
-  top: -120%;
-  left: -150%;
-  width: 200%;
-  height: 200%;
-  background: linear-gradient(
-    120deg,
-    transparent 30%,
-    rgba(255,255,255,0.35) 50%,
-    transparent 70%
-  );
-  transform: rotate(25deg);
-  transition: top 0.7s ease, left 0.7s ease;
-  pointer-events: none;
-  z-index: 2;
-}
-
-.card h3 {
-  margin: clamp(8px, 1vw, 15px) 0 0;
-  font-size: clamp(11px, 1.6vw, 26px);
-  color: white;
-  width: 100%;
-  text-align: center;
-  line-height: 1.25;
-}
-
-.card:hover img, .wishlist-card:hover img {
-  transform: scale(1.1) translateY(-15px);
-  box-shadow: 0 30px 60px rgba(225,40,45,0.35);
-}
-.card:hover .imgWrap::before { top: -20%; left: -20%; }
-
-/* FULL REVIEW PAGE */
-#reviewPage {
-  display: none; /* toggled by JS */
-  width: var(--container-w);
-  margin: clamp(40px, 6vw, 60px) auto;
-  gap: var(--gap);
-  align-items: flex-start;
-  flex-wrap: wrap;
-  opacity: 0;
-  transform: translateY(25px);
-  transition: opacity 0.45s ease, transform 0.45s ease;
-  box-sizing: border-box;
-}
-
-@media (min-width: 641px) {
-  #reviewPage {
-    padding: 0 clamp(20px, 4vw, 70px);
-  }
-}
-
-#reviewPage.visible { opacity: 1; transform: translateY(0); }
-
-
-#reviewPage img {
-  flex: 1 1 260px;
-  max-width: 350px;
-  width: 100%;
-  border-radius: var(--radius-lg);
-  border: 3px solid var(--red);
-}
-
-#reviewContent { flex: 2 1 320px; min-width: 0; }
-#reviewContent #reviewTitle {
-    font-size: 50px;
-}
-#reviewContent p {
-  color: grey;
-  font-size: clamp(16px, 1.8vw, 26px);
-  line-height: 1.5;
-  max-width: 700px;
-}
-
-/* GAME DESCRIPTION + AVG RATING (beside photo) */
-#reviewDescription {
-  color: #ccc;
-  font-size: clamp(14px, 1.3vw, 20px);
-  line-height: 1.5;
-  max-width: 600px;
-  margin-bottom: clamp(16px, 2vw, 25px);
-}
-
-#reviewMetaBadge { margin: 0 0 10px; }
-
-#back {
-  background: var(--red);
-  color: white;
-  border: none;
-  padding: clamp(10px, 1.2vw, 12px) clamp(18px, 2vw, 25px);
-  font-size: clamp(15px, 1.2vw, 18px);
-  border-radius: var(--radius-sm);
-  margin-top: clamp(20px, 3vw, 30px);
-  cursor: pointer;
-  display: block;
-}
-
-/* CATEGORY BACK BUTTON */
-#catBack {
-  display: none; /* shown by JS */
-  margin: clamp(24px, 4vw, 40px) auto;
-  width: auto;
-}
-
-/* FOOTER */
-footer { background-color: #111; padding-bottom: clamp(20px, 4vw, 30px); font-size: clamp(13px, 1.4vw, 20px); }
-
-#f { display: flex; justify-content: center; flex-wrap: wrap; gap: clamp(16px, 3vw, 50px); }
-#f a { display: flex; align-items: center; gap: 8px; text-decoration: none; color: var(--muted); }
-
-/* Fixed-size box that flex-centers the icon inside it, so each icon sits
-   dead-center regardless of its own aspect ratio or any padding baked into
-   the source image itself. */
-.fIconWrap {
-  width: clamp(20px, 1.8vw, 26px);
-  height: clamp(20px, 1.8vw, 26px);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-}
-.fIconWrap img {
-  display: block;
-  max-width: 100%;
-  max-height: 100%;
-  width: auto;
-  height: auto;
-  object-fit: contain;
-  margin: 0 auto;
-}
-
-#lf { height: clamp(60px, 6vw, 100px); width: clamp(60px, 6vw, 100px); display: block; margin: 0 auto; }
-
-#c {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  align-items: center;
-  width: 100%;
-  color: var(--muted);
-  margin-top: 14px;
-  text-align: center;
-}
-
-#c > div {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 0;
-}
-
-
-	
-
-
-/* ACTIVE BUTTON STYLE */
-.active { background: var(--red) !important; color: white !important; }
-
-/* COMMUNITY REVIEWS SECTION */
-#communitySection {
-  display: none;
-  width: min(1400px, 94vw);
-  margin: 20px auto 60px;
-  box-sizing: border-box;
-}
-
-@media (min-width: 641px) {
-  #communitySection {
-    padding: 0 clamp(20px, 4vw, 70px);
-  }
-}
-
-#communitySection h3 {
-  font-size: clamp(26px, 1.8vw, 29px);
-  color: var(--red);
-  border-bottom: 2px solid var(--red);
-  padding-bottom: 10px;
-  margin-bottom: 20px;
-}
-
-#avgBadgeWrap { margin: 0 0 30px; font-size: clamp(13px, 1.3vw, 16px); }
-#avgBadgeWrap .avg-label { color: var(--muted); margin-right: 10px; }
-
-#avgBadge {
-  font-weight: bold;
-  padding: 5px 16px;
-  border-radius: 20px;
-  border: 2px solid #555;
-  color: #888;
-}
-
-#avgBadge.avg-Goated { color: limegreen; border-color: limegreen; }
-#avgBadge.avg-Good { color: dodgerblue; border-color: dodgerblue; }
-#avgBadge.avg-Dropped { color: yellow; border-color: yellow; }
-
-#reviewForm {
-  background: #111;
-  border: 2px solid var(--red);
-  border-radius: var(--radius-md);
-  padding: clamp(15px, 2vw, 20px) clamp(16px, 2.2vw, 25px);
-  margin-bottom: 35px;
-}
-
-#reviewForm label { display: block; margin: 12px 0 6px; color: var(--muted); font-size: 15px; }
-
-#reviewForm input[type="text"],
-#reviewForm select,
-#reviewForm textarea {
-  width: 100%;
-  padding: 10px 12px;
-  border-radius: 8px;
-  border: 1px solid #444;
-  background: #000;
-  color: white;
-  font-family: inherit;
-  font-size: 18px;
-}
-
-#reviewForm textarea { min-height: 90px; resize: vertical; }
-
-#commentName[readonly] { color: var(--muted); border-color: #444; cursor: not-allowed; }
-#commentName.owner-name[readonly] { color: var(--red); font-weight: bold; border-color: var(--red); }
-
-#submitReviewBtn {
-  margin-top: 18px;
-  background: var(--red);
-  color: white;
-  border: none;
-  padding: 10px 26px;
-  border-radius: 10px;
-  font-size: 17px;
-  font-weight: bold;
-  cursor: pointer;
-}
-#submitReviewBtn:hover { background: white; color: var(--red); }
-
-#reviewFormMsg { margin-top: 12px; font-size: 14px; }
-
-.commentCard {
-  background: #111;
-  border: 1px solid #333;
-  border-radius: 12px;
-  padding: 16px 20px;
-  margin-bottom: 16px;
-}
-
-.commentCard .commentHead { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; flex-wrap: wrap; }
-.commentCard .commentName { font-weight: bold; font-size: 18px; color: white; }
-.commentCard .commentName.owner { color: var(--red); }
-
-.commentCard .commentRating { font-size: 11px; font-weight: bold; padding: 3px 10px; border-radius: 12px; }
-
-.rating-Goated { background: rgba(50,205,50,0.2); color: limegreen; }
-.rating-Good { background: rgba(30,144,255,0.2); color: dodgerblue; }
-.rating-Dropped { background: rgba(255,255,0,0.2); color: yellow; }
-
-.commentCard .commentText { color: var(--muted); font-size: 17px; line-height: 1.4; }
-
-#noComments { color: #888; font-size: 14px; }
-
-.commentAvatar {
-  width: 34px;
-  height: 34px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 2px solid #333;
-  vertical-align: middle;
-}
-
-.commentCard.pinned { border-color: var(--red); }
-
-.pinnedTag {
-  font-size: 10px;
-  color: #888;
-  border: 1px solid #444;
-  border-radius: 10px;
-  padding: 2px 8px;
-  margin-left: 4px;
-}
-
-/* REPLY THREADS (Reddit-style: collapsed until "Reply" is clicked) */
-.commentActions { margin-top: 10px; }
-
-.replyToggleBtn,
-.editReviewBtn,
-.deleteReviewBtn {
-  background: none;
-  border: none;
-  color: var(--muted);
-  font-size: 15px;
-  font-weight: bold;
-  cursor: pointer;
-  padding: 4px 0;
-  margin-right: 16px;
-  font-family: inherit;
-}
-.replyToggleBtn:hover,
-.editReviewBtn:hover { color: var(--red); }
-.deleteReviewBtn:hover { color: #ff5c5c; }
-.deleteReviewBtn:disabled { opacity: 0.6; cursor: not-allowed; }
-
-.deleteMsg { margin: -6px 0 6px; font-size: 11px; min-height: 14px; }
-
-/* OWN-REVIEW EDIT FORM (mirrors the reply form styling) */
-.editReviewWrap {
-  margin-top: 12px;
-  padding-top: 12px;
-  border-top: 1px dashed #2a2a2a;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.editRatingSelect {
-  padding: 8px 10px;
-  border-radius: 8px;
-  border: 1px solid #444;
-  background: #000;
-  color: white;
-  font-family: inherit;
-  font-size: 15px;
-  width: 100%;
-}
-
-.editTextArea {
-  width: 100%;
-  min-height: 70px;
-  padding: 8px 10px;
-  border-radius: 8px;
-  border: 1px solid #444;
-  background: #000;
-  color: white;
-  font-family: inherit;
-  font-size: 15px;
-  resize: vertical;
-}
-
-.editSaveBtn, .editCancelBtn {
-  margin-top: 4px;
-  margin-right: 8px;
-  border: none;
-  padding: 7px 16px;
-  border-radius: 8px;
-  font-size: 12px;
-  font-weight: bold;
-  cursor: pointer;
-  font-family: inherit;
-}
-.editSaveBtn { background: var(--red); color: white; }
-.editSaveBtn:hover { background: white; color: var(--red); }
-.editSaveBtn:disabled { opacity: 0.6; cursor: not-allowed; }
-
-.editCancelBtn { background: #333; color: var(--muted); }
-.editCancelBtn:hover { background: #444; color: white; }
-
-.editMsg { margin-top: 2px; font-size: 11px; min-height: 14px; }
-
-.repliesWrap {
-  margin-top: 12px;
-  padding-left: clamp(14px, 2vw, 22px);
-  border-left: 2px solid #2a2a2a;
-}
-
-.replyCard {
-  background: #0a0a0a;
-  border: 1px solid #262626;
-  border-radius: 10px;
-  padding: 10px 14px;
-  margin-bottom: 10px;
-}
-
-.replyCard .commentHead { gap: 8px; margin-bottom: 6px; }
-.replyCard .commentAvatar { width: 26px; height: 26px; }
-.replyCard .commentName { font-size: 17px; }
-.replyCard .commentText { font-size: 15px; }
-
-.noReplies { color: #666; font-size: 12px; margin: 2px 0 12px; }
-
-.replyForm textarea {
-  width: 100%;
-  min-height: 60px;
-  padding: 8px 10px;
-  border-radius: 8px;
-  border: 1px solid #444;
-  background: #000;
-  color: white;
-  font-family: inherit;
-  font-size: 15px;
-  resize: vertical;
-}
-
-.replySubmitBtn {
-  margin-top: 8px;
-  background: var(--red);
-  color: white;
-  border: none;
-  padding: 7px 16px;
-  border-radius: 8px;
-  font-size: 12px;
-  font-weight: bold;
-  cursor: pointer;
-}
-.replySubmitBtn:hover { background: white; color: var(--red); }
-.replySubmitBtn:disabled { opacity: 0.6; cursor: not-allowed; }
-
-.replyMsg { margin-top: 6px; font-size: 11px; min-height: 14px; }
-
-.replyGuestBlock {
-  color: #888;
-  font-size: 12px;
-  margin: 4px 0 12px;
-}
-.replyGuestBlock a { color: var(--red); font-weight: bold; text-decoration: none; }
-.replyGuestBlock a:hover { text-decoration: underline; }
-
-/* GUEST BLOCK MESSAGE */
-#guestBlock {
-  background: #111;
-  border: 2px solid #444;
-  border-radius: var(--radius-md);
-  padding: 20px 25px;
-  margin-bottom: 35px;
-  color: var(--muted);
-  font-size: 14px;
-}
-#guestBlock a { color: var(--red); font-weight: bold; text-decoration: none; }
-#guestBlock a:hover { text-decoration: underline; }
-
-/* ALREADY-REVIEWED NOTICE (shown instead of the post form once a user has one review) */
-#alreadyReviewedMsg {
-  background: #111;
-  border: 2px solid #444;
-  border-radius: var(--radius-md);
-  padding: 20px 25px;
-  margin-bottom: 35px;
-  color: var(--muted);
-  font-size: 14px;
-}
-
-/* PROFILE ICON (nav) */
-.profileIcon {
-  width: clamp(40px, 4vw, 67px);
-  height: clamp(40px, 4vw, 67px);
-  border-radius: 50%;
-  object-fit: cover;
-  border: 3px solid var(--red);
-  cursor: pointer;
-  margin-left: 25%;
-  vertical-align: middle;
-  transition: transform 0.2s ease;
-}
-.profileIcon:hover { transform: scale(1.08); }
-
-/* =========================================================
-   PROFILE SIDE PANEL
-   ========================================================= */
-#profileOverlay {
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.6);
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.35s ease;
-  z-index: 1999;
-}
-#profileOverlay.open { opacity: 1; pointer-events: auto; }
-
-#profilePanel {
-  position: fixed;
-  top: 0;
-  left: 0;
-  height: 100vh;
-  width: min(100vw, max(380px, 33vw));
-  background: #111;
-
-  overflow-y: auto;
-  transform: translateX(-100%);
-  transition: transform 0.35s ease;
-  z-index: 2000;
-
-  display: flex;
-  flex-direction: column;
-  padding: clamp(24px, 3vw, 48px) clamp(24px, 3vw, 44px);
-}
-
-#profilePanel.open { transform: translateX(0); }
-
-#profilePanel .panelTop,
-#searchPanel .panelTop {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: clamp(10px, 1.2vw, 18px);
-}
-
-#profilePanel h3,
-#searchPanel h3 { font-size: clamp(22px, 1.8vw, 30px); color: var(--red); margin: 0; }
-
-.closePanel { font-size: clamp(28px, 2.2vw, 38px); line-height: 1; cursor: pointer; color: var(--muted); }
-.closePanel:hover { color: var(--red); }
-
-.profileAvatarWrap { text-align: center; margin: 10px 0 24px; }
-
-.profileAvatarLarge {
-  width: clamp(100px, 9vw, 150px);
-  height: clamp(100px, 9vw, 150px);
-  border-radius: 50%;
-  object-fit: cover;
-  border: 3px solid var(--red);
-  display: block;
-  margin: 0 auto 16px;
-}
-
-.profileUsername { font-size: clamp(20px, 1.6vw, 28px); font-weight: bold; text-align: center; margin-bottom: 4px; }
-.profileRole { text-align: center; font-size: clamp(13px, 1vw, 17px); color: #888; margin-bottom: 0; }
-
-/* USERNAME EDIT (profile panel) */
-.profileUsernameRow {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-}
-.profileUsernameRow .profileUsername { margin-bottom: 0; }
-
-.editIconBtn {
-  background: none;
-  border: none;
-  color: var(--muted);
-  font-size: clamp(15px, 1.2vw, 19px);
-  cursor: pointer;
-  padding: 2px 4px;
-  line-height: 1;
-}
-.editIconBtn:hover { color: var(--red); }
-
-#usernameEditWrap {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  margin: 10px 0 4px;
-}
-
-.usernameEditActions { display: flex; gap: 10px; }
-.usernameEditActions .panelBtn { width: auto; padding: clamp(8px, 0.9vw, 12px) clamp(16px, 1.6vw, 22px); font-size: clamp(13px, 1vw, 15px); }
-
-.usernameHint { font-size: clamp(11px, 0.9vw, 14px); color: #888; margin-top: -2px; }
-
-#usernameMsg { font-size: clamp(13px, 1vw, 16px); text-align: center; }
-
-/* section dividers use gap instead of manual margins */
-#profilePanel > hr {
-  border: none;
-  border-top: 1px solid #333;
-  background: none;
-  height: 0;
-  margin: 24px 0;
-  width: 100%;
-}
-
-.panelSection { display: flex; flex-direction: column; gap: 12px; }
-
-#profilePanel label { display: block; margin: 0; color: var(--muted); font-size: clamp(13px, 1vw, 16px); }
-
-#profilePanel input[type="text"],
-#profilePanel input[type="password"],
-#profilePanel input[type="file"] {
-  width: 100%;
-  padding: clamp(10px, 1vw, 14px) clamp(12px, 1.2vw, 16px);
-  border-radius: 8px;
-  border: 1px solid #444;
-  background: #000;
-  color: white;
-  font-family: inherit;
-  font-size: clamp(14px, 1.1vw, 17px);
-}
-
-.panelBtn {
-  background: var(--red);
-  color: white;
-  border: none;
-  padding: clamp(11px, 1.1vw, 16px) clamp(20px, 2vw, 26px);
-  border-radius: 10px;
-  font-size: clamp(14px, 1.1vw, 17px);
-  font-weight: bold;
-  cursor: pointer;
-  width: 100%;
-}
-.panelBtn:hover { background: white; color: var(--red); }
-
-.panelBtn.secondaryBtn {
-  background: transparent;
-  border: 2px solid var(--red);
-  color: var(--red);
-}
-.panelBtn.secondaryBtn:hover { background: var(--red); color: white; }
-.panelBtn.secondaryBtn.open { background: var(--red); color: white; }
-
-.panelBtn.logoutBtn { background: #333; margin-top: auto; }
-.panelBtn.logoutBtn:hover { background: var(--red); color: white; }
-
-#profileMsg, #passwordMsg { margin-top: 4px; font-size: clamp(13px, 1vw, 16px); }
-
-/* Everything below this point relies on fluid clamp() sizing, so
-   very few hard breakpoints are needed. These remaining rules only
-   cover structural stacking that clamp() can't express. */
-@media (max-width: 640px) {
-
-  #reviews, #wishlist { grid-template-columns: repeat(2, 1fr); }
-
-  #reviewPage { flex-direction: column; align-items: center; text-align: center; }
-  #reviewPage img { max-width: 70%; }
-  #reviewContent { width: 100%; }
-  #reviewContent p, #reviewDescription { margin-left: auto; margin-right: auto; }
-  #back { margin-left: auto; margin-right: auto; }
-
-  #c {
-    justify-content: center;
-    text-align: center;
-    gap: clamp(6px, 2.5vw, 14px);
-    font-size: clamp(11px, 3vw, 14px);
-  }
-}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Pysh Index - Game Reviews, Ratings & Community Verdicts</title>
+    <meta name="description" content="Pysh Index' home for honest game reviews. Browse Dropped, Good, and Goated verdicts, rate games yourself, and see what the community really thinks.">
+    <meta name="keywords" content="pysh, pysh index, pysh games, game reviews, video game ratings, community game verdicts">
+    <meta name="author" content="Pysh Index">
+    <meta name="robots" content="index, follow, max-image-preview:large">
+    <link rel="canonical" href="https://pysh.site/">
+
+    <!-- Open Graph / Facebook / Discord -->
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Pysh Index">
+    <meta property="og:title" content="Pysh Index - Game Reviews, Ratings & Community Verdicts">
+    <meta property="og:description" content="Honest, community-driven game reviews. Browse Dropped, Good, and Goated verdicts on Pysh Index and add your own.">
+    <meta property="og:url" content="https://pysh.site/">
+    <meta property="og:image" content="https://pysh.site/logo.png">
+    <meta property="og:locale" content="en_US">
+
+    <!-- Twitter / X Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Pysh Index - Game Reviews, Ratings & Community Verdicts">
+    <meta name="twitter:description" content="Honest, community-driven game reviews. Browse Dropped, Good, and Goated verdicts on Pysh Index and add your own.">
+    <meta name="twitter:image" content="https://pysh.site/logo.png">
+    <meta name="twitter:site" content="@pyshgames">
+
+    <link rel="icon" type="image/jpeg" href="logo.jpg">
+    <link rel="apple-touch-icon" href="logo.png">
+    <meta name="theme-color" content="#e1282d">
+
+    <link rel="preconnect" href="https://www.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://firestore.googleapis.com" crossorigin>
+    <link rel="dns-prefetch" href="https://www.gstatic.com">
+
+    <script type="application/ld+json">
+        {
+            "@context": "https://schema.org",
+            "@type": "WebSite",
+            "name": "Pysh Index",
+            "alternateName": ["Pysh", "Pysh Games"],
+            "url": "https://pysh.site/",
+            "description": "Pysh Index is Pysh Games' home for honest, community-driven game reviews, ratings, and verdicts.",
+            "publisher": {
+                "@type": "Organization",
+                "name": "Pysh Games",
+                "url": "https://pysh.site/",
+                "logo": "https://pysh.site/logo.png",
+                "sameAs": [
+                    "https://www.youtube.com/pyshgames",
+                    "https://www.instagram.com/pyshgames",
+                    "https://www.x.com/pyshgames"
+                ]
+            },
+            "potentialAction": {
+                "@type": "SearchAction",
+                "target": {
+                    "@type": "EntryPoint",
+                    "urlTemplate": "https://pysh.site/?q={search_term_string}"
+                },
+                "query-input": "required name=search_term_string"
+            }
+        }
+    </script>
+
+    <style>
+        /* =========================================================
+           ROOT / SCALE
+           ========================================================= */
+        *,
+        *::before,
+        *::after {
+            box-sizing: border-box;
+        }
+
+        :root {
+            --red: #e1282d;
+            --bg: #000;
+            --panel: #111;
+            --muted: #ccc;
+
+            --container-w: min(1400px, 94vw);
+
+            --gap: clamp(8px, 2.2vw, 32px);
+            --gap-sm: clamp(6px, 1.2vw, 18px);
+
+            --radius-lg: clamp(14px, 2vw, 30px);
+            --radius-md: clamp(10px, 1.3vw, 20px);
+            --radius-sm: clamp(8px, 1vw, 15px);
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            background: var(--bg);
+            font-family: Arial, sans-serif;
+            margin: 0;
+            color: white;
+            overflow-x: hidden;
+            padding-bottom: 60px;
+        }
+
+        /* HEADER */
+        header {
+            padding: clamp(6px, 1vw, 10px) 0;
+            background-color: #111;
+        }
+
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: var(--container-w);
+            margin: 0 auto;
+            padding: 0 clamp(16px, 2.5vw, 40px);
+        }
+
+        #logoLink {
+            display: inline-flex;
+            align-items: center;
+            text-decoration: none;
+            margin-left: clamp(10px, 1.8vw, 25px);
+        }
+
+        #l {
+            width: clamp(100px, 11vw, 180px);
+            height: auto;
+            display: block;
+        }
+
+        #right {
+            display: flex;
+            align-items: center;
+            gap: clamp(10px, 1.3vw, 18px);
+            margin-right: clamp(8px, 1.5vw, 20px);
+        }
+
+        /* LARGE, HEADER-FILLING NAV ICONS (NO SCALE ANIMATIONS) */
+        .headerNavIcon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: clamp(48px, 4.2vw, 58px);
+            height: clamp(48px, 4.2vw, 58px);
+            color: var(--muted);
+            background: none;
+            border: 2px solid transparent;
+            border-radius: 50%;
+            padding: 0;
+            cursor: pointer;
+            text-decoration: none;
+            box-sizing: border-box;
+            transition: border-color 0.2s ease, color 0.2s ease;
+            flex-shrink: 0;
+        }
+
+        .headerNavIcon svg {
+            width: 68%;
+            height: 68%;
+            pointer-events: none;
+        }
+
+        .headerNavIcon:hover {
+            color: var(--red);
+            border-color: var(--red);
+        }
+
+        /* Profile Button in Desktop Header */
+        .profileBtn {
+            border: 2px solid var(--red);
+            padding: 0;
+            overflow: hidden;
+            margin-right: clamp(12px, 1.8vw, 26px); /* Shifts Profile more to the left */
+        }
+
+        .profileBtn #profileIcon {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+            display: block;
+            margin: 0;
+        }
+
+        .profileBtn:hover {
+            border-color: white;
+        }
+
+        /* SEARCH SIDE PANEL */
+        #searchOverlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.6);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.35s ease;
+            z-index: 1999;
+        }
+        #searchOverlay.open {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        #searchPanel {
+            position: fixed;
+            top: 0;
+            right: 0;
+            height: 100vh;
+            width: min(100vw, max(380px, 33vw));
+            background: #111;
+            overflow-y: auto;
+            transform: translateX(100%);
+            transition: transform 0.35s ease;
+            z-index: 2000;
+            display: flex;
+            flex-direction: column;
+            padding: clamp(24px, 3vw, 48px) clamp(24px, 3vw, 44px);
+        }
+
+        #searchPanel.open {
+            transform: translateX(0);
+        }
+
+        .searchInputWrap {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: #000;
+            border: 2px solid var(--red);
+            border-radius: var(--radius-sm);
+            padding: clamp(10px, 1.1vw, 16px) clamp(14px, 1.4vw, 20px);
+            margin: 6px 0 24px;
+        }
+        .searchInputWrap svg {
+            width: clamp(20px, 1.6vw, 26px);
+            height: clamp(20px, 1.6vw, 26px);
+            color: var(--muted);
+            flex-shrink: 0;
+            pointer-events: none;
+        }
+
+        .searchPanelInput {
+            flex: 1;
+            min-width: 0;
+            border: none;
+            background: transparent;
+            color: white;
+            font-family: inherit;
+            font-size: clamp(16px, 1.3vw, 20px);
+        }
+        .searchPanelInput:focus {
+            outline: none;
+        }
+
+        .searchResultsPanel {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .searchResultItem {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: clamp(10px, 1vw, 14px);
+            border-radius: 10px;
+            cursor: pointer;
+        }
+        .searchResultItem:hover {
+            background: rgba(225, 40, 45, 0.15);
+        }
+        .searchResultItem img {
+            width: clamp(50px, 4.2vw, 68px);
+            height: clamp(64px, 5.4vw, 86px);
+            object-fit: cover;
+            border-radius: 8px;
+            flex-shrink: 0;
+        }
+        .searchResultItem span {
+            color: white;
+            font-size: clamp(16px, 1.3vw, 20px);
+        }
+        .searchNoResults,
+        .searchHint {
+            color: #888;
+            font-size: clamp(14px, 1.1vw, 17px);
+            padding: 24px 10px;
+            text-align: center;
+        }
+
+        /* AUTH NAV */
+        nav a.nav-auth {
+            font-size: clamp(16px, 1.1vw, 24px);
+            padding: clamp(6px, 0.8vw, 10px) clamp(8px, 1.2vw, 15px);
+            border: 2px solid var(--red);
+            border-radius: var(--radius-sm);
+            white-space: nowrap;
+        }
+        nav a.nav-auth:hover {
+            background: var(--red);
+            color: white;
+        }
+
+        hr {
+            background-color: var(--red);
+            height: 5px;
+            border: solid var(--red);
+        }
+
+        /* LOADER - SKELETON */
+        #loader {
+            width: var(--container-w);
+            margin: clamp(24px, 4vw, 40px) auto;
+        }
+
+        .skeletonGrid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: var(--gap);
+        }
+
+        .skeletonCard {
+            background: #111;
+            border: 3px solid var(--red);
+            border-radius: var(--radius-lg);
+            padding: clamp(10px, 1.6vw, 20px);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .skeletonImg {
+            width: 100%;
+            aspect-ratio: 7 / 9;
+            border-radius: var(--radius-md);
+        }
+
+        .skeletonTitle {
+            height: clamp(14px, 1.6vw, 22px);
+            width: 65%;
+            border-radius: 6px;
+            margin: clamp(8px, 1vw, 15px) auto 0;
+        }
+
+        .skeletonImg,
+        .skeletonTitle {
+            background: linear-gradient(90deg, #161616 25%, #262626 37%, #161616 63%);
+            background-size: 400% 100%;
+            animation: skeletonShimmer 1.4s ease-in-out infinite;
+        }
+
+        @keyframes skeletonShimmer {
+            0% {
+                background-position: 100% 0;
+            }
+            100% {
+                background-position: -100% 0;
+            }
+        }
+
+        /* TITLE ROW / FILTER BUTTONS */
+        #titleRow {
+            width: var(--container-w);
+            margin: clamp(24px, 4vw, 40px) auto;
+            display: flex;
+            justify-content: center;
+        }
+
+        .btnGroup {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: var(--gap);
+            width: 100%;
+        }
+
+        .boxBtn {
+            background: #111;
+            border: 3px solid var(--red);
+            color: white;
+            width: 100%;
+            margin: 0;
+            padding: clamp(10px, 1.4vw, 14px) clamp(10px, 1.6vw, 20px);
+            font-size: clamp(14px, 1.8vw, 26px);
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+        }
+
+        .boxBtn:hover {
+            background: var(--red);
+        }
+
+        h1 {
+            font-size: clamp(28px, 5vw, 60px);
+            margin: 0 clamp(10px, 2vw, 30px);
+            white-space: nowrap;
+        }
+
+        /* REVIEWS GRID */
+        #reviews {
+            display: none;
+            grid-template-columns: repeat(3, 1fr);
+            gap: var(--gap);
+            width: var(--container-w);
+            margin: clamp(30px, 5vw, 50px) auto;
+            perspective: 1200px;
+        }
+
+        /* CARD */
+        .card {
+            background: #111;
+            border: 3px solid var(--red);
+            border-radius: var(--radius-lg);
+            padding: clamp(10px, 1.6vw, 20px);
+            text-align: center;
+            transition: transform 0.35s ease;
+            overflow: visible;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .imgWrap {
+            position: relative;
+            overflow: hidden;
+            border-radius: var(--radius-md);
+        }
+
+        .card img {
+            width: 100%;
+            aspect-ratio: 7 / 9;
+            object-fit: cover;
+            cursor: pointer;
+            transition: transform 0.35s ease, box-shadow 0.35s ease;
+            display: block;
+            margin: auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        .imgWrap::before {
+            content: '';
+            position: absolute;
+            top: -120%;
+            left: -150%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(120deg, transparent 30%, rgba(255, 255, 255, 0.35) 50%, transparent 70%);
+            transform: rotate(25deg);
+            transition: top 0.7s ease, left 0.7s ease;
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        .card h3 {
+            margin: clamp(8px, 1vw, 15px) 0 0;
+            font-size: clamp(11px, 1.6vw, 26px);
+            color: white;
+            width: 100%;
+            text-align: center;
+            line-height: 1.25;
+        }
+
+        .card:hover img {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(225, 40, 45, 0.35);
+        }
+        .card:hover .imgWrap::before {
+            top: -20%;
+            left: -20%;
+        }
+
+        /* FULL REVIEW PAGE */
+        #reviewPage {
+            display: none;
+            width: var(--container-w);
+            margin: clamp(40px, 6vw, 60px) auto;
+            gap: var(--gap);
+            align-items: flex-start;
+            flex-wrap: wrap;
+            opacity: 0;
+            transform: translateY(25px);
+            transition: opacity 0.45s ease, transform 0.45s ease;
+            box-sizing: border-box;
+        }
+
+        @media (min-width: 641px) {
+            #reviewPage {
+                padding: 0 clamp(20px, 4vw, 70px);
+            }
+        }
+
+        #reviewPage.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        #reviewPage img {
+            flex: 1 1 260px;
+            max-width: 350px;
+            width: 100%;
+            border-radius: var(--radius-lg);
+            border: 3px solid var(--red);
+        }
+
+        #reviewContent {
+            flex: 2 1 320px;
+            min-width: 0;
+        }
+        #reviewContent #reviewTitle {
+            font-size: 50px;
+        }
+        #reviewContent p {
+            color: grey;
+            font-size: clamp(16px, 1.8vw, 26px);
+            line-height: 1.5;
+            max-width: 700px;
+        }
+
+        #reviewDescription {
+            color: #ccc;
+            font-size: clamp(14px, 1.3vw, 20px);
+            line-height: 1.5;
+            max-width: 600px;
+            margin-bottom: clamp(16px, 2vw, 25px);
+        }
+
+        #reviewMetaBadge {
+            margin: 0 0 10px;
+        }
+
+        #back {
+            background: var(--red);
+            color: white;
+            border: none;
+            padding: clamp(10px, 1.2vw, 12px) clamp(18px, 2vw, 25px);
+            font-size: clamp(15px, 1.2vw, 18px);
+            border-radius: var(--radius-sm);
+            margin-top: clamp(20px, 3vw, 30px);
+            cursor: pointer;
+            display: block;
+        }
+
+
+        /* FOOTER */
+        footer {
+            background-color: #111;
+            padding-bottom: clamp(20px, 4vw, 30px);
+            font-size: clamp(13px, 1.4vw, 20px);
+        }
+
+        #f {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: clamp(16px, 3vw, 50px);
+        }
+        #f a {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            color: var(--muted);
+        }
+
+        .fIconWrap {
+            width: clamp(20px, 1.8vw, 26px);
+            height: clamp(20px, 1.8vw, 26px);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        .fIconWrap img {
+            display: block;
+            max-width: 100%;
+            max-height: 100%;
+            width: auto;
+            height: auto;
+            object-fit: contain;
+            margin: 0 auto;
+        }
+
+        #lf {
+            height: clamp(60px, 6vw, 100px);
+            width: clamp(60px, 6vw, 100px);
+            display: block;
+            margin: 0 auto;
+        }
+
+        #c {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            align-items: center;
+            width: 100%;
+            color: var(--muted);
+            margin-top: 14px;
+            text-align: center;
+        }
+
+        #c>div {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 0;
+        }
+
+        /* ACTIVE BUTTON STYLE */
+        .active {
+            background: var(--red) !important;
+            color: white !important;
+        }
+
+        /* COMMUNITY REVIEWS SECTION */
+        #communitySection {
+            display: none;
+            width: min(1400px, 94vw);
+            margin: 20px auto 60px;
+            box-sizing: border-box;
+        }
+
+        @media (min-width: 641px) {
+            #communitySection {
+                padding: 0 clamp(20px, 4vw, 70px);
+            }
+        }
+
+        #communitySection h3 {
+            font-size: clamp(26px, 1.8vw, 29px);
+            color: var(--red);
+            border-bottom: 2px solid var(--red);
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+
+        #avgBadgeWrap {
+            margin: 0 0 30px;
+            font-size: clamp(13px, 1.3vw, 16px);
+        }
+        #avgBadgeWrap .avg-label {
+            color: var(--muted);
+            margin-right: 10px;
+        }
+
+        #avgBadge {
+            font-weight: bold;
+            padding: 5px 16px;
+            border-radius: 20px;
+            border: 2px solid #555;
+            color: #888;
+        }
+
+        #avgBadge.avg-Goated {
+            color: limegreen;
+            border-color: limegreen;
+        }
+        #avgBadge.avg-Good {
+            color: dodgerblue;
+            border-color: dodgerblue;
+        }
+        #avgBadge.avg-Dropped {
+            color: yellow;
+            border-color: yellow;
+        }
+
+        #reviewForm {
+            background: #111;
+            border: 2px solid var(--red);
+            border-radius: var(--radius-md);
+            padding: clamp(15px, 2vw, 20px) clamp(16px, 2.2vw, 25px);
+            margin-bottom: 35px;
+        }
+
+        #reviewForm label {
+            display: block;
+            margin: 12px 0 6px;
+            color: var(--muted);
+            font-size: 15px;
+        }
+
+        #reviewForm input[type="text"],
+        #reviewForm select,
+        #reviewForm textarea {
+            width: 100%;
+            padding: 10px 12px;
+            border-radius: 8px;
+            border: 1px solid #444;
+            background: #000;
+            color: white;
+            font-family: inherit;
+            font-size: 18px;
+        }
+
+        #reviewForm textarea {
+            min-height: 90px;
+            resize: vertical;
+        }
+
+        #commentName[readonly] {
+            color: var(--muted);
+            border-color: #444;
+            cursor: not-allowed;
+        }
+        #commentName.owner-name[readonly] {
+            color: var(--red);
+            font-weight: bold;
+            border-color: var(--red);
+        }
+
+        #submitReviewBtn {
+            margin-top: 18px;
+            background: var(--red);
+            color: white;
+            border: none;
+            padding: 10px 26px;
+            border-radius: 10px;
+            font-size: 17px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        #submitReviewBtn:hover {
+            background: white;
+            color: var(--red);
+        }
+
+        #reviewFormMsg {
+            margin-top: 12px;
+            font-size: 14px;
+        }
+
+        .commentCard {
+            background: #111;
+            border: 1px solid #333;
+            border-radius: 12px;
+            padding: 16px 20px;
+            margin-bottom: 16px;
+        }
+
+        .commentCard .commentHead {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 8px;
+            flex-wrap: wrap;
+        }
+        .commentCard .commentName {
+            font-weight: bold;
+            font-size: 18px;
+            color: white;
+        }
+        .commentCard .commentName.owner {
+            color: var(--red);
+        }
+
+        .commentCard .commentRating {
+            font-size: 11px;
+            font-weight: bold;
+            padding: 3px 10px;
+            border-radius: 12px;
+        }
+
+        .rating-Goated {
+            background: rgba(50, 205, 50, 0.2);
+            color: limegreen;
+        }
+        .rating-Good {
+            background: rgba(30, 144, 255, 0.2);
+            color: dodgerblue;
+        }
+        .rating-Dropped {
+            background: rgba(255, 255, 0, 0.2);
+            color: yellow;
+        }
+
+        .commentCard .commentText {
+            color: var(--muted);
+            font-size: 17px;
+            line-height: 1.4;
+        }
+
+        #noComments {
+            color: #888;
+            font-size: 14px;
+        }
+
+        .commentAvatar {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #333;
+            vertical-align: middle;
+        }
+
+        .commentCard.pinned {
+            border-color: var(--red);
+        }
+
+        .pinnedTag {
+            font-size: 10px;
+            color: #888;
+            border: 1px solid #444;
+            border-radius: 10px;
+            padding: 2px 8px;
+            margin-left: 4px;
+        }
+
+        .commentActions {
+            margin-top: 10px;
+        }
+
+        .replyToggleBtn,
+        .editReviewBtn,
+        .deleteReviewBtn {
+            background: none;
+            border: none;
+            color: var(--muted);
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            padding: 4px 0;
+            margin-right: 16px;
+            font-family: inherit;
+        }
+        .replyToggleBtn:hover,
+        .editReviewBtn:hover {
+            color: var(--red);
+        }
+        .deleteReviewBtn:hover {
+            color: #ff5c5c;
+        }
+        .deleteReviewBtn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .deleteMsg {
+            margin: -6px 0 6px;
+            font-size: 11px;
+            min-height: 14px;
+        }
+
+        .editReviewWrap {
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px dashed #2a2a2a;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .editRatingSelect {
+            padding: 8px 10px;
+            border-radius: 8px;
+            border: 1px solid #444;
+            background: #000;
+            color: white;
+            font-family: inherit;
+            font-size: 15px;
+            width: 100%;
+        }
+
+        .editTextArea {
+            width: 100%;
+            min-height: 70px;
+            padding: 8px 10px;
+            border-radius: 8px;
+            border: 1px solid #444;
+            background: #000;
+            color: white;
+            font-family: inherit;
+            font-size: 15px;
+            resize: vertical;
+        }
+
+        .editSaveBtn,
+        .editCancelBtn {
+            margin-top: 4px;
+            margin-right: 8px;
+            border: none;
+            padding: 7px 16px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            font-family: inherit;
+        }
+        .editSaveBtn {
+            background: var(--red);
+            color: white;
+        }
+        .editSaveBtn:hover {
+            background: white;
+            color: var(--red);
+        }
+        .editSaveBtn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .editCancelBtn {
+            background: #333;
+            color: var(--muted);
+        }
+        .editCancelBtn:hover {
+            background: #444;
+            color: white;
+        }
+
+        .editMsg {
+            margin-top: 2px;
+            font-size: 11px;
+            min-height: 14px;
+        }
+
+        .repliesWrap {
+            margin-top: 12px;
+            padding-left: clamp(14px, 2vw, 22px);
+            border-left: 2px solid #2a2a2a;
+        }
+
+        .replyCard {
+            background: #0a0a0a;
+            border: 1px solid #262626;
+            border-radius: 10px;
+            padding: 10px 14px;
+            margin-bottom: 10px;
+        }
+
+        .replyCard .commentHead {
+            gap: 8px;
+            margin-bottom: 6px;
+        }
+        .replyCard .commentAvatar {
+            width: 26px;
+            height: 26px;
+        }
+        .replyCard .commentName {
+            font-size: 17px;
+        }
+        .replyCard .commentText {
+            font-size: 15px;
+        }
+
+        .noReplies {
+            color: #666;
+            font-size: 12px;
+            margin: 2px 0 12px;
+        }
+
+        .replyForm textarea {
+            width: 100%;
+            min-height: 60px;
+            padding: 8px 10px;
+            border-radius: 8px;
+            border: 1px solid #444;
+            background: #000;
+            color: white;
+            font-family: inherit;
+            font-size: 15px;
+            resize: vertical;
+        }
+
+        .replySubmitBtn {
+            margin-top: 8px;
+            background: var(--red);
+            color: white;
+            border: none;
+            padding: 7px 16px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .replySubmitBtn:hover {
+            background: white;
+            color: var(--red);
+        }
+        .replySubmitBtn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        .replyMsg {
+            margin-top: 6px;
+            font-size: 11px;
+            min-height: 14px;
+        }
+
+        .replyGuestBlock {
+            color: #888;
+            font-size: 12px;
+            margin: 4px 0 12px;
+        }
+        .replyGuestBlock a {
+            color: var(--red);
+            font-weight: bold;
+            text-decoration: none;
+        }
+        .replyGuestBlock a:hover {
+            text-decoration: underline;
+        }
+
+        #guestBlock {
+            background: #111;
+            border: 2px solid #444;
+            border-radius: var(--radius-md);
+            padding: 20px 25px;
+            margin-bottom: 35px;
+            color: var(--muted);
+            font-size: 14px;
+        }
+        #guestBlock a {
+            color: var(--red);
+            font-weight: bold;
+            text-decoration: none;
+        }
+        #guestBlock a:hover {
+            text-decoration: underline;
+        }
+
+        #alreadyReviewedMsg {
+            background: #111;
+            border: 2px solid #444;
+            border-radius: var(--radius-md);
+            padding: 20px 25px;
+            margin-bottom: 35px;
+            color: var(--muted);
+            font-size: 14px;
+        }
+
+        /* PROFILE SIDE PANEL */
+        #profileOverlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.6);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.35s ease;
+            z-index: 1999;
+        }
+        #profileOverlay.open {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        #profilePanel {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100vh;
+            width: min(100vw, max(380px, 33vw));
+            background: #111;
+            overflow-y: auto;
+            transform: translateX(-100%);
+            transition: transform 0.35s ease;
+            z-index: 2000;
+            display: flex;
+            flex-direction: column;
+            padding: clamp(24px, 3vw, 48px) clamp(24px, 3vw, 44px);
+        }
+
+        #profilePanel.open {
+            transform: translateX(0);
+        }
+
+        #profilePanel .panelTop,
+        #searchPanel .panelTop,
+        #settingsPanel .panelTop {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: clamp(10px, 1.2vw, 18px);
+        }
+
+        #profilePanel h3,
+        #searchPanel h3,
+        #settingsPanel h3 {
+            font-size: clamp(22px, 1.8vw, 30px);
+            color: var(--red);
+            margin: 0;
+        }
+
+        .closePanel {
+            font-size: clamp(28px, 2.2vw, 38px);
+            line-height: 1;
+            cursor: pointer;
+            color: var(--muted);
+        }
+        .closePanel:hover {
+            color: var(--red);
+        }
+
+        .profileAvatarWrap {
+            text-align: center;
+            margin: 10px 0 24px;
+        }
+
+        .profileAvatarLarge {
+            width: clamp(100px, 9vw, 150px);
+            height: clamp(100px, 9vw, 150px);
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid var(--red);
+            display: block;
+            margin: 0 auto 16px;
+        }
+
+        .profileUsername {
+            font-size: clamp(20px, 1.6vw, 28px);
+            font-weight: bold;
+            text-align: center;
+            margin-bottom: 4px;
+        }
+        .profileRole {
+            text-align: center;
+            font-size: clamp(13px, 1vw, 17px);
+            color: #888;
+            margin-bottom: 0;
+        }
+
+        .profileUsernameRow {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        .profileUsernameRow .profileUsername {
+            margin-bottom: 0;
+        }
+
+        .editIconBtn {
+            background: none;
+            border: none;
+            color: var(--muted);
+            font-size: clamp(15px, 1.2vw, 19px);
+            cursor: pointer;
+            padding: 2px 4px;
+            line-height: 1;
+        }
+        .editIconBtn:hover {
+            color: var(--red);
+        }
+
+        #usernameEditWrap {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin: 10px 0 4px;
+        }
+
+        .usernameEditActions {
+            display: flex;
+            gap: 10px;
+        }
+        .usernameEditActions .panelBtn {
+            width: auto;
+            padding: clamp(8px, 0.9vw, 12px) clamp(16px, 1.6vw, 22px);
+            font-size: clamp(13px, 1vw, 15px);
+        }
+
+        .usernameHint {
+            font-size: clamp(11px, 0.9vw, 14px);
+            color: #888;
+            margin-top: -2px;
+        }
+
+        #usernameMsg {
+            font-size: clamp(13px, 1vw, 16px);
+            text-align: center;
+        }
+
+        #profilePanel>hr {
+            border: none;
+            border-top: 1px solid #333;
+            background: none;
+            height: 0;
+            margin: 24px 0;
+            width: 100%;
+        }
+
+        .panelSection {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        #profilePanel label {
+            display: block;
+            margin: 0;
+            color: var(--muted);
+            font-size: clamp(13px, 1vw, 16px);
+        }
+
+        #profilePanel input[type="text"],
+        #profilePanel input[type="password"],
+        #profilePanel input[type="file"] {
+            width: 100%;
+            padding: clamp(10px, 1vw, 14px) clamp(12px, 1.2vw, 16px);
+            border-radius: 8px;
+            border: 1px solid #444;
+            background: #000;
+            color: white;
+            font-family: inherit;
+            font-size: clamp(14px, 1.1vw, 17px);
+        }
+
+        .panelBtn {
+            background: var(--red);
+            color: white;
+            border: none;
+            padding: clamp(11px, 1.1vw, 16px) clamp(20px, 2vw, 26px);
+            border-radius: 10px;
+            font-size: clamp(14px, 1.1vw, 17px);
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+        }
+        .panelBtn:hover {
+            background: white;
+            color: var(--red);
+        }
+
+        .panelBtn.secondaryBtn {
+            background: transparent;
+            border: 2px solid var(--red);
+            color: var(--red);
+        }
+        .panelBtn.secondaryBtn:hover {
+            background: var(--red);
+            color: white;
+        }
+        .panelBtn.secondaryBtn.open {
+            background: var(--red);
+            color: white;
+        }
+
+        .panelBtn.logoutBtn {
+            background: #333;
+            margin-top: auto;
+        }
+        .panelBtn.logoutBtn:hover {
+            background: var(--red);
+            color: white;
+        }
+
+        #profileMsg,
+        #passwordMsg {
+            margin-top: 4px;
+            font-size: clamp(13px, 1vw, 16px);
+        }
+
+        /* SETTINGS SIDE PANEL */
+        #settingsOverlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.6);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.35s ease;
+            z-index: 1999;
+        }
+        #settingsOverlay.open {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        #settingsPanel {
+            position: fixed;
+            top: 0;
+            right: 0;
+            height: 100vh;
+            width: min(100vw, max(380px, 33vw));
+            background: #111;
+            overflow-y: auto;
+            transform: translateX(100%);
+            transition: transform 0.35s ease;
+            z-index: 2000;
+            display: flex;
+            flex-direction: column;
+            padding: clamp(24px, 3vw, 48px) clamp(24px, 3vw, 44px);
+        }
+
+        #settingsPanel.open {
+            transform: translateX(0);
+        }
+
+        /* =========================================================
+           BOTTOM NAVIGATION BAR (Mobile only)
+           ========================================================= */
+        #bottomNav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background: #111;
+            border-top: 3px solid var(--red);
+            display: none;
+            justify-content: space-around;
+            align-items: center;
+            padding: 0;
+            z-index: 3000;
+        }
+
+        .bottomNavItem {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            flex: 1;
+            height: 100%;
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+            padding: 0;
+            transition: background 0.2s ease, color 0.2s ease;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .bottomNavIcon {
+            width: 36px;
+            height: 36px;
+            flex-shrink: 0;
+            cursor: pointer;
+            box-sizing: border-box;
+            border: 2px solid transparent;
+            border-radius: 50%;
+            padding: 2px;
+            transition: border-color 0.2s ease, color 0.2s ease;
+        }
+		
+        svg.bottomNavIcon:hover,
+        .bottomNavItem:hover svg.bottomNavIcon {
+            border-color: var(--red);
+        }
+
+        #profileIconBottom {
+            margin: 0;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid var(--red);
+            cursor: pointer;
+            display: block;
+        }
+
+        /* Responsive Breakpoints */
+        @media (max-width: 640px) {
+            :root {
+                --container-w: min(1400px, 88vw);
+            }
+
+            body {
+                padding-bottom: 70px;
+            }
+
+            header {
+                padding: 8px 0;
+                background: #111;
+            }
+
+            nav {
+                border-radius: 15px;
+                padding: 6px 14px;
+                background: #111;
+                width: var(--container-w);
+            }
+
+            /* Hide desktop navigation in mobile header */
+            .desktopOnlyNav {
+                display: none !important;
+            }
+
+            #logoLink {
+                margin-left: 0;
+            }
+
+            #right {
+                margin-right: 0;
+                gap: 16px;
+            }
+
+            #l {
+                width: 70px;
+            }
+
+            .headerNavIcon {
+                width: 32px;
+                height: 32px;
+            }
+
+            /* Show bottom nav on mobile */
+            #bottomNav {
+                display: flex;
+            }
+
+            #settingsPanel,
+            #profilePanel,
+            #searchPanel {
+                width: 100vw;
+            }
+
+            #profilePanel {
+                left: auto;
+                right: 0;
+                transform: translateX(100%);
+            }
+
+            #profilePanel.open {
+                transform: translateX(0);
+            }
+
+            #reviews,
+            .skeletonGrid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            #reviewPage {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+            }
+            #reviewPage img {
+                max-width: 95%;
+            }
+            #reviewContent {
+                width: 100%;
+            }
+            #reviewContent p,
+            #reviewDescription {
+                margin-left: auto;
+                margin-right: auto;
+            }
+            #back {
+                margin-left: auto;
+                margin-right: auto;
+            }
+
+            #c {
+                justify-content: center;
+                text-align: center;
+                gap: clamp(6px, 2.5vw, 14px);
+                font-size: clamp(11px, 3vw, 14px);
+            }
+        }
+
+        @media (min-width: 641px) {
+            #bottomNav {
+                display: none !important;
+            }
+        }
+    </style>
 </head>
 
 <body>
 
-<noscript>
-  <div style="max-width:600px;margin:60px auto;text-align:center;color:#ccc;font-family:Arial,sans-serif;">
-    <h1 style="color:#fff;">Pysh Index &mdash; Game Reviews by Pysh Games</h1>
-    <p>Pysh Index is a community-driven game review site. Please enable JavaScript to browse Dropped, Good, and Goated verdicts and post your own reviews.</p>
-  </div>
-</noscript>
-
-<header>
-<nav>
-  <div id="navLeft">
-    <img id="profileIcon" class="profileIcon" src="" alt="Your profile" style="display:none;">
-    <a href="login.html" id="authLink" class="nav-auth">Sign In</a>
-  </div>
-  <a href="about.html"><img id="l" src="logo5.png" alt="Pysh Games logo"></a>
-  <div id="right">
-    <button type="button" id="searchToggleBtn" class="searchIcon" aria-label="Search games">
-      <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="2"></circle>
-        <line x1="16.65" y1="16.65" x2="21" y2="21" stroke="currentColor" stroke-width="2" stroke-linecap="round"></line>
-      </svg>
-    </button>
-    <a href="#" id="logoutLink" class="nav-auth" style="display:none;">Logout</a>
-  </div>
-</nav>
-</header>
-
-<hr>
-
-<main>
-
-<div id="titleRow">
-  <div class="btnGroup">
-    <button class="boxBtn" onclick="filterCategory('Dropped')">Dropped</button>
-    <button class="boxBtn" onclick="filterCategory('Good')">Good</button>
-    <button class="boxBtn" onclick="filterCategory('Goated')">Goated</button>
-  </div>
-
-
-
-</div>
-
-<!-- LOADER - VISIBLE BY DEFAULT -->
-<div id="loader">
-  <img src="lodlogo.png" class="spinner-logo" alt="Pysh Games Logo">
-  <div class="loader-text">Loading...</div>
-</div>
-
-<!-- REVIEWS SECTION - HIDDEN BY DEFAULT -->
-<div id="reviews"></div>
-
-<!-- WISHLIST SECTION - HIDDEN BY DEFAULT -->
-<div id="wishlist"></div>
-
-<!-- CATEGORY BACK BUTTON - HIDDEN BY DEFAULT -->
-<button id="catBack" class="boxBtn" style="display: none;">Back</button>
-
-<!-- REVIEW PAGE - HIDDEN BY DEFAULT -->
-<div id="reviewPage" style="display: none;">
-  <img id="reviewImg">
-  <div id="reviewContent">
-    <h2 id="reviewTitle"></h2>
-    <p id="reviewDescription"></p>
-    <div id="avgBadgeWrap">
-      <span class="avg-label">Community Verdict:</span>
-      <span id="avgBadge">No reviews yet</span>
-    </div>
-    <button id="back">Back</button>
-  </div>
-</div>
-
-<!-- COMMUNITY REVIEWS SECTION - HIDDEN BY DEFAULT -->
-<div id="communitySection">
-  <h3>Community Reviews</h3>
-
-  <div id="guestBlock" style="display:none;">
-    Want to leave your own verdict? <a href="login.html">Sign in</a> to post a review.
-  </div>
-
-  <div id="alreadyReviewedMsg" style="display:none;">
-   Thanks for reviewing!
-  </div>
-
-  <div id="reviewForm">
-    <label for="commentName">Your Name</label>
-    <input type="text" id="commentName" placeholder="Guest">
-
-    <label for="commentRating">Your Rating</label>
-    <select id="commentRating">
-      <option value="">Select a rating</option>
-      <option value="Dropped">Dropped</option>
-      <option value="Good">Good</option>
-      <option value="Goated">Goated</option>
-    </select>
-
-    <label for="commentText">Your Review</label>
-    <textarea id="commentText" placeholder="What did you think?"></textarea>
-
-    <button id="submitReviewBtn">Post Review</button>
-    <div id="reviewFormMsg"></div>
-  </div>
-
-  <div id="commentsList"></div>
-</div>
-
-<hr>
-</main>
-
-<footer>
-<img id="lf" src="logo.png" alt="Pysh Games logo">
-<div id="f">
-  <a href="https://www.youtube.com/pyshgames"><span class="fIconWrap"><img src="youtube.jpg" alt=""></span>YouTube</a>
-  <a href="https://www.instagram.com/pyshgames"><span class="fIconWrap"><img src="instagram.jpg" alt=""></span>Instagram</a>
-  <a href="https://www.x.com/pyshgames"><span class="fIconWrap"><img src="x.jpg" alt=""></span>X</a>
-</div>
-<br>
-<div id="c">
-  <div>&copy; 2008</div>
-  <div id="pysh">Pysh Games&reg;</div>
-  <div>All Rights Reserved</div>
-</div>
-</footer>
-
-<!-- SEARCH SIDE PANEL -->
-<div id="searchOverlay"></div>
-<div id="searchPanel">
-  <div class="panelTop">
-    <h3>Search Games</h3>
-    <span class="closePanel" id="closeSearchPanelBtn">&times;</span>
-  </div>
-
-  <div class="searchInputWrap">
-    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="2"></circle>
-      <line x1="16.65" y1="16.65" x2="21" y2="21" stroke="currentColor" stroke-width="2" stroke-linecap="round"></line>
-    </svg>
-    <input type="text" id="searchInput" class="searchPanelInput" placeholder="Search games..." autocomplete="off">
-  </div>
-
-  <div id="searchResults" class="searchResultsPanel"></div>
-</div>
-
-<!-- PROFILE SIDE PANEL -->
-<div id="profileOverlay"></div>
-<div id="profilePanel">
-  <div class="panelTop">
-    <h3>Your Profile</h3>
-    <span class="closePanel" id="closePanelBtn">&times;</span>
-  </div>
-
-  <div class="profileAvatarWrap">
-    <img id="panelAvatar" class="profileAvatarLarge" src="" alt="Profile photo">
-    <label for="profilePicInput" class="panelBtn" style="display:inline-block;width:auto;padding:8px 16px;font-size:13px;">Change Photo</label>
-    <input type="file" id="profilePicInput" accept="image/*" style="display:none;">
-    <div id="profileMsg"></div>
-  </div>
-
-  <div class="profileUsernameRow">
-    <div class="profileUsername" id="panelUsername"></div>
-    <button type="button" class="editIconBtn" id="editUsernameBtn" title="Edit username" aria-label="Edit username">&#9998;</button>
-  </div>
-  <div id="usernameEditWrap" style="display:none;">
-    <label for="usernameInput">New Username</label>
-    <input type="text" id="usernameInput" placeholder="new-username" autocapitalize="off" autocorrect="off" spellcheck="false">
-    <div class="usernameHint">Lowercase only — capital letters are converted automatically.</div>
-    <div class="usernameEditActions">
-      <button class="panelBtn" id="saveUsernameBtn">Save</button>
-      <button class="panelBtn secondaryBtn" id="cancelUsernameBtn">Cancel</button>
-    </div>
-    <div id="usernameMsg"></div>
-  </div>
-  <div class="profileRole" id="panelRole"></div>
-
-  <hr>
-
-  <div class="panelSection">
-    <a href="../Admin/admin.html" id="adminLink" class="nav-auth" style="display:none; text-align:center;">Admin</a>
-    <button class="boxBtn" id="top10Btn">Top 10</button>
-    <button class="boxBtn" id="wishlistBtn">Wishlist</button>
-  </div>
-
-  <hr>
-
-  <div class="panelSection" id="passwordPanelSection">
-    <button class="panelBtn secondaryBtn" id="sendResetBtn">Reset Password</button>
-    <div id="passwordMsg"></div>
-  </div>
-
-  <hr>
-
-  <button class="panelBtn logoutBtn" id="panelLogoutBtn">Log Out</button>
-</div>
-
-<script type="module">
-
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { 
-  getFirestore, 
-  collection, 
-  getDocs, 
-  addDoc,
-  query, 
-  orderBy,
-  where,
-  doc,
-  getDoc,
-  updateDoc,
-  deleteDoc
-} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-import { getAuth, signOut, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
-
-// Cloudinary config (same account used in the admin panel) - used for profile photo uploads
-const CLOUD_NAME = "dkwmnfnjf";
-const UPLOAD_PRESET = "yugwf5bd";
-
-const firebaseConfig = {
-  apiKey: "AIzaSyBoylOskSQPe1LiDehqp1gmSXfzzNNtRmY",
-  authDomain: "pysh-index.firebaseapp.com",
-  projectId: "pysh-index",
-  appId: "1:263831699229:web:f514a3d8388868f6c9ebf4"
-};
-
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-const auth = getAuth(app);
-
-// ---- Auth session helpers (shared pattern across index.html, login.html, admin.html) ----
-const AUTH_KEY = "pyshAuthUser";
-function getSession() {
-  try {
-    return JSON.parse(localStorage.getItem(AUTH_KEY));
-  } catch {
-    return null;
-  }
-}
-function clearSession() {
-  localStorage.removeItem(AUTH_KEY);
-}
-function setSession(session) {
-  localStorage.setItem(AUTH_KEY, JSON.stringify(session));
-}
-
-// Simple default avatar (grey circle silhouette) used when a user has no profile photo yet
-const DEFAULT_AVATAR = "data:image/svg+xml;utf8," + encodeURIComponent(
-  '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" fill="#333"/><circle cx="50" cy="38" r="18" fill="#888"/><circle cx="50" cy="95" r="32" fill="#888"/></svg>'
-);
-
-// DOM Elements
-const reviewsDiv = document.getElementById("reviews");
-const wishlistDiv = document.getElementById("wishlist");
-const reviewPage = document.getElementById("reviewPage");
-const reviewImg = document.getElementById("reviewImg");
-const reviewTitle = document.getElementById("reviewTitle");
-const reviewDescription = document.getElementById("reviewDescription");
-const backBtn = document.getElementById("back");
-const catBack = document.getElementById("catBack");
-const loader = document.getElementById("loader");
-const wishlistBtn = document.getElementById("wishlistBtn");
-const top10Btn = document.getElementById("top10Btn");
-const authLink = document.getElementById("authLink");
-const adminLink = document.getElementById("adminLink");
-const logoutLink = document.getElementById("logoutLink");
-const profileIcon = document.getElementById("profileIcon");
-const searchOverlay = document.getElementById("searchOverlay");
-const searchPanel = document.getElementById("searchPanel");
-const closeSearchPanelBtn = document.getElementById("closeSearchPanelBtn");
-const searchToggleBtn = document.getElementById("searchToggleBtn");
-const searchInput = document.getElementById("searchInput");
-const searchResults = document.getElementById("searchResults");
-const communitySection = document.getElementById("communitySection");
-const avgBadge = document.getElementById("avgBadge");
-const guestBlock = document.getElementById("guestBlock");
-const alreadyReviewedMsg = document.getElementById("alreadyReviewedMsg");
-const reviewForm = document.getElementById("reviewForm");
-const commentName = document.getElementById("commentName");
-const commentRating = document.getElementById("commentRating");
-const commentText = document.getElementById("commentText");
-const submitReviewBtn = document.getElementById("submitReviewBtn");
-const reviewFormMsg = document.getElementById("reviewFormMsg");
-const commentsList = document.getElementById("commentsList");
-
-// Profile panel elements
-const profileOverlay = document.getElementById("profileOverlay");
-const profilePanel = document.getElementById("profilePanel");
-const closePanelBtn = document.getElementById("closePanelBtn");
-const panelAvatar = document.getElementById("panelAvatar");
-const profilePicInput = document.getElementById("profilePicInput");
-const profileMsg = document.getElementById("profileMsg");
-const panelUsername = document.getElementById("panelUsername");
-const editUsernameBtn = document.getElementById("editUsernameBtn");
-const usernameEditWrap = document.getElementById("usernameEditWrap");
-const usernameInput = document.getElementById("usernameInput");
-const saveUsernameBtn = document.getElementById("saveUsernameBtn");
-const cancelUsernameBtn = document.getElementById("cancelUsernameBtn");
-const usernameMsg = document.getElementById("usernameMsg");
-const panelRole = document.getElementById("panelRole");
-const passwordPanelSection = document.getElementById("passwordPanelSection");
-const sendResetBtn = document.getElementById("sendResetBtn");
-const passwordMsg = document.getElementById("passwordMsg");
-const panelLogoutBtn = document.getElementById("panelLogoutBtn");
-
-// Global state
-let allReviews = [];
-let allWishlist = [];
-let currentFilter = null;
-let currentReviewId = null;
-let currentReviewMeta = null;
-let currentComments = [];
-let repliesCache = {}; // commentId -> loaded replies for the currently open game page
-
-// ---- Auth nav UI ----
-function initAuthUI() {
-  const session = getSession();
-  if (session) {
-    authLink.style.display = "none";
-    logoutLink.style.display = "none"; // logging out now happens from the profile panel
-  
-    adminLink.style.display = session.role === "admin" ? "" : "none";
-    profileIcon.style.display = "";
-    profileIcon.src = session.photoURL || DEFAULT_AVATAR;
-  } else {
-    authLink.style.display = "";
-    logoutLink.style.display = "none";
-    adminLink.style.display = "none";
-    profileIcon.style.display = "none";
-  }
-}
-
-// Logging out instantly sends the user back to the login page.
-// Also signs out of Firebase Auth (Google/email accounts); legacy
-// username/password accounts never had a Firebase Auth session, so
-// this is a harmless no-op for them.
-function doLogout() {
-  clearSession();
-  signOut(auth).catch(() => {});
-  window.location.href = "login.html";
-}
-
-logoutLink.addEventListener("click", (e) => {
-  e.preventDefault();
-  doLogout();
-});
-panelLogoutBtn.addEventListener("click", doLogout);
-
-initAuthUI();
-
-// ---- Search side panel ----
-function openSearch() {
-  closeProfilePanel();
-  searchOverlay.classList.add("open");
-  searchPanel.classList.add("open");
- 
-  searchInput.focus();
-}
-
-function closeSearch() {
-  searchOverlay.classList.remove("open");
-  searchPanel.classList.remove("open");
-  searchInput.value = "";
-  searchResults.innerHTML = "";
-}
-
-function renderSearchResults(matches) {
-  if (matches.length === 0) {
-    searchResults.innerHTML = '<div class="searchNoResults">No games found</div>';
-    return;
-  }
-
-  searchResults.innerHTML = matches.map((r, i) => `
-    <div class="searchResultItem" data-index="${i}">
-      <img src="${r.imageUrl}" alt="">
-      <span>${escapeHtml(r.title)}</span>
-    </div>
-  `).join('');
-
-  searchResults.querySelectorAll(".searchResultItem").forEach(el => {
-    el.addEventListener("click", () => {
-      const chosen = matches[Number(el.dataset.index)];
-      closeSearch();
-      openReviewPage(chosen);
-    });
-  });
-}
-
-function performSearch(rawQuery) {
-  const q = rawQuery.trim().toLowerCase();
-
-  
- 
-
-  const matches = allReviews.filter(r => r.title && r.title.toLowerCase().includes(q)).slice(0, 8);
-  renderSearchResults(matches);
-}
-
-searchToggleBtn.addEventListener("click", (e) => {
-  e.stopPropagation();
-  if (searchPanel.classList.contains("open")) {
-    closeSearch();
-  } else {
-    openSearch();
-  }
-});
-
-closeSearchPanelBtn.addEventListener("click", closeSearch);
-searchOverlay.addEventListener("click", closeSearch);
-
-searchInput.addEventListener("input", () => performSearch(searchInput.value));
-
-searchInput.addEventListener("keydown", (e) => {
-  if (e.key === "Escape") {
-    closeSearch();
-  } else if (e.key === "Enter") {
-    const q = searchInput.value.trim().toLowerCase();
-    if (!q) return;
-    const first = allReviews.find(r => r.title && r.title.toLowerCase().includes(q));
-    if (first) {
-      closeSearch();
-      openReviewPage(first);
-    }
-  }
-});
-
-// ---- Profile side panel ----
-function openProfilePanel() {
-  const session = getSession();
-  if (!session) return;
-  closeSearch();
-  panelAvatar.src = session.photoURL || DEFAULT_AVATAR;
-  panelUsername.textContent = session.username;
-  panelRole.textContent = session.role === "admin" ? "Admin" : "Member";
-  profileMsg.textContent = "";
-  passwordMsg.textContent = "";
-  usernameEditWrap.style.display = "none";
-  usernameInput.value = "";
-  usernameMsg.textContent = "";
-
-  // Only accounts that actually have a password provider linked (email/
-  // password sign-up, or a migrated account) can reset a password. Google
-  // accounts have nothing to reset, so hide the button entirely rather than
-  // showing an option that can never work for them. auth.currentUser is the
-  // real Firebase Auth session, so this reflects what's actually linked -
-  // not a guess based on how the person happened to sign in this time.
-  const providerIds = auth.currentUser
-    ? auth.currentUser.providerData.map(p => p.providerId)
-    : [];
-  passwordPanelSection.style.display = providerIds.includes("password") ? "" : "none";
-  sendResetBtn.disabled = false;
-  sendResetBtn.textContent = "Reset Password";
-
-  profileOverlay.classList.add("open");
-  profilePanel.classList.add("open");
-}
-
-function closeProfilePanel() {
-  profileOverlay.classList.remove("open");
-  profilePanel.classList.remove("open");
-}
-
-profileIcon.addEventListener("click", openProfilePanel);
-closePanelBtn.addEventListener("click", closeProfilePanel);
-profileOverlay.addEventListener("click", closeProfilePanel);
-
-// Sends a real Firebase password-reset email to the signed-in account's own
-// address - the same trusted flow as the "Forgot password?" link on
-// login.html, instead of the old pattern of comparing a plaintext password
-// field in Firestore (which no account still has once it's on Firebase Auth).
-sendResetBtn.addEventListener("click", async () => {
-  if (!auth.currentUser || !auth.currentUser.email) return;
-
-  sendResetBtn.disabled = true;
-  passwordMsg.style.color = "#ccc";
-  passwordMsg.textContent = "Sending...";
-
-  try {
-    await sendPasswordResetEmail(auth, auth.currentUser.email);
-    passwordMsg.style.color = "limegreen";
-    passwordMsg.textContent = "Reset link sent to " + auth.currentUser.email + ". Check your spam folder if it doesn't arrive shortly.";
-  } catch (error) {
-    console.error("Error sending reset email:", error);
-    passwordMsg.style.color = "#e1282d";
-    passwordMsg.textContent = "Could not send reset email. Please try again.";
-  } finally {
-    sendResetBtn.disabled = false;
-  }
-});
-
-profilePicInput.addEventListener("change", async () => {
-  const session = getSession();
-  const file = profilePicInput.files[0];
-  if (!session || !file) return;
-
-  profileMsg.style.color = "#ccc";
-  profileMsg.textContent = "Uploading...";
-
-  try {
-    const formData = new FormData();
-    formData.append("file", file);
-    formData.append("upload_preset", UPLOAD_PRESET);
-
-    const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`, {
-      method: "POST",
-      body: formData
-    });
-    if (!res.ok) throw new Error("Upload failed");
-    const data = await res.json();
-
-    await updateDoc(doc(db, "users", session.id), { photoURL: data.secure_url });
-
-    const updatedSession = { ...session, photoURL: data.secure_url };
-    setSession(updatedSession);
-    panelAvatar.src = data.secure_url;
-    profileIcon.src = data.secure_url;
-
-    profileMsg.style.color = "limegreen";
-    profileMsg.textContent = "Profile photo updated!";
-  } catch (error) {
-    console.error("Error uploading profile photo:", error);
-    profileMsg.style.color = "#e1282d";
-    profileMsg.textContent = "Could not upload photo. Please try again.";
-  }
-});
-
-// ---- Username edit (profile panel) ----
-editUsernameBtn.addEventListener("click", () => {
-  const session = getSession();
-  if (!session) return;
-  usernameInput.value = session.username.toLowerCase();
-  usernameMsg.textContent = "";
-  usernameEditWrap.style.display = "flex";
-  usernameInput.focus();
-});
-
-// Usernames are compulsorily lowercase - force it as the user types (and on
-// paste) rather than rejecting uppercase input after the fact.
-usernameInput.addEventListener("input", () => {
-  const { selectionStart, selectionEnd } = usernameInput;
-  usernameInput.value = usernameInput.value.toLowerCase();
-  usernameInput.setSelectionRange(selectionStart, selectionEnd);
-});
-
-cancelUsernameBtn.addEventListener("click", () => {
-  usernameEditWrap.style.display = "none";
-  usernameInput.value = "";
-  usernameMsg.textContent = "";
-});
-
-saveUsernameBtn.addEventListener("click", async () => {
-  const session = getSession();
-  if (!session) return;
-
-  // Normalize defensively too, in case the value was set some other way
-  // (e.g. programmatically) without going through the input handler above.
-  const newUsername = usernameInput.value.trim().toLowerCase();
-
-  if (!newUsername) {
-    usernameMsg.style.color = "#e1282d";
-    usernameMsg.textContent = "Username can't be empty.";
-    return;
-  }
-  if (newUsername.length < 3 || newUsername.length > 20) {
-    usernameMsg.style.color = "#e1282d";
-    usernameMsg.textContent = "Username must be 3-20 characters.";
-    return;
-  }
-  if (newUsername === session.username) {
-    usernameEditWrap.style.display = "none";
-    return;
-  }
-
-  saveUsernameBtn.disabled = true;
-  usernameMsg.style.color = "#ccc";
-  usernameMsg.textContent = "Saving...";
-
-  try {
-    // Make sure nobody else already has this username
-    const dupQuery = query(collection(db, "users"), where("username", "==", newUsername));
-    const dupSnap = await getDocs(dupQuery);
-    const takenByOther = dupSnap.docs.some(d => d.id !== session.id);
-    if (takenByOther) {
-      usernameMsg.style.color = "#e1282d";
-      usernameMsg.textContent = "That username is already taken.";
-      return;
-    }
-
-    await updateDoc(doc(db, "users", session.id), { username: newUsername });
-
-    const updatedSession = { ...session, username: newUsername };
-    setSession(updatedSession);
-
-    panelUsername.textContent = newUsername;
-    if (session.role !== "admin") {
-      // Keep the (locked) name field on the review form in sync
-      commentName.value = newUsername;
-    }
-
-    usernameMsg.style.color = "limegreen";
-    usernameMsg.textContent = "Username updated!";
-    usernameEditWrap.style.display = "none";
-  } catch (error) {
-    console.error("Error updating username:", error);
-    usernameMsg.style.color = "#e1282d";
-    usernameMsg.textContent = "Could not update username. Please try again.";
-  } finally {
-    saveUsernameBtn.disabled = false;
-  }
-});
-
-// Initialize - hide everything except loader
-document.addEventListener('DOMContentLoaded', function() {
-  // Hide elements initially to prevent flash
-  reviewsDiv.style.display = "none";
-  wishlistDiv.style.display = "none";
-  reviewPage.style.display = "none";
-  catBack.style.display = "none";
-  
-  // Show loader
-  loader.style.display = "flex";
-  
-  // Setup button event listeners
-  wishlistBtn.addEventListener('click', showWishlist);
-  top10Btn.addEventListener('click', showTop10);
-  
-  // Load both reviews and wishlist
-  loadAllData();
-});
-
-async function loadAllData() {
-  try {
-    // Load reviews
-    const reviewsQuery = query(collection(db, "reviews"), orderBy("createdAt", "desc"));
-    const reviewsSnapshot = await getDocs(reviewsQuery);
-    allReviews = [];
-    reviewsSnapshot.forEach(doc => allReviews.push({ id: doc.id, ...doc.data() }));
-    
-    // Load wishlist
-    const wishlistQuery = query(collection(db, "wishlist"), orderBy("addedAt", "desc"));
-    const wishlistSnapshot = await getDocs(wishlistQuery);
-    allWishlist = [];
-    wishlistSnapshot.forEach(doc => allWishlist.push(doc.data()));
-    
-    // Preload images for both
-    await Promise.all([
-      preloadImages(allReviews),
-      preloadImages(allWishlist)
-    ]);
-    
-    // Render both
-    renderReviews(allReviews);
-    renderWishlist(allWishlist);
-    
-    // Hide loader and show reviews by default
-    hideLoader();
-    showReviews();
-    
-  } catch (error) {
-    console.error("Error loading data:", error);
-    hideLoader();
-    alert("Error loading data. Please refresh the page.");
-  }
-}
-
-function hideLoader() {
-  loader.style.display = "none";
-}
-
-function preloadImages(items) {
-  return new Promise((resolve) => {
-    let loadedImages = 0;
-    const totalImages = items.length;
-    
-    if (totalImages === 0) {
-      resolve();
-      return;
-    }
-    
-    items.forEach(item => {
-      const img = new Image();
-      img.src = item.imageUrl;
-      img.onload = () => {
-        loadedImages++;
-        if (loadedImages === totalImages) {
-          resolve();
-        }
-      };
-      img.onerror = () => {
-        loadedImages++;
-        if (loadedImages === totalImages) {
-          resolve();
-        }
-      };
-    });
-  });
-}
-
-function showReviews() {
-  reviewsDiv.style.display = "grid";
-  wishlistDiv.style.display = "none";
-  reviewPage.style.display = "none";
-  communitySection.style.display = "none";
-  
-  // Update button states
-  updateButtonStates('reviews');
-}
-
-function showWishlist() {
-  reviewsDiv.style.display = "none";
-  wishlistDiv.style.display = "grid";
-  reviewPage.style.display = "none";
-  communitySection.style.display = "none";
-  catBack.style.display = "none";
-  
-  // Update button states
-  updateButtonStates('wishlist');
-   closeProfilePanel();
-}
-
-function updateButtonStates(view) {
-  // Reset all buttons
-  document.querySelectorAll('.boxBtn').forEach(btn => {
-    btn.classList.remove('active');
-  });
-  
-  // Activate current view button
-  if (view === 'wishlist') {
-    wishlistBtn.classList.add('active');
-  } else if (view === 'top10') {
-    top10Btn.classList.add('active');
-  } else if (currentFilter) {
-    // If we're in reviews with a filter, highlight that filter button
-    const filterBtn = document.querySelector(`.boxBtn[onclick*="${currentFilter}"]`);
-    if (filterBtn) {
-      filterBtn.classList.add('active');
-    }
-  }
-}
-
-function openReviewPage(r) {
-  reviewsDiv.style.display = "none";
-  wishlistDiv.style.display = "none";
-  reviewPage.style.display = "flex";
-  catBack.style.display = "none";
-  reviewImg.src = r.imageUrl;
-  reviewImg.alt = r.title;
-  reviewTitle.textContent = r.title;
-  reviewDescription.textContent = r.description || "";
-  
-  
-
-  // Fade the review page in
-  reviewPage.classList.remove("visible");
-  requestAnimationFrame(() => {
-    requestAnimationFrame(() => reviewPage.classList.add("visible"));
-  });
-
-  // Open the community reviews section for this game
-  currentReviewId = r.id;
-  currentReviewMeta = r;
-  communitySection.style.display = "block";
-  resetReviewForm();
-  setupCommentNameField();
-  loadComments(currentReviewId);
-   window.scrollTo(0, 0);
-}
-
-function renderReviews(list, showRank = false) {
-  reviewsDiv.innerHTML = "";
-  
-  if (list.length === 0) {
-    const msg = showRank ? "No Top 10 games ranked yet" : "No reviews found";
-    reviewsDiv.innerHTML = `<p style="grid-column: 1 / -1; text-align: center; font-size: 24px; color: #888;">${msg}</p>`;
-    return;
-  }
-  
-  list.forEach(r => {
-    const img = document.createElement("img");
-    img.src = r.imageUrl;
-    img.alt = r.title;
-
-    const title = document.createElement("h3");
-    title.textContent = r.title;
-
-    img.onclick = () => {
-      // Brief click animation on the card before transitioning
-      wrap.classList.add("clicked");
-      setTimeout(() => wrap.classList.remove("clicked"), 400);
-
-      openReviewPage(r);
-    };
-
-    const wrap = document.createElement("div");
-    wrap.className = "imgWrap";
-    wrap.appendChild(img);
-
-    const card = document.createElement("div");
-    card.className = "card";
-
-    if (showRank && r.rank) {
-      const badge = document.createElement("div");
-      badge.className = "wishlist-badge";
-      badge.style.background = "gold";
-      badge.textContent = "#" + r.rank;
-      card.appendChild(badge);
-    }
-
-    card.appendChild(wrap);
-    card.appendChild(title);
-
-    reviewsDiv.appendChild(card);
-  });
-}
-
-function renderWishlist(list) {
-  wishlistDiv.innerHTML = "";
-  
-  if (list.length === 0) {
-    wishlistDiv.innerHTML = '<p style="grid-column: 1 / -1; text-align: center; font-size: 24px; color: #888;">No games in wishlist yet</p>';
-    return;
-  }
-  
-  list.forEach(item => {
-    const img = document.createElement("img");
-    img.src = item.imageUrl;
-    img.alt = item.title;
-
-    const title = document.createElement("h3");
-    title.textContent = item.title;
-
-    const wrap = document.createElement("div");
-    wrap.className = "imgWrap";
-    wrap.appendChild(img);
-
-    const card = document.createElement("div");
-    card.className = "card wishlist-card";
-    
-    // Add wishlist badge
-    const badge = document.createElement("div");
-    badge.className = "wishlist-badge";
-    badge.textContent = "Wishlist";
-    card.appendChild(badge);
-    
-    card.appendChild(wrap);
-    card.appendChild(title);
-
-    wishlistDiv.appendChild(card);
-  });
-}
-
-// Filter functions
-window.filterCategory = (cat) => {
-  currentFilter = cat;
-  const filtered = allReviews.filter(r => r.category === cat);
-  renderReviews(filtered);
-  showReviews();
-  
-  // Show back button
-  catBack.style.display = "block";
-  
-  // Update button states
-  updateButtonStates('reviews');
-};
-
-catBack.onclick = () => {
-  currentFilter = null;
-  renderReviews(allReviews);
-  showReviews();
-  catBack.style.display = "none";
-  updateButtonStates('reviews');
-};
-
-backBtn.onclick = () => {
-  reviewPage.style.display = "none";
-  reviewPage.classList.remove("visible");
-  if (currentFilter) {
-    showReviews();
-    catBack.style.display = "block";
-  } else {
-    showReviews();
-  }
-};
-
-// Top 10 view - uses the "rank" field set from the admin panel
-function showTop10() {
-  currentFilter = null;
-  const top10 = allReviews
-    .filter(r => r.rank)
-    .sort((a, b) => a.rank - b.rank);
-
-  renderReviews(top10, true);
-  showReviews();
-  catBack.style.display = "block";
-  updateButtonStates('top10');
-  closeProfilePanel();
-}
-
-// ---- Community Reviews ----
-
-// Locks/pre-fills the "Your Name" field based on login state.
-// Logged-in admins always post as the red "Pysh" owner label.
-function setupCommentNameField() {
-  const session = getSession();
-
-  if (!session) {
-    // Guests (not signed in) can browse and read reviews, but can't post one
-    reviewForm.style.display = "none";
-    guestBlock.style.display = "block";
-    alreadyReviewedMsg.style.display = "none";
-    return;
-  }
-
-  reviewForm.style.display = "";
-  guestBlock.style.display = "none";
-  alreadyReviewedMsg.style.display = "none"; // corrected by updateReviewFormAvailability() once comments load
-
-  if (session.role === "admin") {
-    commentName.value = "Pysh";
-    commentName.readOnly = true;
-    commentName.classList.add("owner-name");
-  } else {
-    commentName.value = session.username;
-    commentName.readOnly = true;
-    commentName.classList.remove("owner-name");
-  }
-}
-
-function resetReviewForm() {
-  commentRating.value = "";
-  commentText.value = "";
-  reviewFormMsg.textContent = "";
-}
-
-// True if comment `c` (a top-level review, not a reply) was posted by `session`.
-// Prefers the userId stamped on newer reviews; falls back to a name match for
-// older reviews that predate that field. The pinned "Official Verdict" card
-// isn't a real document, so it's never editable through this check.
-function isOwnComment(c, session) {
-  if (!session || c.pinned) return false;
-  if (c.userId) return c.userId === session.id;
-  const displayName = session.role === "admin" ? "Pysh" : session.username;
-  return c.name === displayName;
-}
-
-function findOwnReview(session) {
-  if (!session) return null;
-  return currentComments.find(c => isOwnComment(c, session)) || null;
-}
-
-// Shows/hides the "Post Review" form based on whether the signed-in user
-// already has a review for this game - one review per game, edited in place.
-function updateReviewFormAvailability() {
-  const session = getSession();
-  if (!session) return; // guest state is already handled by setupCommentNameField
-
-  if (findOwnReview(session)) {
-    reviewForm.style.display = "none";
-    alreadyReviewedMsg.style.display = "block";
-  } else {
-    alreadyReviewedMsg.style.display = "none";
-    reviewForm.style.display = "";
-  }
-}
-
-async function loadComments(reviewId) {
-  commentsList.innerHTML = '<p id="noComments">Loading reviews...</p>';
-  repliesCache = {}; // switching games - drop any previously loaded reply threads
-  try {
-    const q = query(collection(db, "reviews", reviewId, "comments"), orderBy("createdAt", "desc"));
-    const snapshot = await getDocs(q);
-    currentComments = [];
-    snapshot.forEach(d => currentComments.push({ id: d.id, ...d.data() }));
-
-    // Pin the game's original Pysh review (title + rating) to the top of the community list
-    if (currentReviewMeta && currentReviewMeta.caption && currentReviewMeta.category) {
-      currentComments.unshift({
-        id: "pinned-verdict",
-        name: "Pysh",
-        rating: currentReviewMeta.category,
-        text: currentReviewMeta.caption,
-        isOwner: true,
-        pinned: true
-      });
-    }
-
-    renderComments();
-    renderAverage();
-    updateReviewFormAvailability();
-  } catch (error) {
-    console.error("Error loading community reviews:", error);
-    commentsList.innerHTML = '<p id="noComments">Could not load reviews right now.</p>';
-  }
-}
-
-function renderComments() {
-  if (currentComments.length === 0) {
-    commentsList.innerHTML = '<p id="noComments">No reviews yet — be the first!</p>';
-    return;
-  }
-
-  const session = getSession();
-
-  commentsList.innerHTML = currentComments.map(c => {
-    const canEdit = isOwnComment(c, session);
-    return `
-    <div class="commentCard ${c.pinned ? 'pinned' : ''}">
-      <div class="commentHead">
-        <img class="commentAvatar" src="${c.photoURL || DEFAULT_AVATAR}" alt="">
-        <span class="commentName ${c.isOwner ? 'owner' : ''}">${c.isOwner ? 'Pysh' : escapeHtml(c.name)}</span>
-        <span class="commentRating rating-${c.rating}">${c.rating}</span>
-       
-      </div>
-      <div class="commentText">${escapeHtml(c.text)}</div>
-
-      <div class="commentActions">
-        ${canEdit ? `<button class="editReviewBtn" data-comment-id="${c.id}">Edit</button>` : ''}
-        ${canEdit ? `<button class="deleteReviewBtn" data-comment-id="${c.id}">Delete</button>` : ''}
-        <button class="replyToggleBtn" data-comment-id="${c.id}">Reply</button>
-      </div>
-      ${canEdit ? `<div class="deleteMsg" id="deleteMsg-${c.id}"></div>` : ''}
-
-      ${canEdit ? `
-        <!-- Own-review edit form - collapsed until "Edit" is clicked -->
-        <div class="editReviewWrap" id="editWrap-${c.id}" style="display:none;">
-          <label for="editRating-${c.id}">Your Rating</label>
-          <select class="editRatingSelect" id="editRating-${c.id}">
-            <option value="Dropped" ${c.rating === 'Dropped' ? 'selected' : ''}>Dropped</option>
-            <option value="Good" ${c.rating === 'Good' ? 'selected' : ''}>Good</option>
-            <option value="Goated" ${c.rating === 'Goated' ? 'selected' : ''}>Goated</option>
-          </select>
-          <textarea class="editTextArea" id="editText-${c.id}">${escapeHtml(c.text)}</textarea>
-          <div>
-            <button class="editSaveBtn" data-comment-id="${c.id}">Save</button>
-            <button class="editCancelBtn" data-comment-id="${c.id}">Cancel</button>
-          </div>
-          <div class="editMsg" id="editMsg-${c.id}"></div>
+    <noscript>
+        <div style="max-width:600px;margin:60px auto;text-align:center;color:#ccc;font-family:Arial,sans-serif;">
+            <h1 style="color:#fff;">Pysh Index &mdash; Game Reviews by Pysh Games</h1>
+            <p>Pysh Index is a community-driven game review site. Please enable JavaScript to browse Dropped, Good, and Goated verdicts and post your own reviews.</p>
         </div>
-      ` : ''}
+    </noscript>
 
-      <!-- Thread is collapsed until "Reply" is clicked -->
-      <div class="repliesWrap" id="repliesWrap-${c.id}" style="display:none;">
-        <div class="repliesList" id="repliesList-${c.id}"></div>
+    <!-- HEADER: Logo on left, 6 large icons on right -->
+    <header>
+        <nav>
+            <a href="about.html" id="logoLink">
+                <img id="l" src="logo5.png" alt="Pysh Games logo">
+            </a>
 
-        ${session ? `
-          <div class="replyForm">
-            <textarea class="replyText" id="replyText-${c.id}" placeholder="Write a reply..."></textarea>
-            <button class="replySubmitBtn" data-comment-id="${c.id}">Post Reply</button>
-            <div class="replyMsg" id="replyMsg-${c.id}"></div>
-          </div>
-        ` : `
-          <div class="replyGuestBlock"><a href="login.html">Sign in</a> to reply.</div>
-        `}
-      </div>
+            <div id="right">
+                <!-- 1. Search Icon -->
+                <button type="button" id="searchToggleBtn" class="headerNavIcon" aria-label="Search games" title="Search">
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="2"></circle>
+                        <line x1="16.65" y1="16.65" x2="21" y2="21" stroke="currentColor" stroke-width="2" stroke-linecap="round"></line>
+                    </svg>
+                </button>
+
+                <!-- 2. Explore Icon (Compass - swapped before Message) -->
+                <a href="#" id="desktopExploreBtn" class="headerNavIcon desktopOnlyNav" aria-label="Explore" title="Explore">
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"></circle>
+                        <polygon points="15.5,8.5 13.2,13.2 8.5,15.5 10.8,10.8" fill="currentColor" stroke="currentColor" stroke-width="1" stroke-linejoin="round"></polygon>
+                    </svg>
+                </a>
+
+                <!-- 3. Messaging Icon (Paper plane - swapped after Explore) -->
+                <a href="#" id="desktopMessagesBtn" class="headerNavIcon desktopOnlyNav" onclick="alert('Under construction'); return false;" aria-label="Messaging" title="Messaging">
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="22" y1="2" x2="11" y2="13"></line>
+                        <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                    </svg>
+                </a>
+
+                <!-- 4. Trending Icon (Fire) -->
+                <a href="#" id="desktopTrendingBtn" class="headerNavIcon desktopOnlyNav" onclick="alert('Under construction'); return false;" aria-label="Trending" title="Trending">
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 3z"></path>
+                    </svg>
+                </a>
+
+                <!-- 5. Profile Icon (Shifted more to the left) -->
+                <button type="button" id="desktopProfileBtn" class="headerNavIcon profileBtn desktopOnlyNav" aria-label="Your profile" title="Profile">
+                    <img id="profileIcon" src="" alt="Your profile">
+                </button>
+
+                <!-- 6. Settings (3-dots) Icon -->
+                <button type="button" id="settingsToggleBtn" class="headerNavIcon" aria-label="Settings" title="Settings">
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                        <circle cx="12" cy="5" r="2"/>
+                        <circle cx="12" cy="12" r="2"/>
+                        <circle cx="12" cy="19" r="2"/>
+                    </svg>
+                </button>
+
+                <!-- Auth links retained for session logic -->
+                <a href="login.html" id="authLink" class="nav-auth" style="display:none;">Sign In</a>
+                <a href="#" id="logoutLink" class="nav-auth" style="display:none;">Logout</a>
+            </div>
+        </nav>
+    </header>
+
+    <hr>
+
+    <main>
+
+        <div id="titleRow">
+            <div class="btnGroup">
+                <button class="boxBtn" onclick="filterCategory('Dropped')">Dropped</button>
+                <button class="boxBtn" onclick="filterCategory('Good')">Good</button>
+                <button class="boxBtn" onclick="filterCategory('Goated')">Goated</button>
+            </div>
+        </div>
+
+        <!-- LOADER -->
+        <div id="loader">
+            <div class="skeletonGrid">
+                <div class="skeletonCard"><div class="skeletonImg"></div><div class="skeletonTitle"></div></div>
+                <div class="skeletonCard"><div class="skeletonImg"></div><div class="skeletonTitle"></div></div>
+                <div class="skeletonCard"><div class="skeletonImg"></div><div class="skeletonTitle"></div></div>
+                <div class="skeletonCard"><div class="skeletonImg"></div><div class="skeletonTitle"></div></div>
+                <div class="skeletonCard"><div class="skeletonImg"></div><div class="skeletonTitle"></div></div>
+                <div class="skeletonCard"><div class="skeletonImg"></div><div class="skeletonTitle"></div></div>
+            </div>
+        </div>
+
+        <!-- REVIEWS SECTION -->
+        <div id="reviews"></div>
+
+
+        <!-- REVIEW PAGE -->
+        <div id="reviewPage" style="display: none;">
+            <img id="reviewImg">
+            <div id="reviewContent">
+                <h2 id="reviewTitle"></h2>
+                <p id="reviewDescription"></p>
+                <div id="avgBadgeWrap">
+                    <span class="avg-label">Community Verdict:</span>
+                    <span id="avgBadge">No reviews yet</span>
+                </div>
+                <button id="back">Back</button>
+            </div>
+        </div>
+
+        <!-- COMMUNITY REVIEWS SECTION -->
+        <div id="communitySection">
+            <h3>Community Reviews</h3>
+
+            <div id="guestBlock" style="display:none;">
+                Want to leave your own verdict? <a href="login.html">Sign in</a> to post a review.
+            </div>
+
+            <div id="alreadyReviewedMsg" style="display:none;">
+                Thanks for reviewing!
+            </div>
+
+            <div id="reviewForm">
+                <label for="commentName">Your Name</label>
+                <input type="text" id="commentName" placeholder="Guest">
+
+                <label for="commentRating">Your Rating</label>
+                <select id="commentRating">
+                    <option value="">Select a rating</option>
+                    <option value="Dropped">Dropped</option>
+                    <option value="Good">Good</option>
+                    <option value="Goated">Goated</option>
+                </select>
+
+                <label for="commentText">Your Review</label>
+                <textarea id="commentText" placeholder="What did you think?"></textarea>
+
+                <button id="submitReviewBtn">Post Review</button>
+                <div id="reviewFormMsg"></div>
+            </div>
+
+            <div id="commentsList"></div>
+        </div>
+
+    </main>
+
+    <!-- SEARCH SIDE PANEL -->
+    <div id="searchOverlay"></div>
+    <div id="searchPanel">
+        <div class="panelTop">
+            <h3>Search Games</h3>
+            <span class="closePanel" id="closeSearchPanelBtn">&times;</span>
+        </div>
+
+        <div class="searchInputWrap">
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="2"></circle>
+                <line x1="16.65" y1="16.65" x2="21" y2="21" stroke="currentColor" stroke-width="2" stroke-linecap="round"></line>
+            </svg>
+            <input type="text" id="searchInput" class="searchPanelInput" placeholder="Search games..." autocomplete="off">
+        </div>
+
+        <div id="searchResults" class="searchResultsPanel"></div>
     </div>
-  `;
-  }).join('');
-}
 
-// ---- Reply threads ----
-// Replies live in a subcollection under each comment:
-// reviews/{reviewId}/comments/{commentId}/replies/{replyId}
-// The pinned "Official Verdict" card uses the fixed id "pinned-verdict" as
-// its comment id, so it can carry its own reply thread too even though it
-// isn't a real document in the "comments" collection.
-
-async function fetchReplies(commentId) {
-  const q = query(
-    collection(db, "reviews", currentReviewId, "comments", commentId, "replies"),
-    orderBy("createdAt", "asc")
-  );
-  const snapshot = await getDocs(q);
-  const replies = [];
-  snapshot.forEach(d => replies.push({ id: d.id, ...d.data() }));
-  return replies;
-}
-
-function renderReplies(commentId) {
-  const listEl = document.getElementById(`repliesList-${commentId}`);
-  if (!listEl) return;
-  const replies = repliesCache[commentId] || [];
-
-  if (replies.length === 0) {
-    listEl.innerHTML = '<p class="noReplies">No replies yet.</p>';
-    return;
-  }
-
-  listEl.innerHTML = replies.map(r => `
-    <div class="replyCard">
-      <div class="commentHead">
-        <img class="commentAvatar" src="${r.photoURL || DEFAULT_AVATAR}" alt="">
-        <span class="commentName ${r.isOwner ? 'owner' : ''}">${r.isOwner ? 'Pysh' : escapeHtml(r.name)}</span>
-      </div>
-      <div class="commentText">${escapeHtml(r.text)}</div>
+    <!-- SETTINGS SIDE PANEL -->
+    <div id="settingsOverlay"></div>
+    <div id="settingsPanel">
+        <div class="panelTop">
+            <h3>Settings</h3>
+            <span class="closePanel" id="closeSettingsPanelBtn">&times;</span>
+        </div>
+        <div class="panelSection">
+            <div id="passwordPanelSection">
+                <button class="panelBtn secondaryBtn" id="sendResetBtn">Change Password</button>
+                <div id="passwordMsg"></div>
+            </div>
+        </div>
     </div>
-  `).join('');
-}
 
-async function toggleReplies(commentId) {
-  const wrap = document.getElementById(`repliesWrap-${commentId}`);
-  if (!wrap) return;
+    <!-- PROFILE SIDE PANEL -->
+    <div id="profileOverlay"></div>
+    <div id="profilePanel">
+        <div class="panelTop">
+            <h3>Your Profile</h3>
+            <span class="closePanel" id="closePanelBtn">&times;</span>
+        </div>
 
-  const isOpen = wrap.style.display !== "none";
-  if (isOpen) {
-    wrap.style.display = "none";
-    return;
-  }
+        <div class="profileAvatarWrap">
+            <img id="panelAvatar" class="profileAvatarLarge" src="" alt="Profile photo">
+            <label for="profilePicInput" class="panelBtn" style="display:inline-block;width:auto;padding:8px 16px;font-size:13px;">Change Photo</label>
+            <input type="file" id="profilePicInput" accept="image/*" style="display:none;">
+            <div id="profileMsg"></div>
+        </div>
 
-  wrap.style.display = "block";
+        <div class="profileUsernameRow">
+            <div class="profileUsername" id="panelUsername"></div>
+            <button type="button" class="editIconBtn" id="editUsernameBtn" title="Edit username" aria-label="Edit username">&#9998;</button>
+        </div>
+        <div id="usernameEditWrap" style="display:none;">
+            <label for="usernameInput">New Username</label>
+            <input type="text" id="usernameInput" placeholder="new-username" autocapitalize="off" autocorrect="off" spellcheck="false">
+            <div class="usernameHint">Lowercase only — capital letters are converted automatically.</div>
+            <div class="usernameEditActions">
+                <button class="panelBtn" id="saveUsernameBtn">Save</button>
+                <button class="panelBtn secondaryBtn" id="cancelUsernameBtn">Cancel</button>
+            </div>
+            <div id="usernameMsg"></div>
+        </div>
+        <div class="profileRole" id="panelRole"></div>
 
-  // Lazy-load this thread's replies the first time it's opened
-  if (!repliesCache[commentId]) {
-    const listEl = document.getElementById(`repliesList-${commentId}`);
-    if (listEl) listEl.innerHTML = '<p class="noReplies">Loading replies...</p>';
-    try {
-      repliesCache[commentId] = await fetchReplies(commentId);
-    } catch (error) {
-      console.error("Error loading replies:", error);
-      repliesCache[commentId] = [];
-    }
-  }
+        <hr>
 
-  renderReplies(commentId);
-}
+        <div class="panelSection">
+            <a href="../Admin/admin.html" id="adminLink" class="nav-auth" style="display:none; text-align:center;">Admin</a>
+        </div>
 
-async function postReply(commentId) {
-  const session = getSession();
-  const msgEl = document.getElementById(`replyMsg-${commentId}`);
-  if (!session) {
-    if (msgEl) {
-      msgEl.style.color = "#e1282d";
-      msgEl.textContent = "Please sign in to reply.";
-    }
-    return;
-  }
+        <hr>
 
-  const textarea = document.getElementById(`replyText-${commentId}`);
-  const text = textarea ? textarea.value.trim() : "";
-  if (!text) {
-    if (msgEl) {
-      msgEl.style.color = "#e1282d";
-      msgEl.textContent = "Write something before posting.";
-    }
-    return;
-  }
+        <button class="panelBtn logoutBtn" id="panelLogoutBtn">Log Out</button>
+    </div>
 
-  const submitBtn = document.querySelector(`.replySubmitBtn[data-comment-id="${commentId}"]`);
-  if (submitBtn) submitBtn.disabled = true;
-  if (msgEl) {
-    msgEl.style.color = "#ccc";
-    msgEl.textContent = "Posting...";
-  }
+    <!-- BOTTOM NAVIGATION BAR (Mobile only) -->
+    <div id="bottomNav">
+        <a href="#" id="homeNavBtn" class="bottomNavItem" aria-label="Explore" title="Explore">
+            <svg class="bottomNavIcon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="2"></circle>
+                <polygon points="15.5,8.5 13.2,13.2 8.5,15.5 10.8,10.8" fill="currentColor" stroke="currentColor" stroke-width="1" stroke-linejoin="round"></polygon>
+            </svg>
+        </a>
+        <a href="#" id="messagesNavBtn" class="bottomNavItem" onclick="alert('Under construction'); return false;" aria-label="Messaging" title="Messaging">
+            <svg class="bottomNavIcon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="22" y1="2" x2="11" y2="13"></line>
+                <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+            </svg>
+        </a>
+        <a href="#" id="trendingNavBtn" class="bottomNavItem" onclick="alert('Under construction'); return false;" aria-label="Trending" title="Trending">
+            <svg class="bottomNavIcon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 3z"></path>
+            </svg>
+        </a>
+        <a href="#" id="profileNavBtn" class="bottomNavItem" aria-label="Profile" title="Profile">
+            <img id="profileIconBottom" class="profileIcon" src="" alt="Your profile">
+        </a>
+    </div>
 
-  const isOwner = session.role === "admin";
-  const name = isOwner ? "Pysh" : session.username;
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import {
+            getFirestore,
+            collection,
+            getDocs,
+            addDoc,
+            query,
+            orderBy,
+            where,
+            doc,
+            getDoc,
+            updateDoc,
+            deleteDoc
+        } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import { getAuth, signOut, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
-  try {
-    await addDoc(collection(db, "reviews", currentReviewId, "comments", commentId, "replies"), {
-      name,
-      text,
-      isOwner,
-      userId: session.id,
-      photoURL: session.photoURL || null,
-      createdAt: Date.now()
-    });
+        const CLOUD_NAME = "dkwmnfnjf";
+        const UPLOAD_PRESET = "yugwf5bd";
 
-    textarea.value = "";
-    if (msgEl) {
-      msgEl.style.color = "limegreen";
-      msgEl.textContent = "Reply posted!";
-    }
+        const firebaseConfig = {
+            apiKey: "AIzaSyBoylOskSQPe1LiDehqp1gmSXfzzNNtRmY",
+            authDomain: "pysh-index.firebaseapp.com",
+            projectId: "pysh-index",
+            appId: "1:263831699229:web:f514a3d8388868f6c9ebf4"
+        };
 
-    repliesCache[commentId] = await fetchReplies(commentId);
-    renderReplies(commentId);
-  } catch (error) {
-    console.error("Error posting reply:", error);
-    if (msgEl) {
-      msgEl.style.color = "#e1282d";
-      msgEl.textContent = "Error posting reply. Please try again.";
-    }
-  } finally {
-    if (submitBtn) submitBtn.disabled = false;
-  }
-}
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
 
-// ---- Own-review editing ----
-// Edit form for a user's own review is rendered inline (see renderComments)
-// but stays collapsed until "Edit" is clicked, same pattern as replies.
-function toggleEditReview(commentId, forceOpen) {
-  const wrap = document.getElementById(`editWrap-${commentId}`);
-  if (!wrap) return;
-  const isOpen = wrap.style.display !== "none";
-  const nextOpen = forceOpen !== undefined ? forceOpen : !isOpen;
-  wrap.style.display = nextOpen ? "block" : "none";
-}
+        const AUTH_KEY = "pyshAuthUser";
+        const DEFAULT_AVATAR = "data:image/svg+xml;utf8," + encodeURIComponent(
+            '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" fill="#333"/><circle cx="50" cy="38" r="18" fill="#888"/><circle cx="50" cy="95" r="32" fill="#888"/></svg>'
+        );
 
-async function saveEditedReview(commentId) {
-  const session = getSession();
-  const msgEl = document.getElementById(`editMsg-${commentId}`);
-  if (!session) return;
+        function getSession() {
+            try {
+                return JSON.parse(localStorage.getItem(AUTH_KEY));
+            } catch {
+                return null;
+            }
+        }
 
-  const ratingSelect = document.getElementById(`editRating-${commentId}`);
-  const textarea = document.getElementById(`editText-${commentId}`);
-  const rating = ratingSelect ? ratingSelect.value : "";
-  const text = textarea ? textarea.value.trim() : "";
+        function clearSession() {
+            localStorage.removeItem(AUTH_KEY);
+        }
 
-  if (!rating) {
-    if (msgEl) { msgEl.style.color = "#e1282d"; msgEl.textContent = "Please select a rating."; }
-    return;
-  }
-  if (!text) {
-    if (msgEl) { msgEl.style.color = "#e1282d"; msgEl.textContent = "Review can't be empty."; }
-    return;
-  }
+        function setSession(session) {
+            localStorage.setItem(AUTH_KEY, JSON.stringify(session));
+        }
 
-  const saveBtn = document.querySelector(`.editSaveBtn[data-comment-id="${commentId}"]`);
-  if (saveBtn) saveBtn.disabled = true;
-  if (msgEl) { msgEl.style.color = "#ccc"; msgEl.textContent = "Saving..."; }
+        // ---- Community Verdict helper ----
+        // Returns 'Dropped' | 'Good' | 'Goated' | null (null = no reviews)
+        function computeVerdict(comments) {
+            if (!comments || comments.length === 0) return null;
+            const values = { Dropped: 1, Good: 2, Goated: 3 };
+            const order = ['Dropped', 'Good', 'Goated'];
+            const sum = comments.reduce((t, c) => t + (values[c.rating] || 2), 0);
+            const mean = sum / comments.length;
+            const idx = Math.max(0, Math.min(2, Math.round(mean) - 1));
+            return order[idx];
+        }
 
-  try {
-    await updateDoc(doc(db, "reviews", currentReviewId, "comments", commentId), {
-      rating,
-      text
-    });
-    await loadComments(currentReviewId);
-  } catch (error) {
-    console.error("Error updating review:", error);
-    if (msgEl) {
-      msgEl.style.color = "#e1282d";
-      msgEl.textContent = "Could not save changes. Please try again.";
-    }
-    if (saveBtn) saveBtn.disabled = false;
-  }
-}
+        async function persistVerdict(reviewId, comments) {
+            const verdict = computeVerdict(comments);
+            if (!verdict) return;
+            try {
+                await updateDoc(doc(db, 'reviews', reviewId), {
+                    communityVerdict: verdict,
+                    category: verdict
+                });
+                // Update local cache so filters work without reload
+                const cached = allReviews.find(r => r.id === reviewId);
+                if (cached) {
+                    cached.communityVerdict = verdict;
+                    cached.category = verdict;
+                }
+            } catch (e) {
+                console.warn('Could not persist community verdict:', e);
+            }
+        }
 
-// Deletes a user's own review. Firestore doesn't cascade-delete subcollections,
-// so any replies under this review are cleaned up first to avoid orphaned data.
-async function deleteReview(commentId) {
-  const session = getSession();
-  if (!session) return;
+        // DOM Elements
+        const reviewsDiv = document.getElementById("reviews");
+        const reviewPage = document.getElementById("reviewPage");
+        const reviewImg = document.getElementById("reviewImg");
+        const reviewTitle = document.getElementById("reviewTitle");
+        const reviewDescription = document.getElementById("reviewDescription");
+        const backBtn = document.getElementById("back");
+        const loader = document.getElementById("loader");
+        const authLink = document.getElementById("authLink");
+        const adminLink = document.getElementById("adminLink");
+        const logoutLink = document.getElementById("logoutLink");
+        const profileIcon = document.getElementById("profileIcon");
+        const searchOverlay = document.getElementById("searchOverlay");
+        const searchPanel = document.getElementById("searchPanel");
+        const closeSearchPanelBtn = document.getElementById("closeSearchPanelBtn");
+        const searchToggleBtn = document.getElementById("searchToggleBtn");
+        const searchInput = document.getElementById("searchInput");
+        const searchResults = document.getElementById("searchResults");
+        const communitySection = document.getElementById("communitySection");
+        const avgBadge = document.getElementById("avgBadge");
+        const guestBlock = document.getElementById("guestBlock");
+        const alreadyReviewedMsg = document.getElementById("alreadyReviewedMsg");
+        const reviewForm = document.getElementById("reviewForm");
+        const commentName = document.getElementById("commentName");
+        const commentRating = document.getElementById("commentRating");
+        const commentText = document.getElementById("commentText");
+        const submitReviewBtn = document.getElementById("submitReviewBtn");
+        const reviewFormMsg = document.getElementById("reviewFormMsg");
+        const commentsList = document.getElementById("commentsList");
 
-  const confirmed = window.confirm("Delete your review? This can't be undone.");
-  if (!confirmed) return;
+        // Profile panel elements
+        const profileOverlay = document.getElementById("profileOverlay");
+        const profilePanel = document.getElementById("profilePanel");
+        const closePanelBtn = document.getElementById("closePanelBtn");
+        const panelAvatar = document.getElementById("panelAvatar");
+        const profilePicInput = document.getElementById("profilePicInput");
+        const profileMsg = document.getElementById("profileMsg");
+        const panelUsername = document.getElementById("panelUsername");
+        const editUsernameBtn = document.getElementById("editUsernameBtn");
+        const usernameEditWrap = document.getElementById("usernameEditWrap");
+        const usernameInput = document.getElementById("usernameInput");
+        const saveUsernameBtn = document.getElementById("saveUsernameBtn");
+        const cancelUsernameBtn = document.getElementById("cancelUsernameBtn");
+        const usernameMsg = document.getElementById("usernameMsg");
+        const panelRole = document.getElementById("panelRole");
+        const passwordPanelSection = document.getElementById("passwordPanelSection");
+        const sendResetBtn = document.getElementById("sendResetBtn");
+        const passwordMsg = document.getElementById("passwordMsg");
+        const panelLogoutBtn = document.getElementById("panelLogoutBtn");
 
-  const msgEl = document.getElementById(`deleteMsg-${commentId}`);
-  const deleteBtn = document.querySelector(`.deleteReviewBtn[data-comment-id="${commentId}"]`);
-  if (deleteBtn) deleteBtn.disabled = true;
-  if (msgEl) { msgEl.style.color = "#ccc"; msgEl.textContent = "Deleting..."; }
+        // Settings panel elements
+        const settingsOverlay = document.getElementById("settingsOverlay");
+        const settingsPanel = document.getElementById("settingsPanel");
+        const closeSettingsPanelBtn = document.getElementById("closeSettingsPanelBtn");
+        const settingsToggleBtn = document.getElementById("settingsToggleBtn");
 
-  try {
-    const repliesSnap = await getDocs(
-      collection(db, "reviews", currentReviewId, "comments", commentId, "replies")
-    );
-    await Promise.all(repliesSnap.docs.map(d => deleteDoc(d.ref)));
+        // Desktop nav elements
+        const desktopMessagesBtn = document.getElementById("desktopMessagesBtn");
+        const desktopExploreBtn = document.getElementById("desktopExploreBtn");
+        const desktopTrendingBtn = document.getElementById("desktopTrendingBtn");
+        const desktopProfileBtn = document.getElementById("desktopProfileBtn");
 
-    await deleteDoc(doc(db, "reviews", currentReviewId, "comments", commentId));
+        // Bottom nav elements
+        const bottomNav = document.getElementById("bottomNav");
+        const homeNavBtn = document.getElementById("homeNavBtn");
+        const messagesNavBtn = document.getElementById("messagesNavBtn");
+        const trendingNavBtn = document.getElementById("trendingNavBtn");
+        const profileNavBtn = document.getElementById("profileNavBtn");
+        const profileIconBottom = document.getElementById("profileIconBottom");
 
-    delete repliesCache[commentId];
-    await loadComments(currentReviewId);
-  } catch (error) {
-    console.error("Error deleting review:", error);
-    if (msgEl) {
-      msgEl.style.color = "#e1282d";
-      msgEl.textContent = "Could not delete review. Please try again.";
-    }
-    if (deleteBtn) deleteBtn.disabled = false;
-  }
-}
+        // Global state
+        let allReviews = [];
+        let currentFilter = null;
+        let currentReviewId = null;
+        let currentReviewMeta = null;
+        let currentComments = [];
+        let repliesCache = {};
 
-// One delegated listener handles every "Reply" toggle, "Post Reply", "Edit"
-// toggle, edit Save/Cancel, and "Delete" button, since comment cards (and
-// their reply threads / edit forms) are re-created on every renderComments() call.
-commentsList.addEventListener("click", (e) => {
-  const toggleBtn = e.target.closest(".replyToggleBtn");
-  if (toggleBtn) {
-    toggleReplies(toggleBtn.dataset.commentId);
-    return;
-  }
+        // ---- Auth nav UI ----
+        function initAuthUI() {
+            const session = getSession();
+            if (session) {
+                if (authLink) authLink.style.display = "none";
+                if (logoutLink) logoutLink.style.display = "none";
+                adminLink.style.display = session.role === "admin" ? "" : "none";
+                profileIcon.style.display = "block";
+                profileIcon.src = session.photoURL || DEFAULT_AVATAR;
+                profileIconBottom.style.display = "block";
+                profileIconBottom.src = session.photoURL || DEFAULT_AVATAR;
+            } else {
+                if (authLink) authLink.style.display = "none";
+                if (logoutLink) logoutLink.style.display = "none";
+                adminLink.style.display = "none";
+                profileIcon.style.display = "block";
+                profileIcon.src = DEFAULT_AVATAR;
+                profileIconBottom.style.display = "block";
+                profileIconBottom.src = DEFAULT_AVATAR;
+            }
+        }
 
-  const submitBtn = e.target.closest(".replySubmitBtn");
-  if (submitBtn) {
-    postReply(submitBtn.dataset.commentId);
-    return;
-  }
+        function doLogout() {
+            clearSession();
+            signOut(auth).catch(() => {});
+            window.location.href = "login.html";
+        }
 
-  const editBtn = e.target.closest(".editReviewBtn");
-  if (editBtn) {
-    toggleEditReview(editBtn.dataset.commentId);
-    return;
-  }
+        if (logoutLink) logoutLink.addEventListener("click", (e) => {
+            e.preventDefault();
+            doLogout();
+        });
+        panelLogoutBtn.addEventListener("click", doLogout);
 
-  const saveBtn = e.target.closest(".editSaveBtn");
-  if (saveBtn) {
-    saveEditedReview(saveBtn.dataset.commentId);
-    return;
-  }
+        initAuthUI();
 
-  const cancelBtn = e.target.closest(".editCancelBtn");
-  if (cancelBtn) {
-    toggleEditReview(cancelBtn.dataset.commentId, false);
-    return;
-  }
+        // ---- Search side panel ----
+        function openSearch() {
+            closeProfilePanel();
+            closeSettings();
+            searchOverlay.classList.add("open");
+            searchPanel.classList.add("open");
+            searchInput.focus();
+        }
 
-  const deleteBtn = e.target.closest(".deleteReviewBtn");
-  if (deleteBtn) {
-    deleteReview(deleteBtn.dataset.commentId);
-  }
-});
+        function closeSearch() {
+            searchOverlay.classList.remove("open");
+            searchPanel.classList.remove("open");
+            searchInput.value = "";
+            searchResults.innerHTML = "";
+        }
 
-// Average verdict: Dropped=1, Good=2, Goated=3, mean rounded to nearest bucket
-function renderAverage() {
-  if (currentComments.length === 0) {
-    avgBadge.textContent = "No reviews yet";
-    avgBadge.className = "";
-    return;
-  }
+        function renderSearchResults(matches) {
+            if (matches.length === 0) {
+                searchResults.innerHTML = '<div class="searchNoResults">No games found</div>';
+                return;
+            }
 
-  const values = { Dropped: 1, Good: 2, Goated: 3 };
-  const order = ["Dropped", "Good", "Goated"];
-  const sum = currentComments.reduce((total, c) => total + (values[c.rating] || 2), 0);
-  const mean = sum / currentComments.length;
-  const idx = Math.max(0, Math.min(2, Math.round(mean) - 1));
-  const category = order[idx];
+            searchResults.innerHTML = matches.map((r, i) => `
+                <div class="searchResultItem" data-index="${i}">
+                  <img src="${r.imageUrl}" alt="">
+                  <span>${escapeHtml(r.title)}</span>
+                </div>
+              `).join('');
 
-  avgBadge.textContent = category.toUpperCase();
-  avgBadge.className = "avg-" + category;
-}
+            searchResults.querySelectorAll(".searchResultItem").forEach(el => {
+                el.addEventListener("click", () => {
+                    const chosen = matches[Number(el.dataset.index)];
+                    closeSearch();
+                    openReviewPage(chosen);
+                });
+            });
+        }
 
-function escapeHtml(str) {
-  const div = document.createElement("div");
-  div.textContent = str || "";
-  return div.innerHTML;
-}
+        function performSearch(rawQuery) {
+            const q = rawQuery.trim().toLowerCase();
+            const matches = allReviews.filter(r => r.title && r.title.toLowerCase().includes(q)).slice(0, 8);
+            renderSearchResults(matches);
+        }
 
-submitReviewBtn.addEventListener("click", async () => {
-  if (!currentReviewId) return;
+        searchToggleBtn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            if (searchPanel.classList.contains("open")) {
+                closeSearch();
+            } else {
+                openSearch();
+            }
+        });
 
-  const session = getSession();
-  if (!session) {
-    // Guests can't post - the form is hidden for them, but guard here too
-    reviewFormMsg.style.color = "#e1282d";
-    reviewFormMsg.textContent = "Please sign in to post a review.";
-    return;
-  }
+        closeSearchPanelBtn.addEventListener("click", closeSearch);
+        searchOverlay.addEventListener("click", closeSearch);
 
-  const rating = commentRating.value;
-  const text = commentText.value.trim();
+        searchInput.addEventListener("input", () => performSearch(searchInput.value));
 
-  if (!rating) {
-    reviewFormMsg.style.color = "#e1282d";
-    reviewFormMsg.textContent = "Please select a rating.";
-    return;
-  }
-  if (!text) {
-    reviewFormMsg.style.color = "#e1282d";
-    reviewFormMsg.textContent = "Please write a short review.";
-    return;
-  }
+        searchInput.addEventListener("keydown", (e) => {
+            if (e.key === "Escape") {
+                closeSearch();
+            } else if (e.key === "Enter") {
+                const q = searchInput.value.trim().toLowerCase();
+                if (!q) return;
+                const first = allReviews.find(r => r.title && r.title.toLowerCase().includes(q));
+                if (first) {
+                    closeSearch();
+                    openReviewPage(first);
+                }
+            }
+        });
 
-  // One review per game per user - if they already have one, they should be
-  // editing it instead (the form is hidden in this case, but guard here too
-  // in case of stale UI state).
-  if (findOwnReview(session)) {
-    reviewFormMsg.style.color = "#e1282d";
-    reviewFormMsg.textContent = "You've already reviewed this game. Edit your existing review instead.";
-    updateReviewFormAvailability();
-    return;
-  }
+        // ---- Profile side panel ----
+        function openProfilePanel() {
+            const session = getSession();
+            if (!session) return;
+            closeSearch();
+            closeSettings();
+            panelAvatar.src = session.photoURL || DEFAULT_AVATAR;
+            panelUsername.textContent = session.username;
+            panelRole.textContent = session.role === "admin" ? "Admin" : "Member";
+            profileMsg.textContent = "";
+            usernameEditWrap.style.display = "none";
+            usernameInput.value = "";
+            usernameMsg.textContent = "";
 
-  const isOwner = session.role === "admin";
-  const name = isOwner ? "Pysh" : session.username;
+            profileOverlay.classList.add("open");
+            profilePanel.classList.add("open");
+        }
 
-  submitReviewBtn.disabled = true;
-  reviewFormMsg.style.color = "#ccc";
-  reviewFormMsg.textContent = "Posting...";
+        function closeProfilePanel() {
+            profileOverlay.classList.remove("open");
+            profilePanel.classList.remove("open");
+        }
 
-  try {
-    await addDoc(collection(db, "reviews", currentReviewId, "comments"), {
-      name,
-      rating,
-      text,
-      isOwner,
-      userId: session.id,
-      photoURL: session.photoURL || null,
-      createdAt: Date.now()
-    });
+        function handleProfileClick(e) {
+            e.preventDefault();
+            const session = getSession();
+            if (!session) {
+                window.location.href = "login.html";
+            } else {
+                openProfilePanel();
+            }
+        }
 
-    commentRating.value = "";
-    commentText.value = "";
-    reviewFormMsg.style.color = "limegreen";
-    reviewFormMsg.textContent = "Review posted!";
-    loadComments(currentReviewId);
-  } catch (error) {
-    console.error("Error posting review:", error);
-    reviewFormMsg.style.color = "#e1282d";
-    reviewFormMsg.textContent = "Error posting review. Please try again.";
-  } finally {
-    submitReviewBtn.disabled = false;
-  }
-});
-</script>
+        profileIcon.addEventListener("click", handleProfileClick);
+        if (desktopProfileBtn) desktopProfileBtn.addEventListener("click", handleProfileClick);
+        profileIconBottom.addEventListener("click", handleProfileClick);
+        if (profileNavBtn) profileNavBtn.addEventListener("click", handleProfileClick);
+
+        closePanelBtn.addEventListener("click", closeProfilePanel);
+        profileOverlay.addEventListener("click", closeProfilePanel);
+
+        // ---- Settings side panel ----
+        function openSettings() {
+            closeProfilePanel();
+            closeSearch();
+            settingsOverlay.classList.add("open");
+            settingsPanel.classList.add("open");
+
+            const session = getSession();
+            const providerIds = auth.currentUser ?
+                auth.currentUser.providerData.map(p => p.providerId) : [];
+            passwordPanelSection.style.display = providerIds.includes("password") ? "" : "none";
+            sendResetBtn.disabled = false;
+            sendResetBtn.textContent = "Change Password";
+            passwordMsg.textContent = "";
+        }
+
+        function closeSettings() {
+            settingsOverlay.classList.remove("open");
+            settingsPanel.classList.remove("open");
+        }
+
+        settingsToggleBtn.addEventListener("click", (e) => {
+            e.stopPropagation();
+            if (settingsPanel.classList.contains("open")) {
+                closeSettings();
+            } else {
+                openSettings();
+            }
+        });
+
+        closeSettingsPanelBtn.addEventListener("click", closeSettings);
+        settingsOverlay.addEventListener("click", closeSettings);
+
+        // ---- Password Reset ----
+        sendResetBtn.addEventListener("click", async () => {
+            if (!auth.currentUser || !auth.currentUser.email) return;
+
+            sendResetBtn.disabled = true;
+            passwordMsg.style.color = "#ccc";
+            passwordMsg.textContent = "Sending...";
+
+            try {
+                await sendPasswordResetEmail(auth, auth.currentUser.email);
+                passwordMsg.style.color = "limegreen";
+                passwordMsg.textContent = "Reset link sent to " + auth.currentUser.email + ". Check your spam folder if it doesn't arrive shortly.";
+            } catch (error) {
+                console.error("Error sending reset email:", error);
+                passwordMsg.style.color = "#e1282d";
+                passwordMsg.textContent = "Could not send reset email. Please try again.";
+            } finally {
+                sendResetBtn.disabled = false;
+            }
+        });
+
+        // ---- Profile picture upload ----
+        profilePicInput.addEventListener("change", async () => {
+            const session = getSession();
+            const file = profilePicInput.files[0];
+            if (!session || !file) return;
+
+            profileMsg.style.color = "#ccc";
+            profileMsg.textContent = "Uploading...";
+
+            try {
+                const formData = new FormData();
+                formData.append("file", file);
+                formData.append("upload_preset", UPLOAD_PRESET);
+
+                const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`, {
+                    method: "POST",
+                    body: formData
+                });
+                if (!res.ok) throw new Error("Upload failed");
+                const data = await res.json();
+
+                await updateDoc(doc(db, "users", session.id), { photoURL: data.secure_url });
+
+                const updatedSession = { ...session, photoURL: data.secure_url };
+                setSession(updatedSession);
+                panelAvatar.src = data.secure_url;
+                profileIcon.src = data.secure_url;
+                profileIconBottom.src = data.secure_url;
+
+                profileMsg.style.color = "limegreen";
+                profileMsg.textContent = "Profile photo updated!";
+            } catch (error) {
+                console.error("Error uploading profile photo:", error);
+                profileMsg.style.color = "#e1282d";
+                profileMsg.textContent = "Could not upload photo. Please try again.";
+            }
+        });
+
+        // ---- Username edit ----
+        editUsernameBtn.addEventListener("click", () => {
+            const session = getSession();
+            if (!session) return;
+            usernameInput.value = session.username.toLowerCase();
+            usernameMsg.textContent = "";
+            usernameEditWrap.style.display = "flex";
+            usernameInput.focus();
+        });
+
+        usernameInput.addEventListener("input", () => {
+            const { selectionStart, selectionEnd } = usernameInput;
+            usernameInput.value = usernameInput.value.toLowerCase();
+            usernameInput.setSelectionRange(selectionStart, selectionEnd);
+        });
+
+        cancelUsernameBtn.addEventListener("click", () => {
+            usernameEditWrap.style.display = "none";
+            usernameInput.value = "";
+            usernameMsg.textContent = "";
+        });
+
+        saveUsernameBtn.addEventListener("click", async () => {
+            const session = getSession();
+            if (!session) return;
+
+            const newUsername = usernameInput.value.trim().toLowerCase();
+
+            if (!newUsername) {
+                usernameMsg.style.color = "#e1282d";
+                usernameMsg.textContent = "Username can't be empty.";
+                return;
+            }
+            if (newUsername.length < 3 || newUsername.length > 20) {
+                usernameMsg.style.color = "#e1282d";
+                usernameMsg.textContent = "Username must be 3-20 characters.";
+                return;
+            }
+            if (newUsername === session.username) {
+                usernameEditWrap.style.display = "none";
+                return;
+            }
+
+            saveUsernameBtn.disabled = true;
+            usernameMsg.style.color = "#ccc";
+            usernameMsg.textContent = "Saving...";
+
+            try {
+                const dupQuery = query(collection(db, "users"), where("username", "==", newUsername));
+                const dupSnap = await getDocs(dupQuery);
+                const takenByOther = dupSnap.docs.some(d => d.id !== session.id);
+                if (takenByOther) {
+                    usernameMsg.style.color = "#e1282d";
+                    usernameMsg.textContent = "That username is already taken.";
+                    return;
+                }
+
+                await updateDoc(doc(db, "users", session.id), { username: newUsername });
+
+                const updatedSession = { ...session, username: newUsername };
+                setSession(updatedSession);
+
+                panelUsername.textContent = newUsername;
+                if (session.role !== "admin") {
+                    commentName.value = newUsername;
+                }
+
+                usernameMsg.style.color = "limegreen";
+                usernameMsg.textContent = "Username updated!";
+                usernameEditWrap.style.display = "none";
+            } catch (error) {
+                console.error("Error updating username:", error);
+                usernameMsg.style.color = "#e1282d";
+                usernameMsg.textContent = "Could not update username. Please try again.";
+            } finally {
+                saveUsernameBtn.disabled = false;
+            }
+        });
+
+        // ---- Desktop Nav Actions ----
+        function triggerExploreNav(e) {
+            e.preventDefault();
+            currentFilter = null;
+            renderReviews(allReviews);
+            showReviews();
+            closeProfilePanel();
+            closeSettings();
+            closeSearch();
+        }
+
+        if (desktopExploreBtn) desktopExploreBtn.addEventListener("click", triggerExploreNav);
+        if (homeNavBtn) homeNavBtn.addEventListener("click", triggerExploreNav);
+
+        if (desktopMessagesBtn) {
+            desktopMessagesBtn.addEventListener("click", (e) => {
+                e.preventDefault();
+                alert("Under construction");
+            });
+        }
+
+        if (desktopTrendingBtn) {
+            desktopTrendingBtn.addEventListener("click", (e) => {
+                e.preventDefault();
+                alert("Under construction");
+            });
+        }
+
+        // ---- Mobile Bottom Nav Actions ----
+        if (messagesNavBtn) {
+            messagesNavBtn.addEventListener("click", (e) => {
+                e.preventDefault();
+                alert("Under construction");
+            });
+        }
+
+        if (trendingNavBtn) {
+            trendingNavBtn.addEventListener("click", (e) => {
+                e.preventDefault();
+                alert("Under construction");
+            });
+        }
+
+        // ---- Data loading ----
+        document.addEventListener('DOMContentLoaded', function() {
+            reviewsDiv.style.display = "none";
+            reviewPage.style.display = "none";
+
+            loader.style.display = "block";
+
+            loadAllData();
+        });
+
+        async function loadAllData() {
+            try {
+                const reviewsQuery = query(collection(db, "reviews"), orderBy("createdAt", "desc"));
+                const reviewsSnapshot = await getDocs(reviewsQuery);
+                allReviews = [];
+                reviewsSnapshot.forEach(doc => allReviews.push({ id: doc.id, ...doc.data() }));
+
+                await preloadImages(allReviews);
+
+                renderReviews(allReviews);
+
+                hideLoader();
+                showReviews();
+            } catch (error) {
+                console.error("Error loading data:", error);
+                hideLoader();
+                alert("Error loading data. Please refresh the page.");
+            }
+        }
+
+        function hideLoader() {
+            loader.style.display = "none";
+        }
+
+        function preloadImages(items) {
+            return new Promise((resolve) => {
+                let loadedImages = 0;
+                const totalImages = items.length;
+
+                if (totalImages === 0) {
+                    resolve();
+                    return;
+                }
+
+                items.forEach(item => {
+                    const img = new Image();
+                    img.src = item.imageUrl;
+                    img.onload = () => {
+                        loadedImages++;
+                        if (loadedImages === totalImages) resolve();
+                    };
+                    img.onerror = () => {
+                        loadedImages++;
+                        if (loadedImages === totalImages) resolve();
+                    };
+                });
+            });
+        }
+
+        function showReviews() {
+            reviewsDiv.style.display = "grid";
+            reviewPage.style.display = "none";
+            communitySection.style.display = "none";
+
+            updateButtonStates('reviews');
+        }
+
+        function updateButtonStates(view) {
+            document.querySelectorAll('.boxBtn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+
+            if (currentFilter) {
+                const filterBtn = document.querySelector(`.boxBtn[onclick*="${currentFilter}"]`);
+                if (filterBtn) {
+                    filterBtn.classList.add('active');
+                }
+            }
+        }
+
+        function openReviewPage(r) {
+            reviewsDiv.style.display = "none";
+            reviewPage.style.display = "flex";
+            reviewImg.src = r.imageUrl;
+            reviewImg.alt = r.title;
+            reviewTitle.textContent = r.title;
+            reviewDescription.textContent = r.description || "";
+
+            reviewPage.classList.remove("visible");
+            requestAnimationFrame(() => {
+                requestAnimationFrame(() => reviewPage.classList.add("visible"));
+            });
+
+            currentReviewId = r.id;
+            currentReviewMeta = r;
+            communitySection.style.display = "block";
+            resetReviewForm();
+            setupCommentNameField();
+            loadComments(currentReviewId);
+            window.scrollTo(0, 0);
+        }
+
+        function renderReviews(list) {
+            reviewsDiv.innerHTML = "";
+
+            if (list.length === 0) {
+                reviewsDiv.innerHTML = '<p style="grid-column: 1 / -1; text-align: center; font-size: 24px; color: #888;">No reviews found</p>';
+                return;
+            }
+
+            list.forEach(r => {
+                const img = document.createElement("img");
+                img.src = r.imageUrl;
+                img.alt = r.title;
+
+                const title = document.createElement("h3");
+                title.textContent = r.title;
+
+                img.onclick = () => {
+                    openReviewPage(r);
+                };
+
+                const wrap = document.createElement("div");
+                wrap.className = "imgWrap";
+                wrap.appendChild(img);
+
+                const card = document.createElement("div");
+                card.className = "card";
+
+                card.appendChild(wrap);
+                card.appendChild(title);
+
+                reviewsDiv.appendChild(card);
+            });
+        }
+
+        // Filter functions
+        window.filterCategory = (cat) => {
+            if (currentFilter === cat) {
+                currentFilter = null;
+                renderReviews(allReviews);
+                showReviews();
+                updateButtonStates('reviews');
+                return;
+            }
+            currentFilter = cat;
+            // Use communityVerdict (dynamic) falling back to stored category
+            const filtered = allReviews.filter(r => (r.communityVerdict || r.category) === cat);
+            renderReviews(filtered);
+            showReviews();
+
+            updateButtonStates('reviews');
+        };
+
+        backBtn.onclick = () => {
+            reviewPage.style.display = "none";
+            reviewPage.classList.remove("visible");
+            showReviews();
+        };
+
+        // ---- Community Reviews ----
+        function setupCommentNameField() {
+            const session = getSession();
+
+            if (!session) {
+                reviewForm.style.display = "none";
+                guestBlock.style.display = "block";
+                alreadyReviewedMsg.style.display = "none";
+                return;
+            }
+
+            reviewForm.style.display = "";
+            guestBlock.style.display = "none";
+            alreadyReviewedMsg.style.display = "none";
+
+            if (session.role === "admin") {
+                commentName.value = "Pysh";
+                commentName.readOnly = true;
+                commentName.classList.add("owner-name");
+            } else {
+                commentName.value = session.username;
+                commentName.readOnly = true;
+                commentName.classList.remove("owner-name");
+            }
+        }
+
+        function resetReviewForm() {
+            commentRating.value = "";
+            commentText.value = "";
+            reviewFormMsg.textContent = "";
+        }
+
+        function isOwnComment(c, session) {
+            if (!session || c.pinned) return false;
+            if (c.userId) return c.userId === session.id;
+            const displayName = session.role === "admin" ? "Pysh" : session.username;
+            return c.name === displayName;
+        }
+
+        function findOwnReview(session) {
+            if (!session) return null;
+            return currentComments.find(c => isOwnComment(c, session)) || null;
+        }
+
+        function updateReviewFormAvailability() {
+            const session = getSession();
+            if (!session) return;
+
+            if (findOwnReview(session)) {
+                reviewForm.style.display = "none";
+                alreadyReviewedMsg.style.display = "block";
+            } else {
+                alreadyReviewedMsg.style.display = "none";
+                reviewForm.style.display = "";
+            }
+        }
+
+        async function loadComments(reviewId) {
+            commentsList.innerHTML = '<p id="noComments">Loading reviews...</p>';
+            repliesCache = {};
+            try {
+                const q = query(collection(db, "reviews", reviewId, "comments"), orderBy("createdAt", "desc"));
+                const snapshot = await getDocs(q);
+                currentComments = [];
+                snapshot.forEach(d => currentComments.push({ id: d.id, ...d.data() }));
+
+                // No longer inject a fake pinned admin review —
+                // the community verdict is calculated from actual reviews only.
+
+                renderComments();
+                renderAverage();
+                updateReviewFormAvailability();
+
+                // Persist the updated community verdict back to Firestore
+                await persistVerdict(reviewId, currentComments);
+            } catch (error) {
+                console.error("Error loading community reviews:", error);
+                commentsList.innerHTML = '<p id="noComments">Could not load reviews right now.</p>';
+            }
+        }
+
+        function renderComments() {
+            if (currentComments.length === 0) {
+                commentsList.innerHTML = '<p id="noComments">No reviews yet — be the first!</p>';
+                return;
+            }
+
+            const session = getSession();
+
+            commentsList.innerHTML = currentComments.map(c => {
+                const canEdit = isOwnComment(c, session);
+                return `
+                <div class="commentCard ${c.pinned ? 'pinned' : ''}">
+                  <div class="commentHead">
+                    <img class="commentAvatar" src="${c.photoURL || DEFAULT_AVATAR}" alt="">
+                    <span class="commentName ${c.isOwner ? 'owner' : ''}">${c.isOwner ? 'Pysh' : escapeHtml(c.name)}</span>
+                    <span class="commentRating rating-${c.rating}">${c.rating}</span>
+                  </div>
+                  <div class="commentText">${escapeHtml(c.text)}</div>
+
+                  <div class="commentActions">
+                    ${canEdit ? `<button class="editReviewBtn" data-comment-id="${c.id}">Edit</button>` : ''}
+                    ${canEdit ? `<button class="deleteReviewBtn" data-comment-id="${c.id}">Delete</button>` : ''}
+                    <button class="replyToggleBtn" data-comment-id="${c.id}">Reply</button>
+                  </div>
+                  ${canEdit ? `<div class="deleteMsg" id="deleteMsg-${c.id}"></div>` : ''}
+
+                  ${canEdit ? `
+                    <div class="editReviewWrap" id="editWrap-${c.id}" style="display:none;">
+                      <label for="editRating-${c.id}">Your Rating</label>
+                      <select class="editRatingSelect" id="editRating-${c.id}">
+                        <option value="Dropped" ${c.rating === 'Dropped' ? 'selected' : ''}>Dropped</option>
+                        <option value="Good" ${c.rating === 'Good' ? 'selected' : ''}>Good</option>
+                        <option value="Goated" ${c.rating === 'Goated' ? 'selected' : ''}>Goated</option>
+                      </select>
+                      <textarea class="editTextArea" id="editText-${c.id}">${escapeHtml(c.text)}</textarea>
+                      <div>
+                        <button class="editSaveBtn" data-comment-id="${c.id}">Save</button>
+                        <button class="editCancelBtn" data-comment-id="${c.id}">Cancel</button>
+                      </div>
+                      <div class="editMsg" id="editMsg-${c.id}"></div>
+                    </div>
+                  ` : ''}
+
+                  <div class="repliesWrap" id="repliesWrap-${c.id}" style="display:none;">
+                    <div class="repliesList" id="repliesList-${c.id}"></div>
+
+                    ${session ? `
+                      <div class="replyForm">
+                        <textarea class="replyText" id="replyText-${c.id}" placeholder="Write a reply..."></textarea>
+                        <button class="replySubmitBtn" data-comment-id="${c.id}">Post Reply</button>
+                        <div class="replyMsg" id="replyMsg-${c.id}"></div>
+                      </div>
+                    ` : `
+                      <div class="replyGuestBlock"><a href="login.html">Sign in</a> to reply.</div>
+                    `}
+                  </div>
+                </div>
+              `;
+            }).join('');
+        }
+
+        // ---- Reply threads ----
+        async function fetchReplies(commentId) {
+            const q = query(
+                collection(db, "reviews", currentReviewId, "comments", commentId, "replies"),
+                orderBy("createdAt", "asc")
+            );
+            const snapshot = await getDocs(q);
+            const replies = [];
+            snapshot.forEach(d => replies.push({ id: d.id, ...d.data() }));
+            return replies;
+        }
+
+        function renderReplies(commentId) {
+            const listEl = document.getElementById(`repliesList-${commentId}`);
+            if (!listEl) return;
+            const replies = repliesCache[commentId] || [];
+
+            if (replies.length === 0) {
+                listEl.innerHTML = '<p class="noReplies">No replies yet.</p>';
+                return;
+            }
+
+            listEl.innerHTML = replies.map(r => `
+                <div class="replyCard">
+                  <div class="commentHead">
+                    <img class="commentAvatar" src="${r.photoURL || DEFAULT_AVATAR}" alt="">
+                    <span class="commentName ${r.isOwner ? 'owner' : ''}">${r.isOwner ? 'Pysh' : escapeHtml(r.name)}</span>
+                  </div>
+                  <div class="commentText">${escapeHtml(r.text)}</div>
+                </div>
+              `).join('');
+        }
+
+        async function toggleReplies(commentId) {
+            const wrap = document.getElementById(`repliesWrap-${commentId}`);
+            if (!wrap) return;
+
+            const isOpen = wrap.style.display !== "none";
+            if (isOpen) {
+                wrap.style.display = "none";
+                return;
+            }
+
+            wrap.style.display = "block";
+
+            if (!repliesCache[commentId]) {
+                const listEl = document.getElementById(`repliesList-${commentId}`);
+                if (listEl) listEl.innerHTML = '<p class="noReplies">Loading replies...</p>';
+                try {
+                    repliesCache[commentId] = await fetchReplies(commentId);
+                } catch (error) {
+                    console.error("Error loading replies:", error);
+                    repliesCache[commentId] = [];
+                }
+            }
+
+            renderReplies(commentId);
+        }
+
+        async function postReply(commentId) {
+            const session = getSession();
+            const msgEl = document.getElementById(`replyMsg-${commentId}`);
+            if (!session) {
+                if (msgEl) {
+                    msgEl.style.color = "#e1282d";
+                    msgEl.textContent = "Please sign in to reply.";
+                }
+                return;
+            }
+
+            const textarea = document.getElementById(`replyText-${commentId}`);
+            const text = textarea ? textarea.value.trim() : "";
+            if (!text) {
+                if (msgEl) {
+                    msgEl.style.color = "#e1282d";
+                    msgEl.textContent = "Write something before posting.";
+                }
+                return;
+            }
+
+            const submitBtn = document.querySelector(`.replySubmitBtn[data-comment-id="${commentId}"]`);
+            if (submitBtn) submitBtn.disabled = true;
+            if (msgEl) {
+                msgEl.style.color = "#ccc";
+                msgEl.textContent = "Posting...";
+            }
+
+            const isOwner = session.role === "admin";
+            const name = isOwner ? "Pysh" : session.username;
+
+            try {
+                await addDoc(collection(db, "reviews", currentReviewId, "comments", commentId, "replies"), {
+                    name,
+                    text,
+                    isOwner,
+                    userId: session.id,
+                    photoURL: session.photoURL || null,
+                    createdAt: Date.now()
+                });
+
+                textarea.value = "";
+                if (msgEl) {
+                    msgEl.style.color = "limegreen";
+                    msgEl.textContent = "Reply posted!";
+                }
+
+                repliesCache[commentId] = await fetchReplies(commentId);
+                renderReplies(commentId);
+            } catch (error) {
+                console.error("Error posting reply:", error);
+                if (msgEl) {
+                    msgEl.style.color = "#e1282d";
+                    msgEl.textContent = "Error posting reply. Please try again.";
+                }
+            } finally {
+                if (submitBtn) submitBtn.disabled = false;
+            }
+        }
+
+        // ---- Own-review editing ----
+        function toggleEditReview(commentId, forceOpen) {
+            const wrap = document.getElementById(`editWrap-${commentId}`);
+            if (!wrap) return;
+            const isOpen = wrap.style.display !== "none";
+            const nextOpen = forceOpen !== undefined ? forceOpen : !isOpen;
+            wrap.style.display = nextOpen ? "block" : "none";
+        }
+
+        async function saveEditedReview(commentId) {
+            const session = getSession();
+            const msgEl = document.getElementById(`editMsg-${commentId}`);
+            if (!session) return;
+
+            const ratingSelect = document.getElementById(`editRating-${commentId}`);
+            const textarea = document.getElementById(`editText-${commentId}`);
+            const rating = ratingSelect ? ratingSelect.value : "";
+            const text = textarea ? textarea.value.trim() : "";
+
+            if (!rating) {
+                if (msgEl) { msgEl.style.color = "#e1282d";
+                    msgEl.textContent = "Please select a rating."; }
+                return;
+            }
+            if (!text) {
+                if (msgEl) { msgEl.style.color = "#e1282d";
+                    msgEl.textContent = "Review can't be empty."; }
+                return;
+            }
+
+            const saveBtn = document.querySelector(`.editSaveBtn[data-comment-id="${commentId}"]`);
+            if (saveBtn) saveBtn.disabled = true;
+            if (msgEl) { msgEl.style.color = "#ccc";
+                msgEl.textContent = "Saving..."; }
+
+            try {
+                await updateDoc(doc(db, "reviews", currentReviewId, "comments", commentId), {
+                    rating,
+                    text
+                });
+                await loadComments(currentReviewId);
+            } catch (error) {
+                console.error("Error updating review:", error);
+                if (msgEl) {
+                    msgEl.style.color = "#e1282d";
+                    msgEl.textContent = "Could not save changes. Please try again.";
+                }
+                if (saveBtn) saveBtn.disabled = false;
+            }
+        }
+
+        async function deleteReview(commentId) {
+            const session = getSession();
+            if (!session) return;
+
+            const confirmed = window.confirm("Delete your review? This can't be undone.");
+            if (!confirmed) return;
+
+            const msgEl = document.getElementById(`deleteMsg-${commentId}`);
+            const deleteBtn = document.querySelector(`.deleteReviewBtn[data-comment-id="${commentId}"]`);
+            if (deleteBtn) deleteBtn.disabled = true;
+            if (msgEl) { msgEl.style.color = "#ccc";
+                msgEl.textContent = "Deleting..."; }
+
+            try {
+                const repliesSnap = await getDocs(
+                    collection(db, "reviews", currentReviewId, "comments", commentId, "replies")
+                );
+                await Promise.all(repliesSnap.docs.map(d => deleteDoc(d.ref)));
+
+                await deleteDoc(doc(db, "reviews", currentReviewId, "comments", commentId));
+
+                delete repliesCache[commentId];
+                await loadComments(currentReviewId);
+            } catch (error) {
+                console.error("Error deleting review:", error);
+                if (msgEl) {
+                    msgEl.style.color = "#e1282d";
+                    msgEl.textContent = "Could not delete review. Please try again.";
+                }
+                if (deleteBtn) deleteBtn.disabled = false;
+            }
+        }
+
+        // Delegated listener for all comment actions
+        commentsList.addEventListener("click", (e) => {
+            const toggleBtn = e.target.closest(".replyToggleBtn");
+            if (toggleBtn) {
+                toggleReplies(toggleBtn.dataset.commentId);
+                return;
+            }
+
+            const submitBtn = e.target.closest(".replySubmitBtn");
+            if (submitBtn) {
+                postReply(submitBtn.dataset.commentId);
+                return;
+            }
+
+            const editBtn = e.target.closest(".editReviewBtn");
+            if (editBtn) {
+                toggleEditReview(editBtn.dataset.commentId);
+                return;
+            }
+
+            const saveBtn = e.target.closest(".editSaveBtn");
+            if (saveBtn) {
+                saveEditedReview(saveBtn.dataset.commentId);
+                return;
+            }
+
+            const cancelBtn = e.target.closest(".editCancelBtn");
+            if (cancelBtn) {
+                toggleEditReview(cancelBtn.dataset.commentId, false);
+                return;
+            }
+
+            const deleteBtn = e.target.closest(".deleteReviewBtn");
+            if (deleteBtn) {
+                deleteReview(deleteBtn.dataset.commentId);
+            }
+        });
+
+        // Average verdict
+        function renderAverage() {
+            if (currentComments.length === 0) {
+                avgBadge.textContent = "No reviews yet";
+                avgBadge.className = "";
+                return;
+            }
+
+            const values = { Dropped: 1, Good: 2, Goated: 3 };
+            const order = ["Dropped", "Good", "Goated"];
+            const sum = currentComments.reduce((total, c) => total + (values[c.rating] || 2), 0);
+            const mean = sum / currentComments.length;
+            const idx = Math.max(0, Math.min(2, Math.round(mean) - 1));
+            const category = order[idx];
+
+            avgBadge.textContent = category.toUpperCase();
+            avgBadge.className = "avg-" + category;
+        }
+
+        function escapeHtml(str) {
+            const div = document.createElement("div");
+            div.textContent = str || "";
+            return div.innerHTML;
+        }
+
+        submitReviewBtn.addEventListener("click", async () => {
+            if (!currentReviewId) return;
+
+            const session = getSession();
+            if (!session) {
+                reviewFormMsg.style.color = "#e1282d";
+                reviewFormMsg.textContent = "Please sign in to post a review.";
+                return;
+            }
+
+            const rating = commentRating.value;
+            const text = commentText.value.trim();
+
+            if (!rating) {
+                reviewFormMsg.style.color = "#e1282d";
+                reviewFormMsg.textContent = "Please select a rating.";
+                return;
+            }
+            if (!text) {
+                reviewFormMsg.style.color = "#e1282d";
+                reviewFormMsg.textContent = "Please write a short review.";
+                return;
+            }
+
+            if (findOwnReview(session)) {
+                reviewFormMsg.style.color = "#e1282d";
+                reviewFormMsg.textContent = "You've already reviewed this game. Edit your existing review instead.";
+                updateReviewFormAvailability();
+                return;
+            }
+
+            const isOwner = session.role === "admin";
+            const name = isOwner ? "Pysh" : session.username;
+
+            submitReviewBtn.disabled = true;
+            reviewFormMsg.style.color = "#ccc";
+            reviewFormMsg.textContent = "Posting...";
+
+            try {
+                await addDoc(collection(db, "reviews", currentReviewId, "comments"), {
+                    name,
+                    rating,
+                    text,
+                    isOwner,
+                    userId: session.id,
+                    photoURL: session.photoURL || null,
+                    createdAt: Date.now()
+                });
+
+                commentRating.value = "";
+                commentText.value = "";
+                reviewFormMsg.style.color = "limegreen";
+                reviewFormMsg.textContent = "Review posted!";
+                // loadComments already calls persistVerdict internally
+                await loadComments(currentReviewId);
+            } catch (error) {
+                console.error("Error posting review:", error);
+                reviewFormMsg.style.color = "#e1282d";
+                reviewFormMsg.textContent = "Error posting review. Please try again.";
+            } finally {
+                submitReviewBtn.disabled = false;
+            }
+        });
+    </script>
 
 </body>
 </html>
