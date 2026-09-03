@@ -108,6 +108,7 @@
         header {
             padding: clamp(6px, 1vw, 10px) 0;
             background-color: #111;
+			border-bottom:5px solid var(--red);
         }
 
         nav {
@@ -164,14 +165,8 @@
             pointer-events: none;
         }
 
-        .headerNavIcon:hover {
-            color: var(--red);
-            border-color: var(--red);
-        }
-
         /* Profile Button in Desktop Header */
         .profileBtn {
-            border: 2px solid var(--red);
             padding: 0;
             overflow: hidden;
             margin-right: clamp(12px, 1.8vw, 26px); /* Shifts Profile more to the left */
@@ -184,10 +179,6 @@
             object-fit: cover;
             display: block;
             margin: 0;
-        }
-
-        .profileBtn:hover {
-            border-color: white;
         }
 
         /* SEARCH SIDE PANEL */
@@ -470,6 +461,27 @@
         .card:hover .imgWrap::before {
             top: -20%;
             left: -20%;
+        }
+
+        /* TRENDING SECTION */
+        #trendingSection {
+            display: none;
+            width: var(--container-w);
+            margin: clamp(20px, 4vw, 40px) auto clamp(40px, 6vw, 60px);
+        }
+
+        #trendingHeading {
+            font-size: clamp(22px, 3.2vw, 38px);
+            text-align: center;
+            margin: 0 0 clamp(18px, 2.6vw, 32px);
+            color: white;
+        }
+
+        #trendingGrid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: var(--gap);
+            perspective: 1200px;
         }
 
         /* FULL REVIEW PAGE */
@@ -1049,12 +1061,13 @@
         #profilePanel {
             position: fixed;
             top: 0;
-            left: 0;
+            left: auto;
+            right: 0;
             height: 100vh;
             width: min(100vw, max(380px, 33vw));
             background: #111;
             overflow-y: auto;
-            transform: translateX(-100%);
+            transform: translateX(100%);
             transition: transform 0.35s ease;
             z-index: 2000;
             display: flex;
@@ -1331,8 +1344,12 @@
             transition: border-color 0.2s ease, color 0.2s ease;
         }
 		
-        svg.bottomNavIcon:hover,
-        .bottomNavItem:hover svg.bottomNavIcon {
+        /* Nav icon "active section" indicator — border only shows once the
+           icon has been clicked (and stays until another section is picked
+           or its panel is closed). Same logic on mobile bottom bar and
+           desktop header. */
+        .headerNavIcon.navIconActive,
+        .bottomNavIcon.navIconActive {
             border-color: var(--red);
         }
 
@@ -1342,9 +1359,15 @@
             height: 36px;
             border-radius: 50%;
             object-fit: cover;
-            border: 2px solid var(--red);
+            border: 2px solid transparent;
             cursor: pointer;
             display: block;
+            box-sizing: border-box;
+            transition: border-color 0.2s ease;
+        }
+
+        #profileIconBottom.navIconActive {
+            border-color: var(--red);
         }
 
         /* Responsive Breakpoints */
@@ -1360,6 +1383,7 @@
             header {
                 padding: 8px 0;
                 background: #111;
+					border-bottom:3px solid var(--red);
             }
 
             nav {
@@ -1403,18 +1427,9 @@
                 width: 100vw;
             }
 
-            #profilePanel {
-                left: auto;
-                right: 0;
-                transform: translateX(100%);
-            }
-
-            #profilePanel.open {
-                transform: translateX(0);
-            }
-
             #reviews,
-            .skeletonGrid {
+            .skeletonGrid,
+            #trendingGrid {
                 grid-template-columns: repeat(2, 1fr);
             }
 
@@ -1497,7 +1512,7 @@
                 </a>
 
                 <!-- 4. Trending Icon (Fire) -->
-                <a href="#" id="desktopTrendingBtn" class="headerNavIcon desktopOnlyNav" onclick="alert('Under construction'); return false;" aria-label="Trending" title="Trending">
+                <a href="#" id="desktopTrendingBtn" class="headerNavIcon desktopOnlyNav" aria-label="Trending" title="Trending">
                     <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 3z"></path>
                     </svg>
@@ -1524,7 +1539,7 @@
         </nav>
     </header>
 
-    <hr>
+   
 
     <main>
 
@@ -1551,6 +1566,11 @@
         <!-- REVIEWS SECTION -->
         <div id="reviews"></div>
 
+        <!-- TRENDING SECTION -->
+        <div id="trendingSection">
+            <h2 id="trendingHeading">Trending Hot 🔥</h2>
+            <div id="trendingGrid"></div>
+        </div>
 
         <!-- REVIEW PAGE -->
         <div id="reviewPage" style="display: none;">
@@ -1633,6 +1653,7 @@
                 <button class="panelBtn secondaryBtn" id="sendResetBtn">Change Password</button>
                 <div id="passwordMsg"></div>
             </div>
+            <button class="panelBtn logoutBtn" id="settingsLogoutBtn" style="margin-top: 20px;">Log Out</button>
         </div>
     </div>
 
@@ -1675,7 +1696,7 @@
 
         <hr>
 
-        <button class="panelBtn logoutBtn" id="panelLogoutBtn">Log Out</button>
+       
     </div>
 
     <!-- BOTTOM NAVIGATION BAR (Mobile only) -->
@@ -1692,7 +1713,7 @@
                 <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
             </svg>
         </a>
-        <a href="#" id="trendingNavBtn" class="bottomNavItem" onclick="alert('Under construction'); return false;" aria-label="Trending" title="Trending">
+        <a href="#" id="trendingNavBtn" class="bottomNavItem" aria-label="Trending" title="Trending">
             <svg class="bottomNavIcon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 3z"></path>
             </svg>
@@ -1768,17 +1789,16 @@
 
         async function persistVerdict(reviewId, comments) {
             const verdict = computeVerdict(comments);
-            if (!verdict) return;
             try {
                 await updateDoc(doc(db, 'reviews', reviewId), {
-                    communityVerdict: verdict,
-                    category: verdict
+                    communityVerdict: verdict || null,
+                    category: verdict || null
                 });
                 // Update local cache so filters work without reload
                 const cached = allReviews.find(r => r.id === reviewId);
                 if (cached) {
-                    cached.communityVerdict = verdict;
-                    cached.category = verdict;
+                    cached.communityVerdict = verdict || null;
+                    cached.category = verdict || null;
                 }
             } catch (e) {
                 console.warn('Could not persist community verdict:', e);
@@ -1804,6 +1824,8 @@
         const searchInput = document.getElementById("searchInput");
         const searchResults = document.getElementById("searchResults");
         const communitySection = document.getElementById("communitySection");
+        const trendingSection = document.getElementById("trendingSection");
+        const trendingGrid = document.getElementById("trendingGrid");
         const avgBadge = document.getElementById("avgBadge");
         const guestBlock = document.getElementById("guestBlock");
         const alreadyReviewedMsg = document.getElementById("alreadyReviewedMsg");
@@ -1834,6 +1856,7 @@
         const sendResetBtn = document.getElementById("sendResetBtn");
         const passwordMsg = document.getElementById("passwordMsg");
         const panelLogoutBtn = document.getElementById("panelLogoutBtn");
+        const settingsLogoutBtn = document.getElementById("settingsLogoutBtn");
 
         // Settings panel elements
         const settingsOverlay = document.getElementById("settingsOverlay");
@@ -1855,6 +1878,24 @@
         const profileNavBtn = document.getElementById("profileNavBtn");
         const profileIconBottom = document.getElementById("profileIconBottom");
 
+        // ---- Nav icon "active section" borders (click-driven, mirrored on mobile + desktop) ----
+        const primaryNavIcons = {
+            explore: [desktopExploreBtn, homeNavBtn ? homeNavBtn.querySelector("svg") : null],
+            trending: [desktopTrendingBtn, trendingNavBtn ? trendingNavBtn.querySelector("svg") : null]
+        };
+
+        function setPrimaryNavIcon(key) {
+            Object.values(primaryNavIcons).forEach(group => {
+                group.forEach(el => el && el.classList.remove("navIconActive"));
+            });
+            const group = primaryNavIcons[key];
+            if (group) group.forEach(el => el && el.classList.add("navIconActive"));
+        }
+
+        function setOverlayNavIcon(el, active) {
+            if (el) el.classList.toggle("navIconActive", active);
+        }
+
         // Global state
         let allReviews = [];
         let currentFilter = null;
@@ -1862,6 +1903,9 @@
         let currentReviewMeta = null;
         let currentComments = [];
         let repliesCache = {};
+        let trendingStatsCache = {}; // { [reviewId]: interactionCount }
+        let cameFromTrending = false;
+        let dataReadyPromise = null;
 
         // ---- Auth nav UI ----
         function initAuthUI() {
@@ -1869,6 +1913,7 @@
             if (session) {
                 if (authLink) authLink.style.display = "none";
                 if (logoutLink) logoutLink.style.display = "none";
+                if (settingsLogoutBtn) settingsLogoutBtn.style.display = "block";
                 adminLink.style.display = session.role === "admin" ? "" : "none";
                 profileIcon.style.display = "block";
                 profileIcon.src = session.photoURL || DEFAULT_AVATAR;
@@ -1877,6 +1922,7 @@
             } else {
                 if (authLink) authLink.style.display = "none";
                 if (logoutLink) logoutLink.style.display = "none";
+                if (settingsLogoutBtn) settingsLogoutBtn.style.display = "none";
                 adminLink.style.display = "none";
                 profileIcon.style.display = "block";
                 profileIcon.src = DEFAULT_AVATAR;
@@ -1895,7 +1941,8 @@
             e.preventDefault();
             doLogout();
         });
-        panelLogoutBtn.addEventListener("click", doLogout);
+        if (panelLogoutBtn) panelLogoutBtn.addEventListener("click", doLogout);
+        if (settingsLogoutBtn) settingsLogoutBtn.addEventListener("click", doLogout);
 
         initAuthUI();
 
@@ -1906,6 +1953,7 @@
             searchOverlay.classList.add("open");
             searchPanel.classList.add("open");
             searchInput.focus();
+            setOverlayNavIcon(searchToggleBtn, true);
         }
 
         function closeSearch() {
@@ -1913,6 +1961,7 @@
             searchPanel.classList.remove("open");
             searchInput.value = "";
             searchResults.innerHTML = "";
+            setOverlayNavIcon(searchToggleBtn, false);
         }
 
         function renderSearchResults(matches) {
@@ -1987,11 +2036,15 @@
 
             profileOverlay.classList.add("open");
             profilePanel.classList.add("open");
+            profileIconBottom.classList.add("navIconActive");
+            setOverlayNavIcon(desktopProfileBtn, true);
         }
 
         function closeProfilePanel() {
             profileOverlay.classList.remove("open");
             profilePanel.classList.remove("open");
+            profileIconBottom.classList.remove("navIconActive");
+            setOverlayNavIcon(desktopProfileBtn, false);
         }
 
         function handleProfileClick(e) {
@@ -2018,17 +2071,20 @@
             closeSearch();
             settingsOverlay.classList.add("open");
             settingsPanel.classList.add("open");
+            setOverlayNavIcon(settingsToggleBtn, true);
 
             const session = getSession();
             const providerIds = auth.currentUser ?
                 auth.currentUser.providerData.map(p => p.providerId) : [];
-            passwordPanelSection.style.display = providerIds.includes("password") ? "" : "none";
+            passwordPanelSection.style.display = (session && providerIds.includes("password")) ? "" : "none";
+            if (settingsLogoutBtn) settingsLogoutBtn.style.display = session ? "block" : "none";
             sendResetBtn.disabled = false;
             sendResetBtn.textContent = "Change Password";
             passwordMsg.textContent = "";
         }
 
         function closeSettings() {
+            setOverlayNavIcon(settingsToggleBtn, false);
             settingsOverlay.classList.remove("open");
             settingsPanel.classList.remove("open");
         }
@@ -2205,10 +2261,7 @@
         }
 
         if (desktopTrendingBtn) {
-            desktopTrendingBtn.addEventListener("click", (e) => {
-                e.preventDefault();
-                alert("Under construction");
-            });
+            desktopTrendingBtn.addEventListener("click", showTrending);
         }
 
         // ---- Mobile Bottom Nav Actions ----
@@ -2220,10 +2273,7 @@
         }
 
         if (trendingNavBtn) {
-            trendingNavBtn.addEventListener("click", (e) => {
-                e.preventDefault();
-                alert("Under construction");
-            });
+            trendingNavBtn.addEventListener("click", showTrending);
         }
 
         // ---- Data loading ----
@@ -2233,7 +2283,7 @@
 
             loader.style.display = "block";
 
-            loadAllData();
+            dataReadyPromise = loadAllData();
         });
 
         async function loadAllData() {
@@ -2241,7 +2291,14 @@
                 const reviewsQuery = query(collection(db, "reviews"), orderBy("createdAt", "desc"));
                 const reviewsSnapshot = await getDocs(reviewsQuery);
                 allReviews = [];
-                reviewsSnapshot.forEach(doc => allReviews.push({ id: doc.id, ...doc.data() }));
+                reviewsSnapshot.forEach(doc => {
+                    const data = doc.data();
+                    allReviews.push({
+                        id: doc.id,
+                        ...data,
+                        communityVerdict: data.communityVerdict || null
+                    });
+                });
 
                 await preloadImages(allReviews);
 
@@ -2249,6 +2306,32 @@
 
                 hideLoader();
                 showReviews();
+
+                // Auto-sync any legacy reviews that don't have communityVerdict set yet
+                const pendingVerdicts = allReviews.filter(r => !r.communityVerdict);
+                if (pendingVerdicts.length > 0) {
+                    Promise.all(pendingVerdicts.map(async (r) => {
+                        try {
+                            const cSnap = await getDocs(collection(db, "reviews", r.id, "comments"));
+                            const comments = [];
+                            cSnap.forEach(d => comments.push(d.data()));
+                            const verdict = computeVerdict(comments);
+                            if (verdict) {
+                                r.communityVerdict = verdict;
+                                r.category = verdict;
+                                updateDoc(doc(db, "reviews", r.id), {
+                                    communityVerdict: verdict,
+                                    category: verdict
+                                }).catch(() => {});
+                                if (currentFilter) {
+                                    renderReviews(allReviews.filter(item => item.communityVerdict === currentFilter));
+                                }
+                            }
+                        } catch (err) {
+                            console.warn("Could not check comments for review:", r.id, err);
+                        }
+                    }));
+                }
             } catch (error) {
                 console.error("Error loading data:", error);
                 hideLoader();
@@ -2289,8 +2372,10 @@
             reviewsDiv.style.display = "grid";
             reviewPage.style.display = "none";
             communitySection.style.display = "none";
+            trendingSection.style.display = "none";
 
             updateButtonStates('reviews');
+            setPrimaryNavIcon('explore');
         }
 
         function updateButtonStates(view) {
@@ -2306,8 +2391,10 @@
             }
         }
 
-        function openReviewPage(r) {
+        function openReviewPage(r, fromTrending) {
+            cameFromTrending = !!fromTrending;
             reviewsDiv.style.display = "none";
+            trendingSection.style.display = "none";
             reviewPage.style.display = "flex";
             reviewImg.src = r.imageUrl;
             reviewImg.alt = r.title;
@@ -2362,6 +2449,127 @@
             });
         }
 
+        // ---- Trending ----
+
+        function skeletonCardsHTML(count) {
+            let html = "";
+            for (let i = 0; i < count; i++) {
+                html += '<div class="skeletonCard"><div class="skeletonImg"></div><div class="skeletonTitle"></div></div>';
+            }
+            return html;
+        }
+
+        // Normalizes a Firestore Timestamp, plain ms number, or date string into ms since epoch.
+        function toMillis(value) {
+            if (value == null) return 0;
+            if (typeof value === "number") return value;
+            if (typeof value.toDate === "function") return value.toDate().getTime();
+            if (typeof value.seconds === "number") return value.seconds * 1000;
+            const parsed = Date.parse(value);
+            return isNaN(parsed) ? 0 : parsed;
+        }
+
+        // Number of people who've left a review (comment) on a game, cached until invalidated.
+        async function getInteractionCount(reviewId) {
+            if (trendingStatsCache[reviewId] !== undefined) {
+                return trendingStatsCache[reviewId];
+            }
+            try {
+                const snap = await getDocs(collection(db, "reviews", reviewId, "comments"));
+                trendingStatsCache[reviewId] = snap.size;
+                return snap.size;
+            } catch (err) {
+                console.warn("Could not get interaction count for", reviewId, err);
+                return 0;
+            }
+        }
+
+        // Recency-weighted score: interactions matter most relative to how long a game
+        // has been listed, so a freshly-listed game with lots of reviews ranks above an
+        // older game with the same (or even a somewhat larger) total review count, and a
+        // recently-listed game with a decent but smaller review count settles in below it.
+        function computeTrendingScore(review, interactionCount) {
+            const listedAt = toMillis(review.createdAt);
+            const ageHours = Math.max(0, (Date.now() - listedAt) / 3600000);
+            const gravity = 1.5;
+            return interactionCount / Math.pow(ageHours + 2, gravity);
+        }
+
+        async function loadTrendingGames() {
+            const scored = await Promise.all(allReviews.map(async (r) => {
+                const interactionCount = await getInteractionCount(r.id);
+                const trendingScore = computeTrendingScore(r, interactionCount);
+                return { ...r, interactionCount, trendingScore };
+            }));
+
+            scored.sort((a, b) => {
+                if (b.trendingScore !== a.trendingScore) return b.trendingScore - a.trendingScore;
+                return toMillis(b.createdAt) - toMillis(a.createdAt);
+            });
+
+            return scored.slice(0, 12);
+        }
+
+        function renderTrending(list) {
+            trendingGrid.innerHTML = "";
+
+            if (list.length === 0) {
+                trendingGrid.innerHTML = '<p style="grid-column: 1 / -1; text-align: center; font-size: 24px; color: #888;">No trending games yet</p>';
+                return;
+            }
+
+            list.forEach((r) => {
+                const img = document.createElement("img");
+                img.src = r.imageUrl;
+                img.alt = r.title;
+                img.onclick = () => openReviewPage(r, true);
+
+                const wrap = document.createElement("div");
+                wrap.className = "imgWrap";
+                wrap.appendChild(img);
+
+                const title = document.createElement("h3");
+                title.textContent = r.title;
+
+                const card = document.createElement("div");
+                card.className = "card";
+
+                card.appendChild(wrap);
+                card.appendChild(title);
+
+                trendingGrid.appendChild(card);
+            });
+        }
+
+        async function showTrending(e) {
+            if (e) e.preventDefault();
+            closeSearch();
+            closeSettings();
+            closeProfilePanel();
+
+            reviewsDiv.style.display = "none";
+            reviewPage.style.display = "none";
+            communitySection.style.display = "none";
+            trendingSection.style.display = "block";
+            currentFilter = null;
+            updateButtonStates('trending');
+            setPrimaryNavIcon('trending');
+
+            trendingGrid.innerHTML = skeletonCardsHTML(12);
+
+            if (dataReadyPromise) {
+                try { await dataReadyPromise; } catch (_) { /* handled by loadAllData */ }
+            }
+
+            try {
+                const top = await loadTrendingGames();
+                renderTrending(top);
+            } catch (err) {
+                console.error("Error loading trending games:", err);
+                trendingGrid.innerHTML = '<p style="grid-column: 1 / -1; text-align: center; font-size: 18px; color: #888;">Could not load trending games. Please try again.</p>';
+            }
+        }
+
         // Filter functions
         window.filterCategory = (cat) => {
             if (currentFilter === cat) {
@@ -2372,8 +2580,8 @@
                 return;
             }
             currentFilter = cat;
-            // Use communityVerdict (dynamic) falling back to stored category
-            const filtered = allReviews.filter(r => (r.communityVerdict || r.category) === cat);
+            // Filter strictly relies on community verdict
+            const filtered = allReviews.filter(r => r.communityVerdict === cat);
             renderReviews(filtered);
             showReviews();
 
@@ -2383,7 +2591,12 @@
         backBtn.onclick = () => {
             reviewPage.style.display = "none";
             reviewPage.classList.remove("visible");
-            showReviews();
+            if (cameFromTrending) {
+                cameFromTrending = false;
+                showTrending();
+            } else {
+                showReviews();
+            }
         };
 
         // ---- Community Reviews ----
@@ -2720,6 +2933,7 @@
                 await deleteDoc(doc(db, "reviews", currentReviewId, "comments", commentId));
 
                 delete repliesCache[commentId];
+                delete trendingStatsCache[currentReviewId];
                 await loadComments(currentReviewId);
             } catch (error) {
                 console.error("Error deleting review:", error);
@@ -2771,21 +2985,15 @@
 
         // Average verdict
         function renderAverage() {
-            if (currentComments.length === 0) {
+            const verdict = computeVerdict(currentComments);
+            if (!verdict) {
                 avgBadge.textContent = "No reviews yet";
                 avgBadge.className = "";
                 return;
             }
 
-            const values = { Dropped: 1, Good: 2, Goated: 3 };
-            const order = ["Dropped", "Good", "Goated"];
-            const sum = currentComments.reduce((total, c) => total + (values[c.rating] || 2), 0);
-            const mean = sum / currentComments.length;
-            const idx = Math.max(0, Math.min(2, Math.round(mean) - 1));
-            const category = order[idx];
-
-            avgBadge.textContent = category.toUpperCase();
-            avgBadge.className = "avg-" + category;
+            avgBadge.textContent = verdict.toUpperCase();
+            avgBadge.className = "avg-" + verdict;
         }
 
         function escapeHtml(str) {
@@ -2847,6 +3055,7 @@
                 commentText.value = "";
                 reviewFormMsg.style.color = "limegreen";
                 reviewFormMsg.textContent = "Review posted!";
+                delete trendingStatsCache[currentReviewId];
                 // loadComments already calls persistVerdict internally
                 await loadComments(currentReviewId);
             } catch (error) {
