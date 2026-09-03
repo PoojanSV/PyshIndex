@@ -1694,7 +1694,7 @@
             <a href="../Admin/admin.html" id="adminLink" class="nav-auth" style="display:none; text-align:center;">Admin</a>
         </div>
 
-        <hr>
+     
 
        
     </div>
@@ -1878,22 +1878,39 @@
         const profileNavBtn = document.getElementById("profileNavBtn");
         const profileIconBottom = document.getElementById("profileIconBottom");
 
-        // ---- Nav icon "active section" borders (click-driven, mirrored on mobile + desktop) ----
+        // ---- Nav icon "active section" border (click-driven, exactly one at a time,
+        //      mirrored on mobile bottom bar + desktop header) ----
         const primaryNavIcons = {
             explore: [desktopExploreBtn, homeNavBtn ? homeNavBtn.querySelector("svg") : null],
             trending: [desktopTrendingBtn, trendingNavBtn ? trendingNavBtn.querySelector("svg") : null]
         };
+        const overlayNavIcons = {
+            search: [searchToggleBtn],
+            settings: [settingsToggleBtn],
+            profile: [desktopProfileBtn, profileIconBottom]
+        };
 
-        function setPrimaryNavIcon(key) {
-            Object.values(primaryNavIcons).forEach(group => {
-                group.forEach(el => el && el.classList.remove("navIconActive"));
-            });
-            const group = primaryNavIcons[key];
-            if (group) group.forEach(el => el && el.classList.add("navIconActive"));
+        let currentPrimaryNavKey = null; // 'explore' | 'trending' — the underlying page
+        let currentOverlayNavKey = null; // 'search' | 'settings' | 'profile' | null — open panel, takes priority
+
+        function refreshNavIconActive() {
+            Object.values(primaryNavIcons).forEach(group => group.forEach(el => el && el.classList.remove("navIconActive")));
+            Object.values(overlayNavIcons).forEach(group => group.forEach(el => el && el.classList.remove("navIconActive")));
+
+            const activeGroup = currentOverlayNavKey
+                ? overlayNavIcons[currentOverlayNavKey]
+                : primaryNavIcons[currentPrimaryNavKey];
+            if (activeGroup) activeGroup.forEach(el => el && el.classList.add("navIconActive"));
         }
 
-        function setOverlayNavIcon(el, active) {
-            if (el) el.classList.toggle("navIconActive", active);
+        function setPrimaryNavIcon(key) {
+            currentPrimaryNavKey = key;
+            refreshNavIconActive();
+        }
+
+        function setOverlayNavIcon(key, active) {
+            currentOverlayNavKey = active ? key : (currentOverlayNavKey === key ? null : currentOverlayNavKey);
+            refreshNavIconActive();
         }
 
         // Global state
@@ -1953,7 +1970,7 @@
             searchOverlay.classList.add("open");
             searchPanel.classList.add("open");
             searchInput.focus();
-            setOverlayNavIcon(searchToggleBtn, true);
+            setOverlayNavIcon("search", true);
         }
 
         function closeSearch() {
@@ -1961,7 +1978,7 @@
             searchPanel.classList.remove("open");
             searchInput.value = "";
             searchResults.innerHTML = "";
-            setOverlayNavIcon(searchToggleBtn, false);
+            setOverlayNavIcon("search", false);
         }
 
         function renderSearchResults(matches) {
@@ -2036,15 +2053,13 @@
 
             profileOverlay.classList.add("open");
             profilePanel.classList.add("open");
-            profileIconBottom.classList.add("navIconActive");
-            setOverlayNavIcon(desktopProfileBtn, true);
+            setOverlayNavIcon("profile", true);
         }
 
         function closeProfilePanel() {
             profileOverlay.classList.remove("open");
             profilePanel.classList.remove("open");
-            profileIconBottom.classList.remove("navIconActive");
-            setOverlayNavIcon(desktopProfileBtn, false);
+            setOverlayNavIcon("profile", false);
         }
 
         function handleProfileClick(e) {
@@ -2071,7 +2086,7 @@
             closeSearch();
             settingsOverlay.classList.add("open");
             settingsPanel.classList.add("open");
-            setOverlayNavIcon(settingsToggleBtn, true);
+            setOverlayNavIcon("settings", true);
 
             const session = getSession();
             const providerIds = auth.currentUser ?
@@ -2084,7 +2099,7 @@
         }
 
         function closeSettings() {
-            setOverlayNavIcon(settingsToggleBtn, false);
+            setOverlayNavIcon("settings", false);
             settingsOverlay.classList.remove("open");
             settingsPanel.classList.remove("open");
         }
