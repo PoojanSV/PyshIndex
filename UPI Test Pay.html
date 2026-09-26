@@ -1,0 +1,769 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>UPI Test Pay</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<style>
+  :root {
+    --bg: #F3F6F5;
+    --surface: #FFFFFF;
+    --ink: #10221E;
+    --muted: #5B6B66;
+    --line: #DCE4E1;
+    --brand: #0E7C6B;
+    --brand-strong: #0A5F52;
+    --brand-tint: #E3F2EE;
+    --amber: #C6832A;
+    --amber-tint: #FBF0DF;
+    --success: #1E8E5A;
+    --success-bg: #E7F5EC;
+    --success-line: #BEE3CC;
+    --danger: #C6473B;
+    --danger-bg: #FBEAE8;
+    --danger-line: #F0C7C1;
+    --shadow: 0 1px 2px rgba(16,34,30,0.04), 0 10px 30px rgba(16,34,30,0.08);
+    color-scheme: light;
+    box-sizing: border-box;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0B1613;
+      --surface: #102420;
+      --ink: #E9F3F0;
+      --muted: #93A8A2;
+      --line: #22352F;
+      --brand: #3BC7AA;
+      --brand-strong: #59D9BE;
+      --brand-tint: #133A32;
+      --amber: #E7B45E;
+      --amber-tint: #352A16;
+      --success: #49CC8E;
+      --success-bg: #10331F;
+      --success-line: #1F5A38;
+      --danger: #E68B7F;
+      --danger-bg: #391A17;
+      --danger-line: #6B2F28;
+      --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 10px 30px rgba(0,0,0,0.4);
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0B1613;
+    --surface: #102420;
+    --ink: #E9F3F0;
+    --muted: #93A8A2;
+    --line: #22352F;
+    --brand: #3BC7AA;
+    --brand-strong: #59D9BE;
+    --brand-tint: #133A32;
+    --amber: #E7B45E;
+    --amber-tint: #352A16;
+    --success: #49CC8E;
+    --success-bg: #10331F;
+    --success-line: #1F5A38;
+    --danger: #E68B7F;
+    --danger-bg: #391A17;
+    --danger-line: #6B2F28;
+    --shadow: 0 1px 2px rgba(0,0,0,0.3), 0 10px 30px rgba(0,0,0,0.4);
+    color-scheme: dark;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-padding-top: env(safe-area-inset-top, 0px); }
+  html, body {
+    height: 100%;
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: "Manrope", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  }
+  body {
+    display: flex;
+    justify-content: center;
+    padding: 28px 16px calc(28px + env(safe-area-inset-bottom, 0px));
+    min-height: 100%;
+  }
+  .app {
+    width: 100%;
+    max-width: 440px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .topline {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 2px 4px;
+  }
+  .mark {
+    width: 34px; height: 34px;
+    border-radius: 10px;
+    background: var(--brand);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .mark svg { width: 18px; height: 18px; }
+  .topline h1 {
+    font-size: 16px;
+    font-weight: 700;
+    margin: 0;
+    letter-spacing: -0.01em;
+  }
+  .topline p {
+    margin: 0;
+    font-size: 12.5px;
+    color: var(--muted);
+  }
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 20px;
+    box-shadow: var(--shadow);
+    padding: 22px;
+    overflow: hidden;
+  }
+  .warn {
+    display: flex;
+    gap: 10px;
+    background: var(--amber-tint);
+    border: 1px solid color-mix(in srgb, var(--amber) 35%, var(--line));
+    color: var(--ink);
+    border-radius: 14px;
+    padding: 12px 14px;
+    font-size: 13px;
+    line-height: 1.45;
+  }
+  .warn b { color: var(--amber); }
+  h2 {
+    font-size: 20px;
+    margin: 4px 0 4px;
+    letter-spacing: -0.01em;
+  }
+  .sub {
+    color: var(--muted);
+    font-size: 13.5px;
+    margin: 0 0 18px;
+    line-height: 1.5;
+  }
+  label {
+    display: block;
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--muted);
+    margin-bottom: 6px;
+  }
+  .field { margin-bottom: 14px; }
+  .field-row { display: flex; gap: 10px; }
+  .field-row .field { flex: 1; }
+  input[type="text"], input[type="number"] {
+    width: 100%;
+    padding: 12px 13px;
+    border-radius: 12px;
+    border: 1.5px solid var(--line);
+    background: var(--bg);
+    color: var(--ink);
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 14.5px;
+  }
+  input:focus-visible {
+    outline: 2px solid var(--brand);
+    outline-offset: 1px;
+    border-color: var(--brand);
+  }
+  .err {
+    color: var(--danger);
+    font-size: 12px;
+    margin-top: 5px;
+    display: none;
+  }
+  .err.show { display: block; }
+  .amt-prefix { position: relative; }
+  .amt-prefix span {
+    position: absolute; left: 13px; top: 50%; transform: translateY(-50%);
+    font-family: "IBM Plex Mono", monospace; color: var(--muted); font-size: 14.5px;
+  }
+  .amt-prefix input { padding-left: 26px; }
+
+  .primary-pay {
+    width: 100%;
+    border: none;
+    border-radius: 14px;
+    padding: 15px 16px;
+    background: var(--brand);
+    color: white;
+    font-family: inherit;
+    font-weight: 700;
+    font-size: 15px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 6px;
+  }
+  .primary-pay:hover { background: var(--brand-strong); }
+  .primary-pay:disabled { opacity: 0.5; cursor: not-allowed; }
+  .primary-pay small {
+    display: block;
+    font-weight: 500;
+    font-size: 11.5px;
+    opacity: 0.85;
+  }
+
+  .divider {
+    display: flex; align-items: center; gap: 10px;
+    margin: 20px 0 12px;
+    color: var(--muted);
+    font-size: 12px;
+  }
+  .divider::before, .divider::after {
+    content: ""; flex: 1; height: 1px; background: var(--line);
+  }
+
+  .appgrid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+  }
+  .appchip {
+    display: flex; flex-direction: column; align-items: center; gap: 7px;
+    padding: 12px 6px;
+    border-radius: 14px;
+    border: 1.5px solid var(--line);
+    background: var(--bg);
+    cursor: pointer;
+    font-family: inherit;
+    color: var(--ink);
+  }
+  .appchip:hover { border-color: var(--brand); }
+  .appchip:disabled { opacity: 0.4; cursor: not-allowed; }
+  .badge {
+    width: 34px; height: 34px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    color: white; font-weight: 700; font-size: 13px;
+    font-family: "IBM Plex Mono", monospace;
+  }
+  .appchip span { font-size: 11.5px; font-weight: 600; text-align: center; line-height: 1.2; }
+
+  .qr-toggle {
+    margin-top: 16px;
+    text-align: center;
+  }
+  .linklike {
+    background: none; border: none; color: var(--brand);
+    font-family: inherit; font-size: 13px; font-weight: 700;
+    cursor: pointer; padding: 6px;
+  }
+  .qr-wrap {
+    display: none;
+    margin-top: 12px;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding: 16px;
+    background: var(--bg);
+    border-radius: 14px;
+    border: 1px solid var(--line);
+  }
+  .qr-wrap.show { display: flex; }
+  .qr-wrap p { margin: 0; font-size: 12px; color: var(--muted); text-align: center; }
+  #qrcode { background: white; padding: 10px; border-radius: 10px; }
+
+  .info-toggle {
+    margin-top: 16px;
+    border-top: 1px solid var(--line);
+    padding-top: 14px;
+  }
+  .info-toggle summary {
+    cursor: pointer;
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--muted);
+    list-style: none;
+  }
+  .info-toggle summary::-webkit-details-marker { display: none; }
+  .info-toggle summary::before { content: "+ "; color: var(--brand); }
+  .info-toggle[open] summary::before { content: "– "; }
+  .info-toggle p, .info-toggle li {
+    font-size: 12.5px; color: var(--muted); line-height: 1.55;
+  }
+  .info-toggle ul { margin: 8px 0 0; padding-left: 18px; }
+
+  /* waiting screen */
+  .center-block { text-align: center; padding: 18px 4px 6px; }
+  .spinner {
+    width: 46px; height: 46px; margin: 0 auto 20px;
+    border-radius: 50%;
+    border: 3.5px solid var(--line);
+    border-top-color: var(--brand);
+    animation: spin 0.9s linear infinite;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .spinner { animation-duration: 2.4s; }
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .center-block h2 { margin-bottom: 8px; }
+  .center-block .sub { margin-bottom: 22px; }
+  .ghost-btn {
+    border: 1.5px solid var(--line);
+    background: transparent;
+    color: var(--ink);
+    font-family: inherit; font-weight: 700; font-size: 13.5px;
+    padding: 11px 18px; border-radius: 12px; cursor: pointer;
+  }
+
+  /* confirm screen */
+  .confirm-row { display: flex; gap: 10px; margin-top: 18px; }
+  .confirm-row button {
+    flex: 1; padding: 14px; border-radius: 12px; font-family: inherit;
+    font-weight: 700; font-size: 14px; cursor: pointer; border: 1.5px solid var(--line);
+    background: var(--bg); color: var(--ink);
+  }
+  .confirm-row button.suggested { border-color: var(--brand); box-shadow: 0 0 0 2px var(--brand-tint) inset; }
+  .confirm-row button.yes:hover { border-color: var(--success); color: var(--success); }
+  .confirm-row button.no:hover { border-color: var(--danger); color: var(--danger); }
+  .hint-line { font-size: 12px; color: var(--muted); text-align: center; margin-top: 12px; }
+
+  /* receipt / result */
+  .receipt {
+    border-radius: 16px;
+    padding: 22px 20px 18px;
+    text-align: center;
+  }
+  .receipt.ok { background: var(--success-bg); border: 1px solid var(--success-line); }
+  .receipt.bad { background: var(--danger-bg); border: 1px solid var(--danger-line); }
+  .status-icon {
+    width: 52px; height: 52px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 12px;
+  }
+  .receipt.ok .status-icon { background: var(--success); }
+  .receipt.bad .status-icon { background: var(--danger); }
+  .status-icon svg { width: 26px; height: 26px; }
+  .receipt h2 { margin: 0 0 4px; }
+  .receipt.ok h2 { color: var(--success); }
+  .receipt.bad h2 { color: var(--danger); }
+  .receipt .status-sub { font-size: 12.5px; color: var(--muted); margin: 0 0 18px; }
+
+  .tear {
+    position: relative;
+    margin: 0 -20px;
+    height: 14px;
+    background:
+      linear-gradient(-45deg, var(--surface) 8px, transparent 0) 0 8px,
+      linear-gradient(45deg, var(--surface) 8px, transparent 0) 0 8px;
+    background-size: 16px 16px;
+    background-repeat: repeat-x;
+  }
+  .slip {
+    background: var(--surface);
+    margin: 0 -20px -18px;
+    padding: 18px 20px 20px;
+    text-align: left;
+  }
+  .slip-row {
+    display: flex; justify-content: space-between; gap: 10px;
+    padding: 7px 0;
+    border-bottom: 1px dashed var(--line);
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 12.5px;
+  }
+  .slip-row:last-child { border-bottom: none; }
+  .slip-row .k { color: var(--muted); }
+  .slip-row .v { color: var(--ink); font-weight: 600; text-align: right; word-break: break-word; }
+
+  .result-actions {
+    margin-top: 18px;
+    display: flex; gap: 10px;
+  }
+  .result-actions button {
+    flex: 1; padding: 13px; border-radius: 12px; font-family: inherit;
+    font-weight: 700; font-size: 13.5px; cursor: pointer;
+  }
+  .result-actions .again { border: none; background: var(--brand); color: white; }
+  .result-actions .again:hover { background: var(--brand-strong); }
+  .result-actions .home { border: 1.5px solid var(--line); background: transparent; color: var(--ink); }
+
+  footer {
+    text-align: center;
+    font-size: 11.5px;
+    color: var(--muted);
+    padding: 4px 10px 0;
+    line-height: 1.5;
+  }
+  [hidden] { display: none !important; }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <div class="topline">
+    <div class="mark">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M4 12h6l2-5 3 10 2-5h3" stroke="white" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </div>
+    <div>
+      <h1>UPI test pay</h1>
+      <p>A prototype for trying a real UPI payment redirect end to end</p>
+    </div>
+  </div>
+
+  <div class="warn">
+    <span>⚠️</span>
+    <div><b>This sends a real payment request.</b> It is not a sandbox. If you complete it in your UPI app, real money moves. Use your own accounts and a small amount like ₹1.</div>
+  </div>
+
+  <main class="card" id="card">
+
+    <!-- SETUP -->
+    <section data-screen="setup">
+      <h2>Set up a test payment</h2>
+      <p class="sub">Enter where the ₹1 should go, then choose how to open a UPI app.</p>
+
+      <div class="field">
+        <label for="vpa">Payee UPI ID (VPA)</label>
+        <input type="text" id="vpa" placeholder="yourname@okhdfcbank" autocomplete="off" autocapitalize="off" spellcheck="false">
+        <div class="err" id="vpa-err">Enter a valid UPI ID, like name@bank.</div>
+      </div>
+
+      <div class="field-row">
+        <div class="field">
+          <label for="pname">Payee name</label>
+          <input type="text" id="pname" placeholder="Test payee" autocomplete="off">
+        </div>
+        <div class="field">
+          <label for="amt">Amount</label>
+          <div class="amt-prefix">
+            <span>₹</span>
+            <input type="number" id="amt" value="1" min="1" max="10" step="1">
+          </div>
+        </div>
+      </div>
+
+      <button class="primary-pay" id="pay-any" disabled>
+        <div>
+          Pay with any UPI app
+          <small>Opens your phone's own app chooser</small>
+        </div>
+      </button>
+
+      <div class="divider">or open a specific app directly</div>
+
+      <div class="appgrid" id="appgrid"></div>
+
+      <div class="qr-toggle">
+        <button class="linklike" id="qr-toggle-btn" disabled>Prefer to scan on your phone? Show a QR code</button>
+        <div class="qr-wrap" id="qr-wrap">
+          <div id="qrcode"></div>
+          <p>Scan with your UPI app's own QR scanner (not a generic camera app) to open this payment on your phone.</p>
+        </div>
+      </div>
+
+      <details class="info-toggle">
+        <summary>Why doesn't this page just scan my installed apps?</summary>
+        <p>Browsers don't let a website read the list of apps on your phone — that's a privacy boundary, not a bug. The closest real equivalent is "Pay with any UPI app" above: it fires the standard UPI intent, and your phone's own operating system shows every UPI app you actually have installed. That list comes from your phone, not from this page.</p>
+      </details>
+      <details class="info-toggle">
+        <summary>How is "verified" decided here?</summary>
+        <p>As a browser tab, this page can tell when you switch away to another app and when you come back — nothing more. It cannot see your bank, your UPI app, or whether money actually moved. So after you return, it asks you directly whether the payment went through, and shows that as the result.</p>
+        <p>A production-grade version would need a backend connected to a licensed UPI payment aggregator (for example Razorpay, Cashfree, or PhonePe's gateway), which confirms each transaction by ID via a server-to-server webhook — the only trustworthy source of truth for "did this payment succeed."</p>
+      </details>
+    </section>
+
+    <!-- WAITING -->
+    <section data-screen="waiting" hidden>
+      <div class="center-block">
+        <div class="spinner"></div>
+        <h2 id="waiting-title">Opening your UPI app…</h2>
+        <p class="sub">If it opened, finish or cancel the payment there, then come back to this tab.</p>
+        <button class="ghost-btn" id="waiting-cancel">Cancel and go back</button>
+      </div>
+    </section>
+
+    <!-- NOT FOUND -->
+    <section data-screen="notfound" hidden>
+      <div class="center-block">
+        <div class="status-icon" style="background:var(--danger); margin-bottom:16px;">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="white" stroke-width="2.4" stroke-linecap="round"/></svg>
+        </div>
+        <h2 id="notfound-title">App didn't open</h2>
+        <p class="sub">This usually means that app isn't installed here, or your browser blocked the redirect. Try "Pay with any UPI app," another app below, or the QR code.</p>
+        <button class="ghost-btn" id="notfound-back">Choose another app</button>
+      </div>
+    </section>
+
+    <!-- CONFIRM -->
+    <section data-screen="confirm" hidden>
+      <div class="center-block">
+        <h2>Did the payment go through?</h2>
+        <p class="sub" id="confirm-sub">You just returned from <b>—</b>. This page can't check your bank directly, so tell it what happened.</p>
+      </div>
+      <div class="confirm-row">
+        <button class="no" id="confirm-no">✕ No / cancelled</button>
+        <button class="yes" id="confirm-yes">✓ Yes, it paid</button>
+      </div>
+      <p class="hint-line" id="confirm-hint"></p>
+    </section>
+
+    <!-- RESULT -->
+    <section data-screen="result" hidden>
+      <div class="receipt" id="receipt">
+        <div class="status-icon" id="result-icon"></div>
+        <h2 id="result-title">Verified</h2>
+        <p class="status-sub" id="result-sub">Marked as paid — based on your confirmation, not a bank record.</p>
+        <div class="tear"></div>
+        <div class="slip">
+          <div class="slip-row"><span class="k">App</span><span class="v" id="r-app">—</span></div>
+          <div class="slip-row"><span class="k">Amount</span><span class="v" id="r-amt">—</span></div>
+          <div class="slip-row"><span class="k">Payee VPA</span><span class="v" id="r-vpa">—</span></div>
+          <div class="slip-row"><span class="k">Reference</span><span class="v" id="r-ref">—</span></div>
+          <div class="slip-row"><span class="k">Time</span><span class="v" id="r-time">—</span></div>
+        </div>
+      </div>
+      <div class="result-actions">
+        <button class="home" id="result-home">Start over</button>
+        <button class="again" id="result-again">Test again</button>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    Runs entirely in this browser tab. Nothing you type here is sent to any server or stored anywhere but this device.
+  </footer>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  var APPS = [
+    { key: "gpay", name: "Google Pay", scheme: "tez", color: "#3B7DE0" },
+    { key: "phonepe", name: "PhonePe", scheme: "phonepe", color: "#5F259F" },
+    { key: "paytm", name: "Paytm", scheme: "paytmmp", color: "#00A8E1" },
+    { key: "bhim", name: "BHIM", scheme: "bhim", color: "#00A650" },
+    { key: "amazonpay", name: "Amazon Pay", scheme: "amazonpay", color: "#E8890C" },
+    { key: "mobikwik", name: "Mobikwik", scheme: "mobikwik", color: "#1E4CA1" }
+  ];
+
+  var el = {};
+  ["vpa","pname","amt","vpa-err","pay-any","appgrid","qr-toggle-btn","qr-wrap","qrcode",
+   "waiting-title","waiting-cancel","notfound-title","notfound-back",
+   "confirm-sub","confirm-hint","confirm-yes","confirm-no",
+   "receipt","result-icon","result-title","result-sub","r-app","r-amt","r-vpa","r-ref","r-time",
+   "result-home","result-again"
+  ].forEach(function (id) { el[id.replace(/-([a-z])/g, function (_, c) { return c.toUpperCase(); })] = document.getElementById(id); });
+
+  var screens = {};
+  document.querySelectorAll("[data-screen]").forEach(function (s) { screens[s.dataset.screen] = s; });
+
+  function show(name) {
+    Object.keys(screens).forEach(function (k) { screens[k].hidden = (k !== name); });
+  }
+
+  // ---------- build app grid ----------
+  APPS.forEach(function (app) {
+    var btn = document.createElement("button");
+    btn.className = "appchip";
+    btn.disabled = true;
+    btn.innerHTML =
+      '<span class="badge" style="background:' + app.color + '">' + app.name.slice(0, 1) + '</span>' +
+      '<span>' + app.name + '</span>';
+    btn.addEventListener("click", function () { startPayment(app.scheme, app.name); });
+    el.appgrid.appendChild(btn);
+  });
+
+  // ---------- validation ----------
+  var VPA_RE = /^[a-zA-Z0-9.\-_]{2,256}@[a-zA-Z]{2,64}$/;
+
+  function currentVpa() { return el.vpa.value.trim(); }
+  function currentName() { return el.pname.value.trim() || "Test payee"; }
+  function currentAmount() {
+    var n = parseFloat(el.amt.value);
+    if (!isFinite(n) || n <= 0) return 1;
+    return Math.min(Math.max(n, 1), 10);
+  }
+
+  function validate() {
+    var ok = VPA_RE.test(currentVpa());
+    document.getElementById("vpa-err").classList.toggle("show", currentVpa().length > 0 && !ok);
+    el.payAny.disabled = !ok;
+    el.qrToggleBtn.disabled = !ok;
+    Array.prototype.forEach.call(el.appgrid.children, function (btn) { btn.disabled = !ok; });
+    return ok;
+  }
+  el.vpa.addEventListener("input", validate);
+  el.pname.addEventListener("input", refreshQr);
+  el.amt.addEventListener("input", refreshQr);
+  el.vpa.addEventListener("input", refreshQr);
+
+  try {
+    var savedVpa = localStorage.getItem("upiTestPay:vpa");
+    if (savedVpa) el.vpa.value = savedVpa;
+    var savedName = localStorage.getItem("upiTestPay:name");
+    if (savedName) el.pname.value = savedName;
+  } catch (e) { /* storage unavailable, continue without it */ }
+
+  window.addEventListener("beforeunload", function () {
+    try {
+      localStorage.setItem("upiTestPay:vpa", currentVpa());
+      localStorage.setItem("upiTestPay:name", currentName());
+    } catch (e) {}
+  });
+
+  validate();
+
+  // ---------- deep link building ----------
+  function genRef() {
+    var bytes = new Uint8Array(5);
+    (window.crypto || window.msCrypto).getRandomValues(bytes);
+    var hex = Array.prototype.map.call(bytes, function (b) { return b.toString(16).padStart(2, "0"); }).join("");
+    return "TST" + Date.now().toString(36).toUpperCase() + hex.toUpperCase();
+  }
+
+  function buildLink(scheme, ref) {
+    var params = [
+      "pa=" + encodeURIComponent(currentVpa()),
+      "pn=" + encodeURIComponent(currentName()),
+      "am=" + encodeURIComponent(currentAmount().toFixed(2)),
+      "cu=INR",
+      "tr=" + encodeURIComponent(ref),
+      "tn=" + encodeURIComponent("UPI test pay")
+    ].join("&");
+    return scheme + "://pay?" + params;
+  }
+
+  function genericLink() {
+    return buildLink("upi", "PREVIEW");
+  }
+
+  // ---------- QR ----------
+  var qrObj = null;
+  function refreshQr() {
+    if (!el.qrWrap.classList.contains("show")) return;
+    renderQr();
+  }
+  function renderQr() {
+    el.qrcode.innerHTML = "";
+    try {
+      qrObj = new QRCode(el.qrcode, {
+        text: genericLink(),
+        width: 176,
+        height: 176,
+        colorDark: "#10221E",
+        colorLight: "#ffffff",
+        correctLevel: QRCode.CorrectLevel.M
+      });
+    } catch (e) {
+      el.qrcode.textContent = "QR code unavailable right now.";
+    }
+  }
+  el.qrToggleBtn.addEventListener("click", function () {
+    var willShow = !el.qrWrap.classList.contains("show");
+    el.qrWrap.classList.toggle("show", willShow);
+    el.qrToggleBtn.textContent = willShow ? "Hide QR code" : "Prefer to scan on your phone? Show a QR code";
+    if (willShow) renderQr();
+  });
+
+  // ---------- payment flow ----------
+  var flow = {
+    active: false,
+    appName: "",
+    ref: "",
+    launchedAt: 0,
+    wentHidden: false,
+    notFoundTimer: null
+  };
+
+  function startPayment(scheme, appName) {
+    if (!validate()) return;
+    flow.active = true;
+    flow.appName = appName;
+    flow.ref = genRef();
+    flow.launchedAt = Date.now();
+    flow.wentHidden = false;
+
+    el.waitingTitle.textContent = "Opening " + appName + "…";
+    show("waiting");
+
+    var link = buildLink(scheme, flow.ref);
+    window.location.href = link;
+
+    clearTimeout(flow.notFoundTimer);
+    flow.notFoundTimer = setTimeout(function () {
+      if (flow.active && !flow.wentHidden && !document.hidden) {
+        el.notfoundTitle.textContent = appName + " didn't open";
+        show("notfound");
+      }
+    }, 1800);
+  }
+
+  document.addEventListener("visibilitychange", function () {
+    if (!flow.active) return;
+    if (document.hidden) {
+      flow.wentHidden = true;
+      clearTimeout(flow.notFoundTimer);
+    } else if (flow.wentHidden) {
+      var awaySeconds = (Date.now() - flow.launchedAt) / 1000;
+      el.confirmSub.innerHTML = "You just returned from <b>" + flow.appName + "</b>. This page can't check your bank directly, so tell it what happened.";
+      el.confirmHint.textContent = awaySeconds < 2.5
+        ? "You were away for under " + Math.max(awaySeconds, 0).toFixed(1) + "s — often that means it was closed before paying."
+        : "You were away for about " + awaySeconds.toFixed(1) + "s.";
+      document.querySelector("#confirm-yes").classList.toggle("suggested", awaySeconds >= 2.5);
+      document.querySelector("#confirm-no").classList.toggle("suggested", awaySeconds < 2.5);
+      show("confirm");
+    }
+  });
+
+  el.payAny.addEventListener("click", function () { startPayment("upi", "your UPI app"); });
+
+  el.waitingCancel.addEventListener("click", function () {
+    flow.active = false;
+    clearTimeout(flow.notFoundTimer);
+    show("setup");
+  });
+  el.notfoundBack.addEventListener("click", function () {
+    flow.active = false;
+    show("setup");
+  });
+
+  function finish(success) {
+    flow.active = false;
+    var icon = success
+      ? '<svg viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4 10-10" stroke="white" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>'
+      : '<svg viewBox="0 0 24 24" fill="none"><path d="M6 6l12 12M18 6L6 18" stroke="white" stroke-width="2.6" stroke-linecap="round"/></svg>';
+    el.receipt.className = "receipt " + (success ? "ok" : "bad");
+    el.resultIcon.innerHTML = icon;
+    el.resultTitle.textContent = success ? "Verified" : "Failed";
+    el.resultSub.textContent = success
+      ? "Marked as paid — based on your confirmation, not a bank record."
+      : "Marked as not completed — no money should have moved.";
+    el.rApp.textContent = flow.appName;
+    el.rAmt.textContent = "₹" + currentAmount().toFixed(2);
+    el.rVpa.textContent = currentVpa();
+    el.rRef.textContent = flow.ref;
+    el.rTime.textContent = new Date().toLocaleString();
+    show("result");
+  }
+
+  el.confirmYes.addEventListener("click", function () { finish(true); });
+  el.confirmNo.addEventListener("click", function () { finish(false); });
+
+  el.resultAgain.addEventListener("click", function () { show("setup"); });
+  el.resultHome.addEventListener("click", function () {
+    el.vpa.value = ""; el.pname.value = ""; el.amt.value = "1";
+    validate();
+    show("setup");
+  });
+
+  show("setup");
+})();
+</script>
+</body>
+</html>
