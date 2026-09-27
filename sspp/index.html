@@ -44,12 +44,12 @@
   .navtools{display:flex;align-items:center;gap:14px;margin-left:43%;}
   .icon-btn{width:36px;height:36px;border-radius:50%;border:1px solid var(--line);background:var(--bg-elev);display:flex;align-items:center;justify-content:center;cursor:pointer}
   .icon-btn:hover{border-color:var(--gold)}
-  .avatar-sm{width:36px;height:36px;border-radius:50%;background:linear-gradient(160deg,var(--btn-grad-1),var(--btn-grad-2));color:var(--btn-text);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px}
+  .avatar-sm{width:36px;height:36px;border-radius:50%;background:linear-gradient(160deg,var(--btn-grad-1),var(--btn-grad-2));color:var(--btn-text);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;overflow:hidden}
 
   /* profile + rent */
   .hero{flex:none;background:radial-gradient(120% 200% at 15% -40%, var(--hero-glow) 0%, var(--bg) 60%);border-bottom:1px solid var(--line);padding:20px 0 16px}
   .hero-left{display:flex;align-items:center;gap:16px}
-  .hero-avatar{width:56px;height:56px;border-radius:50%;background:linear-gradient(160deg,var(--btn-grad-1),var(--btn-grad-2));color:var(--btn-text);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:22px;flex-shrink:0}
+  .hero-avatar{width:56px;height:56px;border-radius:50%;background:linear-gradient(160deg,var(--btn-grad-1),var(--btn-grad-2));color:var(--btn-text);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:22px;flex-shrink:0;overflow:hidden}
   .hero h1{font-size:23px;margin:0 0 8px;font-weight:700}
   .pills{display:flex;gap:8px;flex-wrap:wrap}
   .pill{font-size:12.5px;font-weight:600;color:var(--gold-soft);background:rgba(232,192,102,.1);border:1px solid var(--line);padding:5px 12px;border-radius:7px}
@@ -135,7 +135,7 @@
         </div>
       </div>
     </div>
-    <div class="rent-bar">
+    <div class="rent-bar" id="rentBar" style="display:none">
       <div>
         <div class="label">Rent due</div>
         <div class="amount" id="rentAmount">Loading…</div>
@@ -193,11 +193,18 @@
     return months[d.getMonth()] + ' ' + d.getDate() + ', ' + h12 + ':' + min + ' ' + ampm;
   }
 
+  function formatDueDate(dateStr){
+    if (!dateStr) return '';
+    var parts = dateStr.split('-');
+    if (parts.length !== 3) return dateStr;
+    var months=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+    return months[parseInt(parts[1],10)-1] + ' ' + parseInt(parts[2],10);
+  }
+
   pgRequireAuth('guest', function(ctx){
     document.getElementById('residentName').textContent = ctx.name;
-    var initial = ctx.name.charAt(0).toUpperCase();
-    document.getElementById('heroAvatar').textContent = initial;
-    document.getElementById('navAvatar').textContent = initial;
+    pgSetAvatar('heroAvatar', ctx);
+    pgSetAvatar('navAvatar', ctx);
     pgWireSignOut('navAvatar');
 
     var g = ctx.guest || {};
@@ -212,15 +219,13 @@
     var monthKey = now.getFullYear() + '-' + ('0'+(now.getMonth()+1)).slice(-2);
     db.ref('payments/' + ctx.guestId + '/' + monthKey).once('value').then(function(snap){
       var p = snap.val();
-      var amtEl = document.getElementById('rentAmount');
-      if (p && p.paid){
-        amtEl.textContent = 'Paid for this month';
-      } else if (p) {
+      var rentBar = document.getElementById('rentBar');
+      if (p && !p.paid){
         var net = Number(p.rent||0) + Number((p.acUnits||0) * (p.acRate||0)) + Number(p.other||0) + Number(p.overdue||0);
-        amtEl.textContent = '₹' + net.toLocaleString('en-IN') + (p.dueDate ? ' · Due ' + p.dueDate : '');
-      } else {
-        amtEl.textContent = 'No dues on file';
+        document.getElementById('rentAmount').textContent = '₹' + net.toLocaleString('en-IN') + (p.dueDate ? ' · Due ' + formatDueDate(p.dueDate) : '');
+        rentBar.style.display = 'flex';
       }
+      // Nothing pending on file — leave the card hidden.
     });
 
     db.ref('announcements').orderByChild('date').limitToLast(10).on('value', function(snap){
