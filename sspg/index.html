@@ -8,9 +8,22 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Mukta:wght@400;500;600;700&display=swap">
 <style>
   :root{
+    color-scheme: dark;
     --bg:#060d18; --bg-elev:#0c1b2e; --card:#0f2038; --line:rgba(232,192,102,.16);
     --gold:#e8c066; --gold-soft:#f4dfa0; --gold-deep:#b8863b;
     --ink:#f5f3ec; --muted:#9fabc2; --maroon:#b23a2e; --teal:#2e8b7f;
+    --body-text:#d9d6ca; --hero-glow:#12233c;
+    --btn-grad-1:#f4dfa0; --btn-grad-2:#b8863b; --btn-text:#20140a;
+  }
+  @media (prefers-color-scheme: light){
+    :root{
+      color-scheme: light;
+      --bg:#faf6ec; --bg-elev:#f1e6d2; --card:#ffffff; --line:rgba(168,120,48,.22);
+      --gold:#c9973f; --gold-soft:#96631c; --gold-deep:#7a4d17;
+      --ink:#241f18; --muted:#7c7362; --maroon:#a13a2a; --teal:#1c7566;
+      --body-text:#4a4234; --hero-glow:#f6e0ac;
+      --btn-grad-1:#f2d78e; --btn-grad-2:#b9832f; --btn-text:#241405;
+    }
   }
   *{box-sizing:border-box}
   html,body{height:100%}
@@ -31,12 +44,12 @@
   .navtools{display:flex;align-items:center;gap:14px;margin-left:43%;}
   .icon-btn{width:36px;height:36px;border-radius:50%;border:1px solid var(--line);background:var(--bg-elev);display:flex;align-items:center;justify-content:center;cursor:pointer}
   .icon-btn:hover{border-color:var(--gold)}
-  .avatar-sm{width:36px;height:36px;border-radius:50%;background:linear-gradient(160deg,var(--gold-soft),var(--gold-deep));color:#20140a;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px}
+  .avatar-sm{width:36px;height:36px;border-radius:50%;background:linear-gradient(160deg,var(--btn-grad-1),var(--btn-grad-2));color:var(--btn-text);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px}
 
   /* profile + rent */
-  .hero{flex:none;background:radial-gradient(120% 200% at 15% -40%, #12233c 0%, var(--bg) 60%);border-bottom:1px solid var(--line);padding:20px 0 16px}
+  .hero{flex:none;background:radial-gradient(120% 200% at 15% -40%, var(--hero-glow) 0%, var(--bg) 60%);border-bottom:1px solid var(--line);padding:20px 0 16px}
   .hero-left{display:flex;align-items:center;gap:16px}
-  .hero-avatar{width:56px;height:56px;border-radius:50%;background:linear-gradient(160deg,var(--gold-soft),var(--gold-deep));color:#20140a;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:22px;flex-shrink:0}
+  .hero-avatar{width:56px;height:56px;border-radius:50%;background:linear-gradient(160deg,var(--btn-grad-1),var(--btn-grad-2));color:var(--btn-text);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:22px;flex-shrink:0}
   .hero h1{font-size:23px;margin:0 0 8px;font-weight:700}
   .pills{display:flex;gap:8px;flex-wrap:wrap}
   .pill{font-size:12.5px;font-weight:600;color:var(--gold-soft);background:rgba(232,192,102,.1);border:1px solid var(--line);padding:5px 12px;border-radius:7px}
@@ -44,7 +57,7 @@
             padding:14px 20px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
   .rent-bar .label{font-size:11.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em}
   .rent-bar .amount{font-family:'Baloo 2',sans-serif;font-size:19px;font-weight:700;color:var(--gold-soft)}
-  .btn{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(160deg,var(--gold-soft),var(--gold-deep));color:#20140a;font-weight:700;font-size:13.5px;padding:10px 20px;border-radius:10px;border:none;cursor:pointer}
+  .btn{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(160deg,var(--btn-grad-1),var(--btn-grad-2));color:var(--btn-text);font-weight:700;font-size:13.5px;padding:10px 20px;border-radius:10px;border:none;cursor:pointer}
   .btn:hover{filter:brightness(1.06)}
 
   /* quick actions: single row of buttons */
@@ -60,7 +73,7 @@
 
   /* main dashboard */
   main{flex:1 1 auto;min-height:0;padding-bottom:14px}
-  .layout{display:grid;grid-template-columns:1.6fr 1fr;gap:22px;height:100%}
+  .layout{display:grid;grid-template-columns:1fr;gap:22px;height:100%}
   .panel{background:var(--card);border:1px solid var(--line);border-radius:16px;overflow:hidden;
          display:flex;flex-direction:column;height:100%}
   .panel-head{flex:none;display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--line)}
@@ -73,14 +86,7 @@
   .note-who{display:flex;align-items:center;gap:9px;font-weight:600;font-size:13.5px}
   .note-who .dot{width:26px;height:26px;border-radius:50%;background:rgba(232,192,102,.14);color:var(--gold-soft);display:flex;align-items:center;justify-content:center;font-size:11.5px;font-weight:700}
   .note-when{font-size:11.5px;color:var(--muted)}
-  .note p{margin:0;font-size:13.5px;color:#d9d6ca;line-height:1.5}
-
-  .side-card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px}
-  .side-card h3{margin:0 0 14px;font-size:14px;color:var(--gold-soft)}
-  .contact{display:flex;align-items:center;gap:12px}
-  .contact .ic{width:36px;height:36px;border-radius:50%;background:rgba(232,192,102,.1);display:flex;align-items:center;justify-content:center;flex-shrink:0}
-  .contact .name{font-weight:600;font-size:13.5px}
-  .contact .phone{font-size:12px;color:var(--muted)}
+  .note p{margin:0;font-size:13.5px;color:var(--body-text);line-height:1.5}
 
   @media (max-width:900px){
     html,body{height:auto}
@@ -89,7 +95,6 @@
     main{overflow:visible}
     .panel{height:auto}
     .panel-body{overflow-y:visible}
-    .layout{grid-template-columns:1fr;height:auto}
   }
   @media (max-width:560px){
     .wrap{padding:0 18px}
@@ -104,9 +109,9 @@
   <div class="wrap">
     <div class="brand"><img src="logo.png" alt="Shree Shyam Boys PG logo"></div>
     <div class="navlinks">
-      <a href="#" class="active">Home</a>
-      <a href="#actions">Payments</a>
-      <a href="#actions">Menu</a>
+      <a href="index.html" class="active">Home</a>
+      <a href="payments.html">Payments</a>
+      <a href="menu.html">Menu</a>
       <a href="#announcements">Announcements</a>
     </div>
     <div class="navtools">
@@ -127,7 +132,6 @@
         <div class="pills">
           <span class="pill">Room 204</span>
           <span class="pill">Floor 2</span>
-         
         </div>
       </div>
     </div>
@@ -144,22 +148,22 @@
 <section class="actions" id="actions">
   <div class="wrap">
     <div class="btn-row">
-      <button class="action-btn">
+      <a class="action-btn" href="payments.html">
         <span class="action-icon" style="background:rgba(232,192,102,.14);color:var(--gold-soft)">₹</span>
         <span class="label">Payments & more</span>
-      </button>
-      <button class="action-btn">
+      </a>
+      <a class="action-btn" href="menu.html">
         <span class="action-icon" style="background:rgba(46,139,127,.16)">
           <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="var(--teal)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3v7a2 2 0 002 2h0a2 2 0 002-2V3"></path><path d="M9 12v9"></path><path d="M17 3c-1.6 0-3 1.6-3 4v4h3"></path><path d="M17 11v10"></path></svg>
         </span>
         <span class="label">Menu</span>
-      </button>
-      <button class="action-btn">
+      </a>
+      <a class="action-btn" href="complain.html">
         <span class="action-icon" style="background:rgba(178,58,46,.16)">
           <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="var(--maroon)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l9 16H3z"></path><line x1="12" y1="9" x2="12" y2="13.5"></line><line x1="12" y1="16.5" x2="12" y2="16.6"></line></svg>
         </span>
         <span class="label">Raise a complaint</span>
-      </button>
+      </a>
     </div>
   </div>
 </section>
@@ -199,8 +203,6 @@
         </div>
       </div>
     </div>
-
-  
   </div>
 </main>
 
