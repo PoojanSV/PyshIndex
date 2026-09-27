@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Payment and more — Shree Shyam Boys PG</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Mukta:wght@400;500;600;700&display=swap">
+<style>
+  :root{
+    color-scheme: dark;
+    --bg:#060d18; --bg-elev:#0c1b2e; --card:#0f2038; --line:rgba(232,192,102,.16);
+    --gold:#e8c066; --gold-soft:#f4dfa0; --gold-deep:#b8863b;
+    --ink:#f5f3ec; --muted:#9fabc2;
+    --hero-glow:#12233c;
+    --btn-grad-1:#f4dfa0; --btn-grad-2:#b8863b; --btn-text:#20140a;
+  }
+  @media (prefers-color-scheme: light){
+    :root{
+      color-scheme: light;
+      --bg:#faf6ec; --bg-elev:#f1e6d2; --card:#ffffff; --line:rgba(168,120,48,.22);
+      --gold:#c9973f; --gold-soft:#96631c; --gold-deep:#7a4d17;
+      --ink:#241f18; --muted:#7c7362;
+      --hero-glow:#f6e0ac;
+      --btn-grad-1:#f2d78e; --btn-grad-2:#b9832f; --btn-text:#241405;
+    }
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:'Mukta',sans-serif;line-height:1.4}
+  h1,h2,.brand{font-family:'Baloo 2',sans-serif}
+  a{color:inherit;text-decoration:none}
+  button{font:inherit}
+  .wrap{max-width:1180px;margin:0 auto;padding:0 32px}
+
+  nav{background:var(--bg);border-bottom:1px solid var(--line)}
+  nav .wrap{display:flex;align-items:center;gap:28px;padding:10px 32px;height:56px}
+  .brand img{height:34px;width:auto;display:block}
+  .navlinks{display:flex;gap:26px;margin-left:8px;flex:1}
+  .navlinks a{font-size:14.5px;font-weight:500;color:var(--muted);padding:8px 0;border-bottom:2px solid transparent}
+  .navlinks a:hover,.navlinks a.active{color:var(--gold-soft);border-color:var(--gold)}
+  .navtools{display:flex;align-items:center;gap:14px;margin-left:43%;}
+  .icon-btn{width:36px;height:36px;border-radius:50%;border:1px solid var(--line);background:var(--bg-elev);display:flex;align-items:center;justify-content:center;cursor:pointer}
+  .icon-btn:hover{border-color:var(--gold)}
+  .avatar-sm{width:36px;height:36px;border-radius:50%;background:linear-gradient(160deg,var(--btn-grad-1),var(--btn-grad-2));color:var(--btn-text);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px}
+
+  .hero{flex:none;background:radial-gradient(120% 200% at 15% -40%, var(--hero-glow) 0%, var(--bg) 60%);border-bottom:1px solid var(--line);padding:20px 0 16px}
+  .hero-top{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+  .hero h1{font-size:23px;margin:0 0 4px;font-weight:700}
+  .hero .sub{font-size:13px;color:var(--muted)}
+  .wrap-narrow{max-width:460px;margin:0 auto;padding:0 24px}
+  .back-link{background:none;border:none;color:var(--gold-soft);font-size:13.5px;font-weight:600;padding:0 0 12px;cursor:pointer}
+  .page-title{font-size:21px;margin:0 0 20px}
+
+  .stack{display:flex;flex-direction:column;gap:14px}
+  .stack-btn{display:block;width:100%;text-align:center;background:var(--card);border:1px solid var(--line);
+             color:var(--ink);font-weight:700;font-size:15px;padding:16px;border-radius:14px;cursor:pointer}
+  .stack-btn:hover{border-color:var(--gold)}
+  .stack-btn.primary{background:linear-gradient(160deg,var(--btn-grad-1),var(--btn-grad-2));color:var(--btn-text);border:none;margin-top:22px}
+
+  .info-card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px;margin-bottom:14px}
+  .info-card p{margin:0;font-size:14.5px;line-height:1.7}
+
+  .amount-card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px;margin-bottom:22px}
+  .amount-row{display:flex;justify-content:space-between;font-size:13.5px;color:var(--muted);padding:6px 0}
+  .amount-row.net{border-top:1px solid var(--line);margin-top:10px;padding-top:14px;font-size:16px;font-weight:700}
+  .amount-row.net span{color:var(--gold-soft)}
+
+  @media (max-width:900px){
+    .navlinks{display:none}
+  }
+  @media (max-width:560px){
+    .wrap{padding:0 18px}
+    nav .wrap{padding:10px 18px}
+    .wrap-narrow{padding:0 18px}
+    .payment-main{padding:28px 0 40px}
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="wrap">
+    <a class="brand" href="index.html"><img src="logo.png" alt="Shree Shyam Boys PG logo"></a>
+    <div class="navlinks">
+      <a href="index.html">Home</a>
+      <a href="payments.html" class="active">Payments</a>
+      <a href="menu.html">Menu</a>
+      <a href="index.html#announcements">Announcements</a>
+    </div>
+    <div class="navtools">
+      <button class="icon-btn" aria-label="Search">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--gold-soft)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+      </button>
+      <div class="avatar-sm" id="navAvatar">A</div>
+    </div>
+  </div>
+</nav>
+
+<main class="hero">
+  <div class="wrap-narrow">
+
+    
+      <a class="back-link" href="index.html">‹ Back</a>
+      <h2 class="page-title">Payment and more</h2>
+
+      <div class="info-card">
+        <p><span id="guestName">Resident</span><br>Room <span id="guestRoom">—</span>, <span id="guestFloor">Floor —</span><br>Payment for <span id="paymentPeriod">this month</span></p>
+      </div>
+
+      <div class="amount-card">
+        <div class="amount-row"><span>Rent amount</span><span id="amtRent">₹0</span></div>
+		<div class="amount-row"><span id="acLabel">Ac Bill amount(0 units * ₹0)</span><span id="amtAc">₹0</span></div>
+		<div class="amount-row"><span>Other Expense</span><span id="amtOther">₹0</span></div>
+        <div class="amount-row"><span>Overdue</span><span id="amtOverdue">₹0</span></div>
+        <div class="amount-row net"><span>Net amount</span><span id="amtNet">₹0</span></div>
+      </div>
+
+      <button class="stack-btn primary" id="payBtn">Make Payment</button>
+    </div>
+
+  </div>
+</main>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<script src="firebase-init.js"></script>
+<script>
+  var monthNames = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+
+  pgRequireAuth('guest', function(ctx){
+    document.getElementById('navAvatar').textContent = (ctx.name || 'R').charAt(0).toUpperCase();
+    pgWireSignOut('navAvatar');
+
+    var g = ctx.guest || {};
+    var now = new Date();
+    var monthKey = now.getFullYear() + '-' + ('0'+(now.getMonth()+1)).slice(-2);
+
+    document.getElementById('guestName').textContent = g.name || ctx.name;
+    document.getElementById('guestRoom').textContent = g.room || '—';
+    document.getElementById('guestFloor').textContent = 'Floor ' + (g.floor ? g.floor.replace(/^Floor\s*/i, '') : '—');
+    document.getElementById('paymentPeriod').textContent = monthNames[now.getMonth()] + ' ' + now.getFullYear();
+
+    db.ref('payments/' + ctx.guestId + '/' + monthKey).once('value').then(function(snap){
+      var p = snap.val() || {};
+      var rent = Number(p.rent != null ? p.rent : (g.rent || 0));
+      var acUnits = Number(p.acUnits != null ? p.acUnits : (g.acUnits || 0));
+      var acRate = Number(p.acRate != null ? p.acRate : (g.acRate || 100));
+      var other = Number(p.other || 0);
+      var overdue = Number(p.overdue || 0);
+      var acBill = acUnits * acRate;
+      var net = rent + acBill + other + overdue;
+
+      document.getElementById('amtRent').textContent = '₹' + rent.toLocaleString('en-IN');
+      document.getElementById('acLabel').textContent = 'Ac Bill amount(' + acUnits + ' units * ₹' + acRate + ')';
+      document.getElementById('amtAc').textContent = '₹' + acBill.toLocaleString('en-IN');
+      document.getElementById('amtOther').textContent = '₹' + other.toLocaleString('en-IN');
+      document.getElementById('amtOverdue').textContent = '₹' + overdue.toLocaleString('en-IN');
+      document.getElementById('amtNet').textContent = '₹' + net.toLocaleString('en-IN');
+
+      var payBtn = document.getElementById('payBtn');
+      if (p.paid){
+        payBtn.textContent = 'Paid ✓';
+        payBtn.disabled = true;
+      } else {
+        payBtn.addEventListener('click', function(){
+          db.ref('payments/' + ctx.guestId + '/' + monthKey).update({
+            rent: rent, acUnits: acUnits, acRate: acRate, other: other, overdue: overdue,
+            requestedAt: Date.now()
+          }).then(function(){
+            payBtn.textContent = 'Payment request sent';
+            payBtn.disabled = true;
+          });
+        });
+      }
+    });
+  });
+</script>
+
+</body>
+</html>

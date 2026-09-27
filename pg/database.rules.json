@@ -1,0 +1,43 @@
+{
+  "rules": {
+    ".read": false,
+    ".write": false,
+
+    "guests": {
+      ".indexOn": ["email"],
+      ".read": "auth != null",
+      "$guestId": {
+        ".write": "auth != null && (auth.token.email == 'sspg.owner@gmail.com' || auth.token.email == data.child('email').val())"
+      }
+    },
+
+    "floors": {
+      ".read": "auth != null",
+      ".write": "auth != null && auth.token.email == 'sspg.owner@gmail.com'"
+    },
+
+    "announcements": {
+      ".read": "auth != null",
+      ".write": "auth != null && auth.token.email == 'sspg.owner@gmail.com'"
+    },
+
+    "menu": {
+      ".read": "auth != null",
+      ".write": "auth != null && auth.token.email == 'sspg.owner@gmail.com'"
+    },
+
+    "payments": {
+      "$guestId": {
+        ".read": "auth != null && (auth.token.email == 'sspg.owner@gmail.com' || root.child('guests').child($guestId).child('uid').val() == auth.uid)",
+        ".write": "auth != null && (auth.token.email == 'sspg.owner@gmail.com' || root.child('guests').child($guestId).child('uid').val() == auth.uid)"
+      }
+    },
+
+    "complaints": {
+      "$guestId": {
+        ".read": "auth != null && (auth.token.email == 'sspg.owner@gmail.com' || root.child('guests').child($guestId).child('uid').val() == auth.uid)",
+        ".write": "auth != null && (auth.token.email == 'sspg.owner@gmail.com' || root.child('guests').child($guestId).child('uid').val() == auth.uid)"
+      }
+    }
+  }
+}
