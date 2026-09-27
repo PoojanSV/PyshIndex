@@ -44,12 +44,12 @@
   .navtools{display:flex;align-items:center;gap:14px;margin-left:43%;}
   .icon-btn{width:36px;height:36px;border-radius:50%;border:1px solid var(--line);background:var(--bg-elev);display:flex;align-items:center;justify-content:center;cursor:pointer}
   .icon-btn:hover{border-color:var(--gold)}
-  .avatar-sm{width:36px;height:36px;border-radius:50%;background:linear-gradient(160deg,var(--btn-grad-1),var(--btn-grad-2));color:var(--btn-text);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px}
+  .avatar-sm{width:36px;height:36px;border-radius:50%;background:linear-gradient(160deg,var(--btn-grad-1),var(--btn-grad-2));color:var(--btn-text);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;overflow:hidden}
 
   /* profile hero */
   .hero{flex:none;background:radial-gradient(120% 200% at 15% -40%, var(--hero-glow) 0%, var(--bg) 60%);border-bottom:1px solid var(--line);padding:20px 0 16px}
   .hero-left{display:flex;align-items:center;gap:16px}
-  .hero-avatar{width:56px;height:56px;border-radius:50%;background:linear-gradient(160deg,var(--btn-grad-1),var(--btn-grad-2));color:var(--btn-text);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:22px;flex-shrink:0}
+  .hero-avatar{width:56px;height:56px;border-radius:50%;background:linear-gradient(160deg,var(--btn-grad-1),var(--btn-grad-2));color:var(--btn-text);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:22px;flex-shrink:0;overflow:hidden}
   .hero h1{font-size:23px;margin:0 0 8px;font-weight:700}
   .pills{display:flex;gap:8px;flex-wrap:wrap}
   .pill{font-size:12.5px;font-weight:600;color:var(--gold-soft);background:rgba(232,192,102,.1);border:1px solid var(--line);padding:5px 12px;border-radius:7px}
@@ -110,6 +110,21 @@
   .status{font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;white-space:nowrap}
   .status.done{color:var(--teal);background:rgba(46,139,127,.14);border:1px solid rgba(46,139,127,.3)}
 
+  .guest-actions{display:flex;gap:8px;margin-top:2px;flex-wrap:wrap}
+  .mini-btn{background:var(--bg-elev);border:1px solid var(--line);color:var(--ink);font-size:12px;font-weight:600;
+            padding:6px 12px;border-radius:8px;cursor:pointer}
+  .mini-btn:hover{border-color:var(--gold)}
+  .mini-btn.danger{color:var(--maroon);border-color:rgba(178,58,46,.35)}
+  .mini-btn.danger:hover{border-color:var(--maroon)}
+  .guest-subpanel{margin-top:4px;padding:14px;background:var(--bg-elev);border:1px solid var(--line);border-radius:12px}
+  .guest-subpanel .field{margin-bottom:12px}
+  .guest-subpanel .field:last-of-type{margin-bottom:0}
+  .checkbox-field{margin-bottom:12px}
+  .checkbox-field label{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--ink);font-weight:500;cursor:pointer;margin:0}
+  .checkbox-field input{width:auto}
+  .btn.small{padding:8px 18px;font-size:12.5px}
+  .pmt-status{font-size:11.5px;color:var(--muted);margin:8px 0}
+
   @media (max-width:900px){
     html,body{height:auto}
     body{overflow:visible}
@@ -133,7 +148,7 @@
     <div class="navlinks">
       <a class="active">Owner dashboard</a>
       <a id="navAddGuest">Add guest</a>
-      <a id="navResidents">Residents</a>
+      <a id="navResidents">Manage guests</a>
     </div>
     <div class="navtools">
       <button class="icon-btn" aria-label="Search">
@@ -170,7 +185,7 @@
         <span class="action-icon" style="background:rgba(46,139,127,.16)">
           <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="var(--teal)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 00-3-3.87"></path><path d="M16 3.13a4 4 0 010 7.75"></path></svg>
         </span>
-        <span class="label">Residents</span>
+        <span class="label">Manage guests</span>
       </a>
     </div>
   </div>
@@ -220,7 +235,7 @@
     </div>
 
     <div class="panel" id="residentsPanel">
-      <div class="panel-head"><h2>Residents</h2><span id="residentCountLabel">0 total</span></div>
+      <div class="panel-head"><h2>Manage guests</h2><span id="residentCountLabel">0 total</span></div>
       <div class="panel-body" style="padding:0" id="guestsList">
         <div class="item"><p>Loading residents…</p></div>
       </div>
@@ -235,11 +250,17 @@
 <script>
   var floorsData = {};
   var guestsData = {};
+  var openPanel = null; // { guestId, type } — only one guest sub-panel open at a time
 
   document.getElementById('navAddGuest').addEventListener('click', function(){ document.getElementById('addGuestPanel').scrollIntoView({behavior:'smooth'}); });
   document.getElementById('navResidents').addEventListener('click', function(){ document.getElementById('residentsPanel').scrollIntoView({behavior:'smooth'}); });
   document.getElementById('quickAddGuest').addEventListener('click', function(){ document.getElementById('addGuestPanel').scrollIntoView({behavior:'smooth'}); });
   document.getElementById('quickResidents').addEventListener('click', function(){ document.getElementById('residentsPanel').scrollIntoView({behavior:'smooth'}); });
+
+  function currentMonthKey(){
+    var now = new Date();
+    return now.getFullYear() + '-' + ('0'+(now.getMonth()+1)).slice(-2);
+  }
 
   function ensureFloorsSeed(){
     return db.ref('floors').once('value').then(function(snap){
@@ -302,6 +323,7 @@
   function loadGuests(){
     db.ref('guests').on('value', function(snap){
       guestsData = snap.val() || {};
+      openPanel = null;
       renderGuestsList();
       document.getElementById('pillGuestCount').textContent = Object.keys(guestsData).length + ' guests';
       document.getElementById('residentCountLabel').textContent = Object.keys(guestsData).length + ' total';
@@ -318,11 +340,197 @@
     }
     list.innerHTML = ids.map(function(id){
       var g = guestsData[id];
-      return '<div class="item"><div class="item-top"><span class="item-title">'+ g.name +'</span>' +
-             '<span class="status done">'+ g.floor +' · Room '+ g.room +'</span></div>' +
-             '<p>'+ g.email +' · ₹'+ Number(g.rent||0).toLocaleString('en-IN') +'/mo</p></div>';
+      return '<div class="item" data-guest-id="'+id+'">' +
+        '<div class="item-top"><span class="item-title">'+ g.name +'</span>' +
+        '<span class="status done">'+ g.floor +' · Room '+ g.room +'</span></div>' +
+        '<p>'+ g.email +' · ₹'+ Number(g.rent||0).toLocaleString('en-IN') +'/mo</p>' +
+        '<div class="guest-actions">' +
+          '<button type="button" class="mini-btn" data-action="toggle-payment">Payment</button>' +
+          '<button type="button" class="mini-btn" data-action="toggle-move">Move room</button>' +
+          '<button type="button" class="mini-btn danger" data-action="delete">Delete</button>' +
+        '</div>' +
+        '<div class="guest-subpanel" style="display:none"></div>' +
+      '</div>';
     }).join('');
   }
+
+  // ---- Payment: edit + status ----
+  function paymentPanelHtml(){
+    return '' +
+      '<div class="field"><label>Month</label><input type="month" class="pmt-month" value="'+currentMonthKey()+'"></div>' +
+      '<div class="field"><label>Rent (₹)</label><input type="number" min="0" class="pmt-rent"></div>' +
+      '<div class="field"><label>AC units</label><input type="number" min="0" class="pmt-acunits"></div>' +
+      '<div class="field"><label>AC rate (₹/unit)</label><input type="number" min="0" class="pmt-acrate"></div>' +
+      '<div class="field"><label>Other expense (₹)</label><input type="number" min="0" class="pmt-other"></div>' +
+      '<div class="field"><label>Overdue (₹)</label><input type="number" min="0" class="pmt-overdue"></div>' +
+      '<div class="field"><label>Due date</label><input type="date" class="pmt-duedate"></div>' +
+      '<div class="checkbox-field"><label><input type="checkbox" class="pmt-paid"> Marked as paid</label></div>' +
+      '<div class="pmt-status"></div>' +
+      '<div class="submit-row"><button type="button" class="btn small" data-action="save-payment">Save payment</button></div>';
+  }
+
+  function loadPaymentIntoPanel(guestId, itemEl){
+    var g = guestsData[guestId] || {};
+    var sub = itemEl.querySelector('.guest-subpanel');
+    var monthKey = sub.querySelector('.pmt-month').value || currentMonthKey();
+    db.ref('payments/' + guestId + '/' + monthKey).once('value').then(function(snap){
+      var p = snap.val() || {};
+      sub.querySelector('.pmt-rent').value = p.rent != null ? p.rent : (g.rent || 0);
+      sub.querySelector('.pmt-acunits').value = p.acUnits != null ? p.acUnits : (g.acUnits || 0);
+      sub.querySelector('.pmt-acrate').value = p.acRate != null ? p.acRate : (g.acRate || 100);
+      sub.querySelector('.pmt-other').value = p.other || 0;
+      sub.querySelector('.pmt-overdue').value = p.overdue || 0;
+      sub.querySelector('.pmt-duedate').value = p.dueDate || '';
+      sub.querySelector('.pmt-paid').checked = !!p.paid;
+      sub.querySelector('.pmt-status').textContent = 'Currently ' + (p.paid ? 'paid' : (Object.keys(p).length ? 'pending' : 'not yet billed')) + ' for ' + monthKey + '.';
+    });
+  }
+
+  function savePayment(guestId, itemEl){
+    var sub = itemEl.querySelector('.guest-subpanel');
+    var monthKey = sub.querySelector('.pmt-month').value;
+    if (!monthKey){ alert('Pick a month first.'); return; }
+    var data = {
+      rent: Number(sub.querySelector('.pmt-rent').value || 0),
+      acUnits: Number(sub.querySelector('.pmt-acunits').value || 0),
+      acRate: Number(sub.querySelector('.pmt-acrate').value || 0),
+      other: Number(sub.querySelector('.pmt-other').value || 0),
+      overdue: Number(sub.querySelector('.pmt-overdue').value || 0),
+      dueDate: sub.querySelector('.pmt-duedate').value || null,
+      paid: sub.querySelector('.pmt-paid').checked
+    };
+    db.ref('payments/' + guestId + '/' + monthKey).update(data).then(function(){
+      sub.querySelector('.pmt-status').textContent = 'Saved — marked ' + (data.paid ? 'paid' : 'pending') + ' for ' + monthKey + '.';
+    });
+  }
+
+  // ---- Move room ----
+  function movePanelHtml(){
+    return '' +
+      '<div class="field"><label>New floor</label><select class="move-floor-select"><option value="" disabled selected>Choose a floor</option></select></div>' +
+      '<div class="field"><label>New room</label><select class="move-room-select" disabled><option value="" disabled selected>Choose a floor first</option></select>' +
+        '<div class="space-status move-space-status"></div>' +
+      '</div>' +
+      '<div class="submit-row"><button type="button" class="btn small" data-action="move-room" disabled>Move guest</button></div>';
+  }
+
+  function populateMoveFloors(itemEl){
+    var sub = itemEl.querySelector('.guest-subpanel');
+    var sel = sub.querySelector('.move-floor-select');
+    sel.innerHTML = '<option value="" disabled selected>Choose a floor</option>' +
+      Object.keys(floorsData).map(function(f){ return '<option value="'+f+'">'+f+'</option>'; }).join('');
+  }
+
+  function populateMoveRooms(itemEl){
+    var sub = itemEl.querySelector('.guest-subpanel');
+    var floor = sub.querySelector('.move-floor-select').value;
+    var rooms = (floorsData[floor] && floorsData[floor].rooms) || {};
+    var sel = sub.querySelector('.move-room-select');
+    sel.disabled = false;
+    sel.innerHTML = '<option value="" disabled selected>Choose a room</option>' +
+      Object.keys(rooms).map(function(r){ return '<option value="'+r+'">Room '+r+'</option>'; }).join('');
+    sub.querySelector('.move-space-status').textContent = '';
+    sub.querySelector('[data-action="move-room"]').disabled = true;
+  }
+
+  function updateMoveSpaceStatus(guestId, itemEl){
+    var sub = itemEl.querySelector('.guest-subpanel');
+    var floor = sub.querySelector('.move-floor-select').value;
+    var room = sub.querySelector('.move-room-select').value;
+    var roomInfo = ((floorsData[floor]||{}).rooms||{})[room];
+    var capacity = roomInfo ? Number(roomInfo.capacity) : 0;
+    var occupied = Object.keys(guestsData).filter(function(id){
+      var g = guestsData[id];
+      return id !== guestId && g.floor === floor && g.room === room;
+    }).length;
+
+    var statusEl = sub.querySelector('.move-space-status');
+    var btn = sub.querySelector('[data-action="move-room"]');
+    if (occupied >= capacity){
+      statusEl.textContent = 'Room full (' + occupied + '/' + capacity + ' beds taken)';
+      statusEl.style.color = 'var(--maroon)';
+      btn.disabled = true;
+    } else {
+      statusEl.textContent = (capacity - occupied) + ' of ' + capacity + ' beds available';
+      statusEl.style.color = 'var(--teal)';
+      btn.disabled = false;
+    }
+  }
+
+  function moveGuest(guestId, itemEl){
+    var sub = itemEl.querySelector('.guest-subpanel');
+    var floor = sub.querySelector('.move-floor-select').value;
+    var room = sub.querySelector('.move-room-select').value;
+    if (!floor || !room){ alert('Choose a floor and room.'); return; }
+    db.ref('guests/' + guestId).update({ floor: floor, room: room });
+    // The guests listener re-renders the list once this write lands.
+  }
+
+  // ---- Delete ----
+  function deleteGuest(guestId){
+    var g = guestsData[guestId] || {};
+    if (!confirm('Remove ' + (g.name || 'this guest') + ' from the system? This also clears their payment and complaint history.')) return;
+    var updates = {};
+    updates['guests/' + guestId] = null;
+    updates['payments/' + guestId] = null;
+    updates['complaints/' + guestId] = null;
+    db.ref().update(updates);
+  }
+
+  // ---- Toggling sub-panels ----
+  function togglePanel(guestId, type, itemEl){
+    var sub = itemEl.querySelector('.guest-subpanel');
+
+    if (openPanel && openPanel.guestId === guestId && openPanel.type === type){
+      sub.style.display = 'none';
+      sub.innerHTML = '';
+      openPanel = null;
+      return;
+    }
+    if (openPanel){
+      var prevEl = document.querySelector('[data-guest-id="'+openPanel.guestId+'"]');
+      if (prevEl){
+        var prevSub = prevEl.querySelector('.guest-subpanel');
+        prevSub.style.display = 'none';
+        prevSub.innerHTML = '';
+      }
+    }
+
+    openPanel = { guestId: guestId, type: type };
+    if (type === 'payment'){
+      sub.innerHTML = paymentPanelHtml();
+      sub.style.display = 'block';
+      loadPaymentIntoPanel(guestId, itemEl);
+    } else if (type === 'move'){
+      sub.innerHTML = movePanelHtml();
+      sub.style.display = 'block';
+      populateMoveFloors(itemEl);
+    }
+  }
+
+  document.getElementById('guestsList').addEventListener('click', function(e){
+    var actionBtn = e.target.closest('[data-action]');
+    if (!actionBtn) return;
+    var itemEl = e.target.closest('[data-guest-id]');
+    if (!itemEl) return;
+    var guestId = itemEl.getAttribute('data-guest-id');
+    var action = actionBtn.getAttribute('data-action');
+
+    if (action === 'toggle-payment') togglePanel(guestId, 'payment', itemEl);
+    else if (action === 'toggle-move') togglePanel(guestId, 'move', itemEl);
+    else if (action === 'delete') deleteGuest(guestId);
+    else if (action === 'save-payment') savePayment(guestId, itemEl);
+    else if (action === 'move-room') moveGuest(guestId, itemEl);
+  });
+
+  document.getElementById('guestsList').addEventListener('change', function(e){
+    var itemEl = e.target.closest('[data-guest-id]');
+    if (!itemEl) return;
+    var guestId = itemEl.getAttribute('data-guest-id');
+    if (e.target.classList.contains('move-floor-select')) populateMoveRooms(itemEl);
+    else if (e.target.classList.contains('move-room-select')) updateMoveSpaceStatus(guestId, itemEl);
+    else if (e.target.classList.contains('pmt-month')) loadPaymentIntoPanel(guestId, itemEl);
+  });
 
   function onAddGuest(e){
     e.preventDefault();
@@ -358,9 +566,8 @@
   }
 
   pgRequireAuth('owner', function(ctx){
-    var initial = (ctx.name || 'Owner').charAt(0).toUpperCase();
-    document.getElementById('navAvatar').textContent = initial;
-    document.getElementById('heroAvatar').textContent = initial;
+    pgSetAvatar('navAvatar', ctx);
+    pgSetAvatar('heroAvatar', ctx);
     document.getElementById('welcomeHeading').textContent = 'Welcome back, ' + ctx.name;
     pgWireSignOut('navAvatar');
 
