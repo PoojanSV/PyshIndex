@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sign in — Shree Shyam Boys PG</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Mukta:wght@400;500;600;700&display=swap">
+<style>
+  :root{
+    color-scheme: dark;
+    --bg:#060d18; --bg-elev:#0c1b2e; --card:#0f2038; --line:rgba(232,192,102,.16);
+    --gold:#e8c066; --gold-soft:#f4dfa0; --gold-deep:#b8863b;
+    --ink:#f5f3ec; --muted:#9fabc2; --maroon:#b23a2e; --teal:#2e8b7f;
+    --body-text:#d9d6ca; --hero-glow:#12233c;
+    --btn-grad-1:#f4dfa0; --btn-grad-2:#b8863b; --btn-text:#20140a;
+  }
+  @media (prefers-color-scheme: light){
+    :root{
+      color-scheme: light;
+      --bg:#faf6ec; --bg-elev:#f1e6d2; --card:#ffffff; --line:rgba(168,120,48,.22);
+      --gold:#c9973f; --gold-soft:#96631c; --gold-deep:#7a4d17;
+      --ink:#241f18; --muted:#7c7362; --maroon:#a13a2a; --teal:#1c7566;
+      --body-text:#4a4234; --hero-glow:#f6e0ac;
+      --btn-grad-1:#f2d78e; --btn-grad-2:#b9832f; --btn-text:#241405;
+    }
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{margin:0;background:radial-gradient(120% 200% at 15% -40%, var(--hero-glow) 0%, var(--bg) 60%);
+       color:var(--ink);font-family:'Mukta',sans-serif;line-height:1.4;
+       display:flex;align-items:center;justify-content:center;padding:24px}
+  h1,.brand{font-family:'Baloo 2',sans-serif}
+  a{color:inherit;text-decoration:none}
+  button{font:inherit}
+
+  .login-card{background:var(--card);border:1px solid var(--line);border-radius:18px;
+              padding:38px 32px;max-width:360px;width:100%;text-align:center}
+  .login-card img{height:46px;width:auto;margin-bottom:16px}
+  .login-card h1{font-size:21px;margin:0 0 6px;font-weight:700}
+  .login-card .sub{font-size:13.5px;color:var(--muted);margin:0 0 26px}
+
+  .google-btn{
+    display:flex;align-items:center;justify-content:center;gap:10px;width:100%;
+    background:#fff;color:#1f1f1f;border:1px solid rgba(0,0,0,.14);border-radius:10px;
+    font-weight:600;font-size:14.5px;padding:12px 18px;cursor:pointer
+  }
+  .google-btn:hover{background:#f7f7f7}
+  .google-btn:active{background:#efefef}
+  .google-btn svg{flex:none}
+
+  .hint{margin-top:18px;font-size:12px;color:var(--muted)}
+
+  .error-msg{display:none;margin-top:16px;text-align:left;font-size:12.5px;line-height:1.5;
+             color:var(--maroon);background:rgba(178,58,46,.12);border:1px solid rgba(178,58,46,.32);
+             border-radius:10px;padding:11px 13px}
+  .error-msg.show{display:block}
+
+  .spinner{display:none;margin-top:18px;font-size:12.5px;color:var(--muted)}
+  .spinner.show{display:block}
+</style>
+</head>
+<body>
+
+<div class="login-card">
+  <img src="logo.png" alt="Shree Shyam Boys PG logo">
+  <h1>Shree Shyam Boys PG</h1>
+  <p class="sub">Sign in to view your dashboard</p>
+
+  <button class="google-btn" id="googleBtn" type="button">
+    <svg width="18" height="18" viewBox="0 0 18 18">
+      <path fill="#4285F4" d="M17.64 9.2c0-.64-.06-1.25-.16-1.84H9v3.48h4.84a4.14 4.14 0 01-1.8 2.72v2.26h2.9c1.7-1.57 2.7-3.88 2.7-6.62z"/>
+      <path fill="#34A853" d="M9 18c2.43 0 4.47-.8 5.96-2.18l-2.9-2.26c-.8.54-1.84.86-3.06.86-2.35 0-4.34-1.59-5.05-3.72H.97v2.33A9 9 0 009 18z"/>
+      <path fill="#FBBC05" d="M3.95 10.7A5.4 5.4 0 013.68 9c0-.59.1-1.17.27-1.7V4.97H.97A9 9 0 000 9c0 1.45.35 2.83.97 4.03l2.98-2.33z"/>
+      <path fill="#EA4335" d="M9 3.58c1.32 0 2.51.46 3.44 1.35l2.58-2.58C13.46.89 11.43 0 9 0A9 9 0 00.97 4.97L3.95 7.3C4.66 5.17 6.65 3.58 9 3.58z"/>
+    </svg>
+    Continue with Google
+  </button>
+
+  <div class="spinner" id="spinner">Signing you in…</div>
+  <div class="error-msg" id="loginError"></div>
+
+  <p class="hint">Guests are added by the owner — there's no separate sign-up.</p>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<script src="firebase-init.js"></script>
+<script>
+  var errEl = document.getElementById('loginError');
+  var spinnerEl = document.getElementById('spinner');
+  var btnEl = document.getElementById('googleBtn');
+
+  function showError(msg){
+    spinnerEl.classList.remove('show');
+    errEl.textContent = msg;
+    errEl.classList.add('show');
+  }
+
+  function routeUser(user){
+    if (user.email === OWNER_EMAIL){
+      window.location.href = 'owner.html';
+      return;
+    }
+    db.ref('guests').orderByChild('email').equalTo(user.email).once('value').then(function(snap){
+      if (snap.exists()){
+        window.location.href = 'index.html';
+      } else {
+        showError("This Google account isn't registered as a guest yet. Please ask the owner to add you first.");
+        auth.signOut();
+      }
+    }).catch(function(err){
+      showError(err.message || 'Something went wrong. Please try again.');
+    });
+  }
+
+  // If a session already exists, skip straight to the right dashboard.
+  auth.onAuthStateChanged(function(user){
+    if (user){
+      spinnerEl.classList.add('show');
+      routeUser(user);
+    }
+  });
+
+  btnEl.addEventListener('click', function(){
+    errEl.classList.remove('show');
+    spinnerEl.classList.add('show');
+    pgSignInWithGoogle().then(function(result){
+      routeUser(result.user);
+    }).catch(function(err){
+      showError(err.message || 'Sign-in failed. Please try again.');
+    });
+  });
+</script>
+
+</body>
+</html>

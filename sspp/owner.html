@@ -1,0 +1,377 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Owner Dashboard — Shree Shyam Boys PG</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Mukta:wght@400;500;600;700&display=swap">
+<style>
+  :root{
+    color-scheme: dark;
+    --bg:#060d18; --bg-elev:#0c1b2e; --card:#0f2038; --line:rgba(232,192,102,.16);
+    --gold:#e8c066; --gold-soft:#f4dfa0; --gold-deep:#b8863b;
+    --ink:#f5f3ec; --muted:#9fabc2; --maroon:#b23a2e; --teal:#2e8b7f;
+    --body-text:#d9d6ca; --hero-glow:#12233c;
+    --btn-grad-1:#f4dfa0; --btn-grad-2:#b8863b; --btn-text:#20140a;
+  }
+  @media (prefers-color-scheme: light){
+    :root{
+      color-scheme: light;
+      --bg:#faf6ec; --bg-elev:#f1e6d2; --card:#ffffff; --line:rgba(168,120,48,.22);
+      --gold:#c9973f; --gold-soft:#96631c; --gold-deep:#7a4d17;
+      --ink:#241f18; --muted:#7c7362; --maroon:#a13a2a; --teal:#1c7566;
+      --body-text:#4a4234; --hero-glow:#f6e0ac;
+      --btn-grad-1:#f2d78e; --btn-grad-2:#b9832f; --btn-text:#241405;
+    }
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:'Mukta',sans-serif;line-height:1.4;
+       display:flex;flex-direction:column;overflow:hidden}
+  h1,h2,h3,.brand{font-family:'Baloo 2',sans-serif}
+  a{color:inherit;text-decoration:none}
+  button{font:inherit}
+  .wrap{max-width:1180px;width:100%;margin:0 auto;padding:0 32px}
+
+  /* nav */
+  nav{flex:none;background:var(--bg);border-bottom:1px solid var(--line)}
+  nav .wrap{display:flex;align-items:center;gap:28px;padding:10px 32px;height:56px}
+  .brand img{height:34px;width:auto;display:block}
+  .navlinks{display:flex;gap:26px;margin-left:8px;flex:1}
+  .navlinks a{font-size:14.5px;font-weight:500;color:var(--muted);padding:8px 0;border-bottom:2px solid transparent;cursor:pointer}
+  .navlinks a:hover,.navlinks a.active{color:var(--gold-soft);border-color:var(--gold)}
+  .navtools{display:flex;align-items:center;gap:14px;margin-left:43%;}
+  .icon-btn{width:36px;height:36px;border-radius:50%;border:1px solid var(--line);background:var(--bg-elev);display:flex;align-items:center;justify-content:center;cursor:pointer}
+  .icon-btn:hover{border-color:var(--gold)}
+  .avatar-sm{width:36px;height:36px;border-radius:50%;background:linear-gradient(160deg,var(--btn-grad-1),var(--btn-grad-2));color:var(--btn-text);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px}
+
+  /* profile hero */
+  .hero{flex:none;background:radial-gradient(120% 200% at 15% -40%, var(--hero-glow) 0%, var(--bg) 60%);border-bottom:1px solid var(--line);padding:20px 0 16px}
+  .hero-left{display:flex;align-items:center;gap:16px}
+  .hero-avatar{width:56px;height:56px;border-radius:50%;background:linear-gradient(160deg,var(--btn-grad-1),var(--btn-grad-2));color:var(--btn-text);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:22px;flex-shrink:0}
+  .hero h1{font-size:23px;margin:0 0 8px;font-weight:700}
+  .pills{display:flex;gap:8px;flex-wrap:wrap}
+  .pill{font-size:12.5px;font-weight:600;color:var(--gold-soft);background:rgba(232,192,102,.1);border:1px solid var(--line);padding:5px 12px;border-radius:7px}
+
+  /* quick actions */
+  .actions{flex:none;padding:14px 0}
+  .btn-row{display:inline-flex;gap:10px}
+  .action-btn{display:flex;flex-direction:column;align-items:center;gap:7px;background:var(--card);
+              border:1px solid var(--line);border-radius:14px;padding:12px 18px;cursor:pointer;color:var(--ink);
+              flex:0 0 auto;width:92px;border-width:1px}
+  .action-btn:hover{border-color:var(--gold)}
+  .action-icon{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;
+               font-family:'Baloo 2',sans-serif;font-weight:700;font-size:16px}
+  .action-btn .label{font-size:12.5px;font-weight:600;text-align:center}
+
+  /* main */
+  main{flex:1 1 auto;min-height:0;padding:22px 0 14px;overflow-y:auto}
+  .layout{display:grid;grid-template-columns:1fr;gap:22px;max-width:640px;margin:0 auto}
+
+  .panel{background:var(--card);border:1px solid var(--line);border-radius:16px;overflow:hidden}
+  .panel-head{padding:16px 20px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between}
+  .panel-head h2{margin:0;font-size:17px}
+  .panel-head span{font-size:12.5px;color:var(--muted)}
+  .panel-body{padding:20px}
+
+  .field{margin-bottom:18px}
+  .field:last-of-type{margin-bottom:0}
+  .field label{display:block;font-size:12.5px;font-weight:600;color:var(--gold-soft);margin-bottom:7px}
+  .field select,.field input{
+    width:100%;background:var(--bg-elev);border:1px solid var(--line);border-radius:10px;
+    color:var(--ink);font-family:'Mukta',sans-serif;font-size:14px;padding:11px 13px;outline:none
+  }
+  .field select{appearance:none;-webkit-appearance:none;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%239fabc2' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    background-repeat:no-repeat;background-position:right 13px center;padding-right:34px}
+  @media (prefers-color-scheme: light){
+    .field select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%238a7f6a' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E")}
+  }
+  .field select:focus,.field input:focus{border-color:var(--gold)}
+  .space-status{font-size:12.5px;font-weight:600;margin-top:8px;min-height:16px}
+  .hint{font-size:11.5px;color:var(--muted);margin-top:6px}
+
+  .submit-row{display:flex;justify-content:flex-end;margin-top:6px}
+  .btn{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(160deg,var(--btn-grad-1),var(--btn-grad-2));color:var(--btn-text);font-weight:700;font-size:13.5px;padding:11px 26px;border-radius:10px;border:none;cursor:pointer}
+  .btn:hover{filter:brightness(1.06)}
+  .btn:disabled{opacity:.5;cursor:not-allowed;filter:none}
+
+  .confirm{display:none;align-items:center;gap:10px;background:rgba(46,139,127,.12);border:1px solid rgba(46,139,127,.35);
+           color:var(--gold-soft);border-radius:10px;padding:12px 14px;font-size:13px;margin-top:14px}
+  .confirm.show{display:flex}
+
+  /* residents list */
+  .item{padding:14px 20px;border-bottom:1px solid var(--line);display:flex;flex-direction:column;gap:6px}
+  .item:last-child{border-bottom:none}
+  .item-top{display:flex;align-items:center;justify-content:space-between;gap:10px}
+  .item-title{font-weight:600;font-size:13.5px}
+  .item p{margin:0;font-size:13.5px;color:var(--body-text)}
+  .status{font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;white-space:nowrap}
+  .status.done{color:var(--teal);background:rgba(46,139,127,.14);border:1px solid rgba(46,139,127,.3)}
+
+  @media (max-width:900px){
+    html,body{height:auto}
+    body{overflow:visible}
+    .navlinks{display:none}
+    main{overflow:visible}
+  }
+  @media (max-width:560px){
+    .wrap{padding:0 18px}
+    .submit-row{justify-content:stretch}
+    .submit-row .btn{width:100%;justify-content:center}
+    .btn-row{width:100%}
+    .action-btn{flex:1 1 0;width:auto}
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="wrap">
+    <div class="brand"><img src="logo.png" alt="Shree Shyam Boys PG logo"></div>
+    <div class="navlinks">
+      <a class="active">Owner dashboard</a>
+      <a id="navAddGuest">Add guest</a>
+      <a id="navResidents">Residents</a>
+    </div>
+    <div class="navtools">
+      <button class="icon-btn" aria-label="Search">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--gold-soft)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+      </button>
+      <div class="avatar-sm" id="navAvatar">O</div>
+    </div>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="wrap">
+    <div class="hero-left">
+      <div class="hero-avatar" id="heroAvatar">O</div>
+      <div>
+        <h1 id="welcomeHeading">Welcome back, Owner</h1>
+        <div class="pills">
+          <span class="pill" id="pillGuestCount">0 guests</span>
+          <span class="pill" id="pillRoomCount">0 rooms</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="actions">
+  <div class="wrap">
+    <div class="btn-row">
+      <a class="action-btn" id="quickAddGuest">
+        <span class="action-icon" style="background:rgba(232,192,102,.14);color:var(--gold-soft)">+</span>
+        <span class="label">Add guest</span>
+      </a>
+      <a class="action-btn" id="quickResidents">
+        <span class="action-icon" style="background:rgba(46,139,127,.16)">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="var(--teal)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 00-3-3.87"></path><path d="M16 3.13a4 4 0 010 7.75"></path></svg>
+        </span>
+        <span class="label">Residents</span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<main>
+  <div class="wrap layout">
+    <div class="panel" id="addGuestPanel">
+      <div class="panel-head"><h2>Add guest</h2></div>
+      <div class="panel-body">
+        <form id="addGuestForm">
+          <div class="field">
+            <label for="floorSelect">Floor</label>
+            <select id="floorSelect" required>
+              <option value="" disabled selected>Loading floors…</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="roomSelect">Room</label>
+            <select id="roomSelect" required disabled>
+              <option value="" disabled selected>Choose a floor first</option>
+            </select>
+            <div class="space-status" id="spaceStatus"></div>
+          </div>
+          <div class="field">
+            <label for="guestName">Guest name</label>
+            <input id="guestName" type="text" placeholder="Full name" required>
+          </div>
+          <div class="field">
+            <label for="guestEmail">Guest Gmail</label>
+            <input id="guestEmail" type="email" placeholder="name@gmail.com" required>
+            <div class="hint">The guest signs in with this Google account.</div>
+          </div>
+          <div class="field">
+            <label for="guestRent">Monthly rent (₹)</label>
+            <input id="guestRent" type="number" min="0" placeholder="8500" required>
+          </div>
+          <div class="submit-row">
+            <button type="submit" class="btn" id="addGuestSubmit">Add guest</button>
+          </div>
+          <div class="confirm" id="confirmMsg">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--teal)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6L9 17l-5-5"></path></svg>
+            Guest added. They can now sign in with that Google account.
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div class="panel" id="residentsPanel">
+      <div class="panel-head"><h2>Residents</h2><span id="residentCountLabel">0 total</span></div>
+      <div class="panel-body" style="padding:0" id="guestsList">
+        <div class="item"><p>Loading residents…</p></div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<script src="firebase-init.js"></script>
+<script>
+  var floorsData = {};
+  var guestsData = {};
+
+  document.getElementById('navAddGuest').addEventListener('click', function(){ document.getElementById('addGuestPanel').scrollIntoView({behavior:'smooth'}); });
+  document.getElementById('navResidents').addEventListener('click', function(){ document.getElementById('residentsPanel').scrollIntoView({behavior:'smooth'}); });
+  document.getElementById('quickAddGuest').addEventListener('click', function(){ document.getElementById('addGuestPanel').scrollIntoView({behavior:'smooth'}); });
+  document.getElementById('quickResidents').addEventListener('click', function(){ document.getElementById('residentsPanel').scrollIntoView({behavior:'smooth'}); });
+
+  function ensureFloorsSeed(){
+    return db.ref('floors').once('value').then(function(snap){
+      if (snap.exists()) return;
+      // Default building layout — edit anytime from the Firebase console.
+      return db.ref('floors').set({
+        "Floor 1": { rooms: { "101": {capacity:3}, "102": {capacity:3}, "103": {capacity:2} } },
+        "Floor 2": { rooms: { "201": {capacity:3}, "202": {capacity:3}, "203": {capacity:2}, "204": {capacity:3} } },
+        "Floor 3": { rooms: { "301": {capacity:3}, "302": {capacity:3}, "303": {capacity:2} } }
+      });
+    });
+  }
+
+  function loadFloors(){
+    db.ref('floors').once('value').then(function(snap){
+      floorsData = snap.val() || {};
+      var sel = document.getElementById('floorSelect');
+      var floorNames = Object.keys(floorsData);
+      sel.innerHTML = '<option value="" disabled selected>Choose a floor</option>' +
+        floorNames.map(function(f){ return '<option value="'+f+'">'+f+'</option>'; }).join('');
+      document.getElementById('pillRoomCount').textContent =
+        floorNames.reduce(function(n,f){ return n + Object.keys((floorsData[f]||{}).rooms||{}).length; }, 0) + ' rooms';
+    });
+  }
+
+  function onFloorChange(){
+    var floor = document.getElementById('floorSelect').value;
+    var rooms = (floorsData[floor] && floorsData[floor].rooms) || {};
+    var sel = document.getElementById('roomSelect');
+    sel.disabled = false;
+    sel.innerHTML = '<option value="" disabled selected>Choose a room</option>' +
+      Object.keys(rooms).map(function(r){ return '<option value="'+r+'">Room '+r+'</option>'; }).join('');
+    document.getElementById('spaceStatus').textContent = '';
+    document.getElementById('addGuestSubmit').disabled = false;
+  }
+
+  function onRoomChange(){
+    var floor = document.getElementById('floorSelect').value;
+    var room = document.getElementById('roomSelect').value;
+    var roomInfo = ((floorsData[floor]||{}).rooms||{})[room];
+    var capacity = roomInfo ? Number(roomInfo.capacity) : 0;
+    var occupied = Object.keys(guestsData).filter(function(id){
+      var g = guestsData[id];
+      return g.floor === floor && g.room === room;
+    }).length;
+
+    var statusEl = document.getElementById('spaceStatus');
+    var submitBtn = document.getElementById('addGuestSubmit');
+    if (occupied >= capacity){
+      statusEl.textContent = 'Room full (' + occupied + '/' + capacity + ' beds taken)';
+      statusEl.style.color = 'var(--maroon)';
+      submitBtn.disabled = true;
+    } else {
+      statusEl.textContent = (capacity - occupied) + ' of ' + capacity + ' beds available';
+      statusEl.style.color = 'var(--teal)';
+      submitBtn.disabled = false;
+    }
+  }
+
+  function loadGuests(){
+    db.ref('guests').on('value', function(snap){
+      guestsData = snap.val() || {};
+      renderGuestsList();
+      document.getElementById('pillGuestCount').textContent = Object.keys(guestsData).length + ' guests';
+      document.getElementById('residentCountLabel').textContent = Object.keys(guestsData).length + ' total';
+      if (document.getElementById('roomSelect').value) onRoomChange();
+    });
+  }
+
+  function renderGuestsList(){
+    var list = document.getElementById('guestsList');
+    var ids = Object.keys(guestsData);
+    if (ids.length === 0){
+      list.innerHTML = '<div class="item"><p>No guests added yet.</p></div>';
+      return;
+    }
+    list.innerHTML = ids.map(function(id){
+      var g = guestsData[id];
+      return '<div class="item"><div class="item-top"><span class="item-title">'+ g.name +'</span>' +
+             '<span class="status done">'+ g.floor +' · Room '+ g.room +'</span></div>' +
+             '<p>'+ g.email +' · ₹'+ Number(g.rent||0).toLocaleString('en-IN') +'/mo</p></div>';
+    }).join('');
+  }
+
+  function onAddGuest(e){
+    e.preventDefault();
+    var floor = document.getElementById('floorSelect').value;
+    var room = document.getElementById('roomSelect').value;
+    var name = document.getElementById('guestName').value.trim();
+    var email = document.getElementById('guestEmail').value.trim().toLowerCase();
+    var rent = Number(document.getElementById('guestRent').value || 0);
+
+    if (!floor || !room || !name || !email){
+      alert('Please fill in every field.');
+      return;
+    }
+
+    db.ref('guests').push({
+      name: name,
+      email: email,
+      floor: floor,
+      room: room,
+      rent: rent,
+      acUnits: 0,
+      acRate: 100,
+      addedAt: Date.now()
+    }).then(function(){
+      document.getElementById('addGuestForm').reset();
+      document.getElementById('roomSelect').innerHTML = '<option value="" disabled selected>Choose a floor first</option>';
+      document.getElementById('roomSelect').disabled = true;
+      document.getElementById('spaceStatus').textContent = '';
+      var confirmMsg = document.getElementById('confirmMsg');
+      confirmMsg.classList.add('show');
+      setTimeout(function(){ confirmMsg.classList.remove('show'); }, 4000);
+    });
+  }
+
+  pgRequireAuth('owner', function(ctx){
+    var initial = (ctx.name || 'Owner').charAt(0).toUpperCase();
+    document.getElementById('navAvatar').textContent = initial;
+    document.getElementById('heroAvatar').textContent = initial;
+    document.getElementById('welcomeHeading').textContent = 'Welcome back, ' + ctx.name;
+    pgWireSignOut('navAvatar');
+
+    document.getElementById('floorSelect').addEventListener('change', onFloorChange);
+    document.getElementById('roomSelect').addEventListener('change', onRoomChange);
+    document.getElementById('addGuestForm').addEventListener('submit', onAddGuest);
+
+    ensureFloorsSeed().then(loadFloors);
+    loadGuests();
+  });
+</script>
+
+</body>
+</html>
