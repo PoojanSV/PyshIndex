@@ -1,6 +1,6 @@
 // firebase-init.js — shared Firebase setup for Shree Shyam Boys PG
 // Loaded via <script src="firebase-init.js"></script> AFTER the three
-// firebase-*-compat.js CDN scripts, on every page.
+// firebase-*-compat.js CDN scripts, on every page. 
 
 const firebaseConfig = {
   apiKey: "AIzaSyBykGMuY03LvlaOcRw7Zjh74Vx_5szl3ag",
