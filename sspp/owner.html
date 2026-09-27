@@ -1,0 +1,2235 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Owner Portal — Shree Shyam Boys PG</title>
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#060d18">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;600;700;800&family=Mukta:wght@400;500;600;700&display=swap">
+
+<style>
+  :root {
+    color-scheme: dark;
+    --bg: #060d18;
+    --bg-elev: #0c1b2e;
+    --card: #0f2038;
+    --card-hover: #132744;
+    --line: rgba(232, 192, 102, 0.16);
+    --line-focus: rgba(232, 192, 102, 0.45);
+    --gold: #e8c066;
+    --gold-soft: #f4dfa0;
+    --gold-deep: #b8863b;
+    --ink: #f5f3ec;
+    --muted: #9fabc2;
+    --maroon: #e05244;
+    --maroon-bg: rgba(224, 82, 68, 0.14);
+    --teal: #2e8b7f;
+    --teal-bg: rgba(46, 139, 127, 0.16);
+    --blue: #3b82f6;
+    --blue-bg: rgba(59, 130, 246, 0.15);
+    --amber: #f59e0b;
+    --amber-bg: rgba(245, 158, 11, 0.14);
+    --body-text: #d9d6ca;
+    --hero-glow: #12233c;
+    --btn-grad-1: #f4dfa0;
+    --btn-grad-2: #b8863b;
+    --btn-text: #20140a;
+  }
+
+  @media (prefers-color-scheme: light) {
+    :root {
+      color-scheme: light;
+      --bg: #faf6ec;
+      --bg-elev: #f1e6d2;
+      --card: #ffffff;
+      --card-hover: #fcf9f2;
+      --line: rgba(168, 120, 48, 0.22);
+      --line-focus: rgba(168, 120, 48, 0.55);
+      --gold: #c9973f;
+      --gold-soft: #96631c;
+      --gold-deep: #7a4d17;
+      --ink: #241f18;
+      --muted: #7c7362;
+      --maroon: #a13a2a;
+      --maroon-bg: rgba(161, 58, 42, 0.12);
+      --teal: #1c7566;
+      --teal-bg: rgba(28, 117, 102, 0.14);
+      --body-text: #4a4234;
+      --hero-glow: #f6e0ac;
+      --btn-grad-1: #f2d78e;
+      --btn-grad-2: #b9832f;
+      --btn-text: #241405;
+    }
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Mukta', sans-serif;
+    line-height: 1.45;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+  h1, h2, h3, h4, .brand-title { font-family: 'Baloo 2', sans-serif; }
+  a { color: inherit; text-decoration: none; }
+  button, input, select, textarea { font-family: inherit; }
+
+  .wrap {
+    max-width: 1240px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 0 28px;
+  }
+
+  /* Top Navigation */
+  nav {
+    background: var(--bg);
+    border-bottom: 1px solid var(--line);
+    position: sticky;
+    top: 0;
+    z-index: 50;
+  }
+  nav .wrap {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 64px;
+    padding: 0 28px;
+  }
+  .nav-left {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  .brand-logo {
+    height: 38px;
+    width: auto;
+    display: block;
+  }
+  .owner-badge {
+    font-family: 'Baloo 2', sans-serif;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+    background: rgba(232, 192, 102, 0.15);
+    color: var(--gold-soft);
+    border: 1px solid var(--line);
+    padding: 3px 10px;
+    border-radius: 6px;
+  }
+  .nav-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: linear-gradient(160deg, var(--btn-grad-1), var(--btn-grad-2));
+    color: var(--btn-text);
+    font-weight: 700;
+    font-size: 13.5px;
+    padding: 8px 18px;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    transition: filter 0.2s, transform 0.1s;
+  }
+  .btn:hover { filter: brightness(1.08); transform: translateY(-1px); }
+  .btn:active { transform: translateY(0); }
+
+  .btn-outline {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--bg-elev);
+    color: var(--ink);
+    border: 1px solid var(--line);
+    font-size: 13.5px;
+    font-weight: 600;
+    padding: 8px 16px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: border-color 0.2s, background 0.2s;
+  }
+  .btn-outline:hover {
+    border-color: var(--gold);
+    color: var(--gold-soft);
+  }
+
+  .btn-pen {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(232, 192, 102, 0.15);
+    color: var(--gold-soft);
+    border: 1px solid var(--gold);
+    font-weight: 700;
+    font-size: 13.5px;
+    padding: 8px 18px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn-pen:hover {
+    background: var(--gold);
+    color: var(--btn-text);
+  }
+
+  .user-chip {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 10px;
+    border-radius: 20px;
+    background: var(--bg-elev);
+    border: 1px solid var(--line);
+    font-size: 12px;
+  }
+  .user-chip img {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+  .btn-logout {
+    background: none;
+    border: none;
+    color: var(--maroon);
+    font-weight: 600;
+    font-size: 12.5px;
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 6px;
+    transition: background 0.15s;
+  }
+  .btn-logout:hover {
+    background: var(--maroon-bg);
+  }
+
+  /* Header & Stats Strip */
+  .hero-owner {
+    background: radial-gradient(120% 200% at 15% -40%, var(--hero-glow) 0%, var(--bg) 70%);
+    border-bottom: 1px solid var(--line);
+    padding: 24px 0 20px;
+  }
+  .hero-title-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-bottom: 20px;
+  }
+  .hero-title-row h1 {
+    font-size: 26px;
+    margin: 0;
+    font-weight: 700;
+  }
+  .hero-subtitle {
+    font-size: 14px;
+    color: var(--muted);
+    margin-top: 2px;
+  }
+
+  /* KPI cards */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 14px;
+  }
+  .stat-card {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 14px 18px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .stat-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+  .stat-val {
+    font-family: 'Baloo 2', sans-serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--gold-soft);
+    line-height: 1.1;
+  }
+  .stat-label {
+    font-size: 12px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: .04em;
+    margin-top: 3px;
+  }
+
+  /* Section Tabs */
+  .tabs-nav {
+    display: flex;
+    gap: 10px;
+    padding: 16px 0;
+    border-bottom: 1px solid var(--line);
+    overflow-x: auto;
+    background: var(--bg);
+  }
+  .tab-btn {
+    background: var(--card);
+    border: 1px solid var(--line);
+    color: var(--muted);
+    font-size: 14px;
+    font-weight: 600;
+    padding: 9px 18px;
+    border-radius: 10px;
+    cursor: pointer;
+    white-space: nowrap;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s;
+  }
+  .tab-btn:hover {
+    border-color: var(--gold);
+    color: var(--gold-soft);
+  }
+  .tab-btn.active {
+    background: rgba(232, 192, 102, 0.12);
+    border-color: var(--gold);
+    color: var(--gold-soft);
+  }
+  .tab-badge {
+    background: var(--line);
+    padding: 2px 7px;
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: 700;
+  }
+  .tab-btn.active .tab-badge {
+    background: var(--gold);
+    color: var(--btn-text);
+  }
+
+  /* Main Container */
+  main {
+    flex: 1;
+    padding: 24px 0 60px;
+  }
+
+  .view-panel {
+    display: none;
+    animation: fadeIn 0.25s ease-out;
+  }
+  .view-panel.active {
+    display: block;
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(4px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Section Header */
+  .sec-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 18px;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .sec-head h2 {
+    font-size: 20px;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .sec-sub {
+    font-size: 13.5px;
+    color: var(--muted);
+  }
+
+  /* Filter Toolbar */
+  .toolbar {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 12px 16px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  .toolbar-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .input-search {
+    background: var(--bg-elev);
+    border: 1px solid var(--line);
+    color: var(--ink);
+    padding: 8px 14px;
+    border-radius: 8px;
+    font-size: 13.5px;
+    min-width: 220px;
+    outline: none;
+  }
+  .input-search:focus {
+    border-color: var(--gold);
+  }
+  .select-filter {
+    background: var(--bg-elev);
+    border: 1px solid var(--line);
+    color: var(--ink);
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 13.5px;
+    outline: none;
+    cursor: pointer;
+  }
+  .select-filter:focus {
+    border-color: var(--gold);
+  }
+
+  /* Room Occupancy Grid */
+  .floor-group {
+    margin-bottom: 28px;
+  }
+  .floor-heading {
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--gold-soft);
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .floor-heading span {
+    font-size: 12.5px;
+    color: var(--muted);
+    font-weight: 500;
+  }
+
+  .rooms-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+    gap: 16px;
+  }
+  .room-card {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: border-color 0.2s, transform 0.15s;
+    position: relative;
+    overflow: hidden;
+  }
+  .room-card:hover {
+    border-color: var(--gold);
+    transform: translateY(-2px);
+  }
+  .room-card.is-empty {
+    border-left: 4px solid var(--teal);
+  }
+  .room-card.has-space {
+    border-left: 4px solid var(--amber);
+  }
+  .room-card.is-full {
+    border-left: 4px solid var(--maroon);
+    opacity: 0.95;
+  }
+
+  .room-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 12px;
+  }
+  .room-number {
+    font-family: 'Baloo 2', sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+    line-height: 1;
+  }
+  .room-type {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 3px;
+  }
+
+  .occ-pill {
+    font-size: 11.5px;
+    font-weight: 700;
+    padding: 4px 9px;
+    border-radius: 20px;
+    letter-spacing: .02em;
+    white-space: nowrap;
+  }
+  .occ-pill.vacant { background: var(--teal-bg); color: var(--teal); border: 1px solid rgba(46,139,127,0.3); }
+  .occ-pill.available { background: var(--amber-bg); color: var(--amber); border: 1px solid rgba(245,158,11,0.3); }
+  .occ-pill.full { background: var(--maroon-bg); color: var(--maroon); border: 1px solid rgba(224,82,68,0.3); }
+
+  .beds-visual {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 14px;
+  }
+  .bed-token {
+    flex: 1;
+    height: 8px;
+    border-radius: 4px;
+    background: rgba(255,255,255,0.08);
+  }
+  .bed-token.occupied {
+    background: linear-gradient(90deg, var(--gold-deep), var(--gold));
+  }
+  .bed-token.vacant {
+    background: rgba(46, 139, 127, 0.4);
+  }
+
+  .resident-list-mini {
+    margin-top: 8px;
+    padding-top: 10px;
+    border-top: 1px solid var(--line);
+    font-size: 13px;
+  }
+  .resident-entry {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 4px 0;
+  }
+  .resident-name {
+    font-weight: 600;
+  }
+  .resident-pay {
+    font-size: 11px;
+    padding: 2px 6px;
+    border-radius: 6px;
+  }
+  .pay-paid { color: var(--teal); background: var(--teal-bg); }
+  .pay-pending { color: var(--maroon); background: var(--maroon-bg); }
+
+  .room-footer {
+    margin-top: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 12.5px;
+    color: var(--muted);
+  }
+
+  /* Manage Guests Table */
+  .table-card {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    overflow: hidden;
+  }
+  .table-wrap {
+    overflow-x: auto;
+  }
+  table.guest-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13.5px;
+    text-align: left;
+  }
+  table.guest-table th {
+    background: var(--bg-elev);
+    color: var(--gold-soft);
+    font-weight: 700;
+    padding: 13px 16px;
+    border-bottom: 1px solid var(--line);
+    white-space: nowrap;
+  }
+  table.guest-table td {
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--line);
+    vertical-align: middle;
+  }
+  table.guest-table tr:last-child td {
+    border-bottom: none;
+  }
+  table.guest-table tr:hover td {
+    background: rgba(232, 192, 102, 0.03);
+  }
+
+  .guest-info-cell {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .guest-avatar {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: linear-gradient(160deg, var(--btn-grad-1), var(--btn-grad-2));
+    color: var(--btn-text);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 15px;
+    flex-shrink: 0;
+    overflow: hidden;
+  }
+  .guest-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .guest-name-text {
+    font-weight: 700;
+    color: var(--ink);
+    font-size: 14px;
+  }
+  .guest-contact {
+    font-size: 12px;
+    color: var(--muted);
+  }
+
+  .action-btns {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .icon-action {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    border: 1px solid var(--line);
+    background: var(--bg-elev);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: var(--ink);
+    transition: all 0.15s;
+  }
+  .icon-action:hover {
+    border-color: var(--gold);
+    color: var(--gold-soft);
+    transform: scale(1.05);
+  }
+  .icon-action.danger:hover {
+    border-color: var(--maroon);
+    color: var(--maroon);
+  }
+  .icon-action.remind {
+    color: var(--amber);
+  }
+  .icon-action.remind:hover {
+    border-color: var(--amber);
+    background: var(--amber-bg);
+  }
+
+  /* Add Guest Form */
+  .form-card {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 26px;
+    max-width: 740px;
+    margin: 0 auto;
+  }
+  .form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+  }
+  @media (max-width: 680px) {
+    .form-grid { grid-template-columns: 1fr; }
+  }
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .form-group.full {
+    grid-column: 1 / -1;
+  }
+  .form-group label {
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--gold-soft);
+  }
+  .form-input, .form-select, .form-textarea {
+    background: var(--bg-elev);
+    border: 1px solid var(--line);
+    color: var(--ink);
+    padding: 10px 14px;
+    border-radius: 10px;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .form-input:focus, .form-select:focus, .form-textarea:focus {
+    border-color: var(--gold);
+  }
+  .form-select {
+    cursor: pointer;
+  }
+
+  .capacity-alert {
+    padding: 12px 14px;
+    border-radius: 10px;
+    font-size: 13px;
+    margin-top: 4px;
+    display: none;
+    align-items: center;
+    gap: 8px;
+  }
+  .capacity-alert.show-avail {
+    display: flex;
+    background: var(--teal-bg);
+    border: 1px solid rgba(46,139,127,0.3);
+    color: var(--teal);
+  }
+  .capacity-alert.show-full {
+    display: flex;
+    background: var(--maroon-bg);
+    border: 1px solid rgba(224,82,68,0.35);
+    color: var(--maroon);
+  }
+
+  /* Announcements Hub */
+  .ann-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .ann-card {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 16px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    position: relative;
+  }
+  .ann-card:hover {
+    border-color: var(--line-focus);
+  }
+  .ann-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .ann-title {
+    font-family: 'Baloo 2', sans-serif;
+    font-size: 17px;
+    font-weight: 700;
+    margin: 0;
+  }
+  .target-badge {
+    font-size: 11px;
+    font-weight: 700;
+    padding: 3px 8px;
+    border-radius: 6px;
+    background: rgba(232, 192, 102, 0.12);
+    color: var(--gold-soft);
+    border: 1px solid var(--line);
+  }
+  .ann-body {
+    font-size: 14px;
+    color: var(--body-text);
+    margin: 0;
+  }
+  .ann-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 12px;
+    color: var(--muted);
+    padding-top: 6px;
+    border-top: 1px solid rgba(232, 192, 102, 0.08);
+  }
+
+  /* Complaints Desk */
+  .complaint-card {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 18px 20px;
+    margin-bottom: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .complaint-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .complaint-title-sec {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .complaint-guest {
+    font-weight: 700;
+    font-size: 15px;
+  }
+  .complaint-room {
+    font-size: 12px;
+    color: var(--gold-soft);
+    background: rgba(232, 192, 102, 0.12);
+    padding: 2px 8px;
+    border-radius: 6px;
+  }
+  .complaint-cat {
+    font-size: 12.5px;
+    color: var(--muted);
+  }
+  .complaint-msg {
+    font-size: 14px;
+    color: var(--body-text);
+    margin: 0;
+    line-height: 1.5;
+  }
+  .complaint-actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+    padding-top: 10px;
+    border-top: 1px solid var(--line);
+  }
+
+  /* Status badges */
+  .badge {
+    font-size: 11px;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 20px;
+    white-space: nowrap;
+    text-transform: capitalize;
+  }
+  .badge.open { color: var(--maroon); background: var(--maroon-bg); border: 1px solid rgba(224,82,68,0.3); }
+  .badge.in_progress { color: var(--amber); background: var(--amber-bg); border: 1px solid rgba(245,158,11,0.3); }
+  .badge.resolved { color: var(--teal); background: var(--teal-bg); border: 1px solid rgba(46,139,127,0.3); }
+  .badge.paid { color: var(--teal); background: var(--teal-bg); border: 1px solid rgba(46,139,127,0.3); }
+  .badge.pending { color: var(--maroon); background: var(--maroon-bg); border: 1px solid rgba(224,82,68,0.3); }
+
+  /* Modals */
+  .modal-backdrop {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(3, 7, 14, 0.75);
+    backdrop-filter: blur(4px);
+    z-index: 100;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+  }
+  .modal-backdrop.show {
+    display: flex;
+  }
+  .modal-box {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    width: 100%;
+    max-width: 520px;
+    overflow: hidden;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+    animation: modalPop 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  @keyframes modalPop {
+    from { transform: scale(0.95); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+  }
+  .modal-head {
+    padding: 16px 22px;
+    border-bottom: 1px solid var(--line);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .modal-head h3 {
+    margin: 0;
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .modal-close {
+    background: none;
+    border: none;
+    color: var(--muted);
+    font-size: 22px;
+    cursor: pointer;
+    line-height: 1;
+  }
+  .modal-close:hover { color: var(--ink); }
+  .modal-body {
+    padding: 22px;
+    max-height: 80vh;
+    overflow-y: auto;
+  }
+  .modal-footer {
+    padding: 14px 22px;
+    border-top: 1px solid var(--line);
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 10px;
+    background: var(--bg-elev);
+  }
+
+  /* Toast Notification */
+  .toast {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    background: var(--card);
+    border: 1px solid var(--gold);
+    color: var(--ink);
+    padding: 14px 20px;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    display: none;
+    align-items: center;
+    gap: 12px;
+    z-index: 200;
+    animation: toastSlide 0.3s ease;
+  }
+  .toast.show {
+    display: flex;
+  }
+  @keyframes toastSlide {
+    from { transform: translateY(20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+
+  @media (max-width: 768px) {
+    .wrap { padding: 0 16px; }
+    nav .wrap { padding: 0 16px; }
+    .hero-title-row { flex-direction: column; align-items: flex-start; }
+    .stats-grid { grid-template-columns: 1fr 1fr; }
+  }
+  @media (max-width: 480px) {
+    .stats-grid { grid-template-columns: 1fr; }
+    .nav-actions .btn-outline { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Navigation -->
+<nav>
+  <div class="wrap">
+    <div class="nav-left">
+      <a href="index.html"><img src="logo.png" alt="Shree Shyam Boys PG logo" class="brand-logo"></a>
+      <span class="owner-badge">Owner Portal</span>
+    </div>
+    <div class="nav-actions">
+      <!-- Owner profile info -->
+      <div class="user-chip">
+        <img id="navOwnerPic" src="user.png" alt="Owner photo">
+        <span id="navOwnerEmail">sspg.owner@gmail.com</span>
+        <button class="btn-logout" onclick="SSPG.signOutUser()" title="Sign out of Owner account">Sign Out</button>
+      </div>
+
+      <!-- Pen Icon for instant announcement -->
+      <button class="btn-pen" id="btnOpenAnnModal" title="Send targeted announcement">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+        Announcement
+      </button>
+      <button class="btn-outline" onclick="SSPG.testAndroidNotification()" title="Test Android Push Notification">
+        🔔 Test Push
+      </button>
+      <button class="btn" onclick="switchTab('addGuestTab')">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+        Add Guest
+      </button>
+      <a href="index.html" class="btn-outline">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+        Resident View
+      </a>
+    </div>
+  </div>
+</nav>
+
+<!-- Hero & Live KPI Metrics -->
+<section class="hero-owner">
+  <div class="wrap">
+    <div id="notifBannerMount"></div>
+    <div class="hero-title-row">
+      <div>
+        <h1>PG Management Dashboard</h1>
+        <div class="hero-subtitle">Real-time room availability, guest occupancy, rent payments &amp; in-app announcements</div>
+      </div>
+      <div>
+        <span id="liveStatusPill" style="font-size:12px;color:var(--teal);background:var(--teal-bg);padding:4px 10px;border-radius:20px;border:1px solid rgba(46,139,127,0.3)">
+          ● Connected to Firebase Live RTDB
+        </span>
+      </div>
+    </div>
+
+    <!-- Live Stats -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-icon" style="background:var(--teal-bg);color:var(--teal)">🛏️</div>
+        <div>
+          <div class="stat-val" id="statOccupancy">0 / 0</div>
+          <div class="stat-label">Beds Occupied</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon" style="background:var(--amber-bg);color:var(--amber)">🚪</div>
+        <div>
+          <div class="stat-val" id="statVacantBeds">0</div>
+          <div class="stat-label">Available Beds</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon" style="background:rgba(232,192,102,0.15);color:var(--gold-soft)">👥</div>
+        <div>
+          <div class="stat-val" id="statTotalResidents">0</div>
+          <div class="stat-label">Active Guests</div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-icon" style="background:var(--maroon-bg);color:var(--maroon)">₹</div>
+        <div>
+          <div class="stat-val" id="statPendingRent">₹0</div>
+          <div class="stat-label">Pending Payments</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Tabs Navigation -->
+<div class="wrap">
+  <div class="tabs-nav">
+    <button class="tab-btn active" onclick="switchTab('occupancyTab')">
+      <span>🏢 Room Occupancy</span>
+      <span class="tab-badge" id="badgeRoomCount">12</span>
+    </button>
+    <button class="tab-btn" onclick="switchTab('guestsTab')">
+      <span>👥 Manage Guests</span>
+      <span class="tab-badge" id="badgeGuestCount">1</span>
+    </button>
+    <button class="tab-btn" onclick="switchTab('addGuestTab')">
+      <span>➕ Add Guest</span>
+    </button>
+    <button class="tab-btn" onclick="switchTab('announcementsTab')">
+      <span>📢 Announcements</span>
+      <span class="tab-badge" id="badgeAnnCount">0</span>
+    </button>
+    <button class="tab-btn" onclick="switchTab('complaintsTab')">
+      <span>🛠️ Complaints Desk</span>
+      <span class="tab-badge" id="badgeCompCount">0</span>
+    </button>
+  </div>
+</div>
+
+<!-- Main Panels -->
+<main class="wrap">
+
+  <!-- 1. OCCUPANCY TAB -->
+  <section id="occupancyTab" class="view-panel active">
+    <div class="sec-head">
+      <div>
+        <h2>Room Occupancy Overview</h2>
+        <div class="sec-sub">Visual occupancy status by room and floor. Check which rooms have space or are empty.</div>
+      </div>
+      <div class="toolbar-group">
+        <select class="select-filter" id="filterFloorOcc" onchange="renderOccupancyView()">
+          <option value="all">All Floors</option>
+          <option value="1">Floor 1</option>
+          <option value="2">Floor 2</option>
+          <option value="3">Floor 3</option>
+        </select>
+        <select class="select-filter" id="filterStatusOcc" onchange="renderOccupancyView()">
+          <option value="all">All Status</option>
+          <option value="space">Has Space / Vacant</option>
+          <option value="empty">Completely Empty</option>
+          <option value="full">Full Rooms</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Rooms Container -->
+    <div id="occupancyFloorsContainer">
+      <div style="text-align:center;padding:40px;color:var(--muted)">Loading room occupancy data...</div>
+    </div>
+  </section>
+
+  <!-- 2. MANAGE GUESTS TAB -->
+  <section id="guestsTab" class="view-panel">
+    <div class="sec-head">
+      <div>
+        <h2>Resident &amp; Guest Management</h2>
+        <div class="sec-sub">Manage payments, edit details, move rooms, send in-app reminders, or checkout guests.</div>
+      </div>
+      <button class="btn" onclick="switchTab('addGuestTab')">➕ Add New Guest</button>
+    </div>
+
+    <!-- Toolbar Filters -->
+    <div class="toolbar">
+      <div class="toolbar-group">
+        <input type="text" class="input-search" id="searchGuest" placeholder="Search by name, room, or email..." oninput="renderGuestsTable()">
+        <select class="select-filter" id="filterGuestFloor" onchange="renderGuestsTable()">
+          <option value="all">All Floors</option>
+          <option value="1">Floor 1</option>
+          <option value="2">Floor 2</option>
+          <option value="3">Floor 3</option>
+        </select>
+        <select class="select-filter" id="filterGuestPayment" onchange="renderGuestsTable()">
+          <option value="all">All Payment Status</option>
+          <option value="pending">Pending Payment</option>
+          <option value="paid">Payment Done</option>
+        </select>
+      </div>
+      <div>
+        <span id="guestCountNote" style="font-size:13px;color:var(--muted)">Showing 0 guests</span>
+      </div>
+    </div>
+
+    <!-- Guests Table -->
+    <div class="table-card">
+      <div class="table-wrap">
+        <table class="guest-table">
+          <thead>
+            <tr>
+              <th>Guest</th>
+              <th>Room &amp; Floor</th>
+              <th>Rent / Month</th>
+              <th>AC &amp; Total Due</th>
+              <th>Payment Status</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="guestsTableBody">
+            <tr><td colspan="6" style="text-align:center;padding:30px;color:var(--muted)">Loading guests...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. ADD GUEST TAB -->
+  <section id="addGuestTab" class="view-panel">
+    <div class="sec-head">
+      <div>
+        <h2>Add New Guest</h2>
+        <div class="sec-sub">Register guest with their Google Gmail. They can immediately log in with Google to view their dashboard.</div>
+      </div>
+    </div>
+
+    <div class="form-card">
+      <form id="addGuestForm" onsubmit="handleFormAddGuest(event)">
+        <div class="form-grid">
+          <!-- Floor selection -->
+          <div class="form-group">
+            <label for="newGuestFloor">Select Floor *</label>
+            <select class="form-select" id="newGuestFloor" required onchange="onFloorChangeForAddGuest()">
+              <option value="" disabled selected>-- Choose Floor --</option>
+              <option value="1">Floor 1</option>
+              <option value="2">Floor 2</option>
+              <option value="3">Floor 3</option>
+            </select>
+          </div>
+
+          <!-- Room selection -->
+          <div class="form-group">
+            <label for="newGuestRoom">Select Room *</label>
+            <select class="form-select" id="newGuestRoom" required onchange="onRoomChangeForAddGuest()">
+              <option value="" disabled selected>-- Select Floor First --</option>
+            </select>
+          </div>
+
+          <!-- Room Capacity Banner -->
+          <div class="form-group full">
+            <div id="capacityBanner" class="capacity-alert"></div>
+          </div>
+
+          <!-- Full Name -->
+          <div class="form-group">
+            <label for="newGuestName">Full Name *</label>
+            <input type="text" class="form-input" id="newGuestName" placeholder="e.g. Rahul Sharma" required>
+          </div>
+
+          <!-- Email (Gmail for Google Auth) -->
+          <div class="form-group">
+            <label for="newGuestEmail">Guest Google Gmail *</label>
+            <input type="email" class="form-input" id="newGuestEmail" placeholder="e.g. rahul@gmail.com" required>
+          </div>
+
+          <!-- Phone Number -->
+          <div class="form-group">
+            <label for="newGuestPhone">Phone Number *</label>
+            <input type="tel" class="form-input" id="newGuestPhone" placeholder="e.g. +91 98765 43210" required>
+          </div>
+
+          <!-- Room Type -->
+          <div class="form-group">
+            <label for="newGuestRoomType">Room Type</label>
+            <input type="text" class="form-input" id="newGuestRoomType" readonly placeholder="Auto-populated from room">
+          </div>
+
+          <!-- Monthly Rent -->
+          <div class="form-group">
+            <label for="newGuestRent">Monthly Rent (₹) *</label>
+            <input type="number" class="form-input" id="newGuestRent" value="8500" required>
+          </div>
+
+          <!-- Check-in Date -->
+          <div class="form-group">
+            <label for="newGuestCheckIn">Check-In Date *</label>
+            <input type="date" class="form-input" id="newGuestCheckIn" required>
+          </div>
+
+          <!-- AC Unit Initial Reading -->
+          <div class="form-group">
+            <label for="newGuestAcUnits">AC Initial Units Used</label>
+            <input type="number" class="form-input" id="newGuestAcUnits" value="0">
+          </div>
+
+          <!-- AC Rate per unit -->
+          <div class="form-group">
+            <label for="newGuestAcRate">AC Rate / Unit (₹)</label>
+            <input type="number" class="form-input" id="newGuestAcRate" value="100">
+          </div>
+
+          <!-- Submit Row -->
+          <div class="form-group full" style="margin-top: 10px; display: flex; justify-content: flex-end;">
+            <button type="submit" class="btn" id="btnSubmitAddGuest" style="padding: 12px 28px;">
+              Save &amp; Assign Room
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </section>
+
+  <!-- 4. ANNOUNCEMENTS TAB -->
+  <section id="announcementsTab" class="view-panel">
+    <div class="sec-head">
+      <div>
+        <h2>Announcements Hub</h2>
+        <div class="sec-sub">Target classic in-app notifications to Whole PG, specific floors, or specific rooms.</div>
+      </div>
+      <button class="btn-pen" onclick="openAnnouncementModal()">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+        Compose Announcement
+      </button>
+    </div>
+
+    <!-- Android Chrome Push Notifications Status -->
+    <div style="background:var(--card);border:1px solid rgba(46,139,127,0.35);border-radius:14px;padding:14px 18px;margin-bottom:20px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;">
+        <div style="display:flex;align-items:center;gap:10px;">
+          <span style="font-size:20px;">🔔</span>
+          <div>
+            <div style="font-weight:700;font-size:13.5px;color:var(--gold-soft);">Android Chrome Push Notifications Active</div>
+            <div style="font-size:12px;color:var(--muted);">All announcements, rent alerts &amp; complaints post directly to Android Notification Center with sound and vibration. Tap "Add to Home screen" in Chrome on Android for background delivery.</div>
+          </div>
+        </div>
+        <button type="button" class="btn-outline" style="font-size:12px;padding:5px 12px;" onclick="SSPG.testAndroidNotification()">🔔 Test Push Alert</button>
+      </div>
+    </div>
+
+    <div class="ann-list" id="announcementsList">
+      <div style="text-align:center;padding:30px;color:var(--muted)">Loading announcements...</div>
+    </div>
+  </section>
+
+  <!-- 5. COMPLAINTS DESK TAB -->
+  <section id="complaintsTab" class="view-panel">
+    <div class="sec-head">
+      <div>
+        <h2>Complaints Desk</h2>
+        <div class="sec-sub">Live complaints raised by residents. Review, change status, and send resolution notes.</div>
+      </div>
+      <div class="toolbar-group">
+        <select class="select-filter" id="filterComplaintStatus" onchange="renderComplaintsView()">
+          <option value="all">All Complaints</option>
+          <option value="open">Open</option>
+          <option value="in_progress">In Progress</option>
+          <option value="resolved">Resolved</option>
+        </select>
+      </div>
+    </div>
+
+    <div id="complaintsContainer">
+      <div style="text-align:center;padding:30px;color:var(--muted)">Loading complaints...</div>
+    </div>
+  </section>
+
+</main>
+
+<!-- MODALS -->
+
+<!-- Modal: Compose Announcement (Pen Icon) -->
+<div class="modal-backdrop" id="modalAnnouncement">
+  <div class="modal-box">
+    <div class="modal-head">
+      <h3>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--gold-soft)" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+        Publish In-App Announcement
+      </h3>
+      <button class="modal-close" onclick="closeModal('modalAnnouncement')">&times;</button>
+    </div>
+    <form id="announcementForm" onsubmit="handleSendAnnouncement(event)">
+      <div class="modal-body">
+        <div class="form-group" style="margin-bottom:14px;">
+          <label>Target Audience *</label>
+          <select class="form-select" id="annTargetType" onchange="onAnnTargetChange()" required>
+            <option value="all">🏢 Whole PG (All Residents)</option>
+            <option value="floor">🪜 Specific Floor</option>
+            <option value="room">🚪 Specific Room</option>
+          </select>
+        </div>
+
+        <div class="form-group" id="annTargetFloorGroup" style="display:none;margin-bottom:14px;">
+          <label>Select Target Floor *</label>
+          <select class="form-select" id="annTargetFloor">
+            <option value="1">Floor 1</option>
+            <option value="2">Floor 2</option>
+            <option value="3">Floor 3</option>
+          </select>
+        </div>
+
+        <div class="form-group" id="annTargetRoomGroup" style="display:none;margin-bottom:14px;">
+          <label>Select Target Room *</label>
+          <select class="form-select" id="annTargetRoom"></select>
+        </div>
+
+        <div class="form-group" style="margin-bottom:14px;">
+          <label>Category *</label>
+          <select class="form-select" id="annCategory">
+            <option value="general">General Notice</option>
+            <option value="urgent">Rent &amp; Urgent Alert</option>
+            <option value="maintenance">Maintenance &amp; Repairs</option>
+            <option value="mess">Mess &amp; Food Update</option>
+          </select>
+        </div>
+
+        <div class="form-group" style="margin-bottom:14px;">
+          <label>Title / Subject *</label>
+          <input type="text" class="form-input" id="annTitle" placeholder="e.g. Tank cleaning tomorrow" required>
+        </div>
+
+        <div class="form-group">
+          <label>Message *</label>
+          <textarea class="form-textarea" id="annMessage" rows="4" placeholder="Type your announcement details here..." required></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn-outline" onclick="closeModal('modalAnnouncement')">Cancel</button>
+        <button type="submit" class="btn">Publish In-App Alert</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Modal: Edit Payment -->
+<div class="modal-backdrop" id="modalPayment">
+  <div class="modal-box">
+    <div class="modal-head">
+      <h3>💳 Payment Details &amp; Edit</h3>
+      <button class="modal-close" onclick="closeModal('modalPayment')">&times;</button>
+    </div>
+    <form id="editPaymentForm" onsubmit="handleSavePayment(event)">
+      <input type="hidden" id="payGuestId">
+      <div class="modal-body">
+        <div id="payGuestSummary" style="background:var(--bg-elev);padding:12px;border-radius:10px;margin-bottom:14px;font-size:13.5px;"></div>
+
+        <div class="form-group" style="margin-bottom:14px;">
+          <label>Payment Status *</label>
+          <select class="form-select" id="payStatus">
+            <option value="pending">Pending</option>
+            <option value="paid">Paid</option>
+          </select>
+        </div>
+
+        <div class="form-group" style="margin-bottom:14px;">
+          <label>Monthly Rent Amount (₹)</label>
+          <input type="number" class="form-input" id="payRent" required>
+        </div>
+
+        <div class="form-grid" style="margin-bottom:14px;">
+          <div class="form-group">
+            <label>AC Units (Units)</label>
+            <input type="number" class="form-input" id="payAcUnits" value="0">
+          </div>
+          <div class="form-group">
+            <label>Rate / Unit (₹)</label>
+            <input type="number" class="form-input" id="payAcRate" value="100">
+          </div>
+        </div>
+
+        <div class="form-grid" style="margin-bottom:14px;">
+          <div class="form-group">
+            <label>Other Expenses (₹)</label>
+            <input type="number" class="form-input" id="payOther" value="0">
+          </div>
+          <div class="form-group">
+            <label>Overdue Fee (₹)</label>
+            <input type="number" class="form-input" id="payOverdue" value="0">
+          </div>
+        </div>
+
+        <div style="background:rgba(232,192,102,0.1);border:1px solid var(--line);border-radius:10px;padding:12px 16px;display:flex;justify-content:space-between;align-items:center;">
+          <span style="font-weight:600;font-size:13px;color:var(--muted)">Net Calculated Total:</span>
+          <span id="payNetTotalDisplay" style="font-family:'Baloo 2';font-size:18px;font-weight:700;color:var(--gold-soft)">₹0</span>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn-outline" onclick="closeModal('modalPayment')">Cancel</button>
+        <button type="submit" class="btn">Save Payment Info</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Modal: Move Room -->
+<div class="modal-backdrop" id="modalMoveRoom">
+  <div class="modal-box">
+    <div class="modal-head">
+      <h3>🔄 Transfer Resident to Another Room</h3>
+      <button class="modal-close" onclick="closeModal('modalMoveRoom')">&times;</button>
+    </div>
+    <form id="moveRoomForm" onsubmit="handleConfirmMoveRoom(event)">
+      <input type="hidden" id="moveGuestId">
+      <div class="modal-body">
+        <div id="moveGuestSummary" style="background:var(--bg-elev);padding:12px;border-radius:10px;margin-bottom:16px;font-size:13.5px;"></div>
+
+        <div class="form-group" style="margin-bottom:14px;">
+          <label>Target Floor *</label>
+          <select class="form-select" id="moveTargetFloor" onchange="onMoveFloorChange()" required>
+            <option value="1">Floor 1</option>
+            <option value="2">Floor 2</option>
+            <option value="3">Floor 3</option>
+          </select>
+        </div>
+
+        <div class="form-group" style="margin-bottom:14px;">
+          <label>Target Room *</label>
+          <select class="form-select" id="moveTargetRoom" onchange="onMoveRoomChange()" required></select>
+        </div>
+
+        <div id="moveCapacityAlert" class="capacity-alert"></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn-outline" onclick="closeModal('modalMoveRoom')">Cancel</button>
+        <button type="submit" class="btn" id="btnConfirmMove">Confirm Move</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Modal: Delete / Checkout Resident -->
+<div class="modal-backdrop" id="modalDeleteGuest">
+  <div class="modal-box">
+    <div class="modal-head">
+      <h3 style="color:var(--maroon)">⚠️ Confirm Guest Checkout / Deletion</h3>
+      <button class="modal-close" onclick="closeModal('modalDeleteGuest')">&times;</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="deleteGuestId">
+      <p id="deleteGuestText" style="font-size:14.5px;line-height:1.6;margin:0 0 14px;color:var(--body-text)">
+        Are you sure you want to checkout and remove this resident?
+      </p>
+      <div style="background:var(--maroon-bg);border:1px solid rgba(224,82,68,0.3);color:var(--maroon);padding:12px;border-radius:10px;font-size:12.5px;">
+        This will remove the guest record from Firebase and instantly free up their bed in the room.
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn-outline" onclick="closeModal('modalDeleteGuest')">Cancel</button>
+      <button type="button" class="btn" style="background:var(--maroon);color:#fff;" onclick="handleExecuteDeleteGuest()">
+        Delete / Checkout
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast for Instant Feedback -->
+<div class="toast" id="ownerToast">
+  <span id="toastIcon">✓</span>
+  <span id="toastMsg">Action completed successfully</span>
+</div>
+
+<!-- Firebase SDKs & Client Layer -->
+<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-database-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-messaging-compat.js"></script>
+<script src="firebase-db.js"></script>
+
+<script>
+  // Enforce Owner Auth Guard
+  SSPG.requireAuth('owner');
+
+  // Initialize FCM & Android Push Notifications for Owner
+  window.addEventListener('DOMContentLoaded', () => {
+    SSPG.renderNotificationPromptBanner('notifBannerMount');
+    SSPG.initFCM('owner').then(() => {
+      console.log('[Owner] Android Push registered.');
+    });
+  });
+
+  // Global State
+  let globalRooms = {};
+  let globalGuests = [];
+  let globalAnnouncements = [];
+  let globalComplaints = [];
+
+  function switchTab(tabId) {
+    document.querySelectorAll('.view-panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    
+    const panel = document.getElementById(tabId);
+    if (panel) panel.classList.add('active');
+
+    const tabsMap = {
+      occupancyTab: 0,
+      guestsTab: 1,
+      addGuestTab: 2,
+      announcementsTab: 3,
+      complaintsTab: 4
+    };
+    const idx = tabsMap[tabId];
+    const buttons = document.querySelectorAll('.tab-btn');
+    if (buttons[idx]) buttons[idx].classList.add('active');
+
+    if (tabId === 'addGuestTab') {
+      document.getElementById('newGuestCheckIn').value = new Date().toISOString().split('T')[0];
+    }
+  }
+
+  function showToast(message, isError = false) {
+    const toast = document.getElementById('ownerToast');
+    const msg = document.getElementById('toastMsg');
+    const icon = document.getElementById('toastIcon');
+    msg.textContent = message;
+    icon.textContent = isError ? '⚠️' : '✓';
+    toast.style.borderColor = isError ? 'var(--maroon)' : 'var(--gold)';
+    toast.classList.add('show');
+    setTimeout(() => { toast.classList.remove('show'); }, 3500);
+  }
+
+  function openModal(id) { document.getElementById(id).classList.add('show'); }
+  function closeModal(id) { document.getElementById(id).classList.remove('show'); }
+
+  window.addEventListener('DOMContentLoaded', () => {
+    // Show owner photo if available
+    SSPG.onAuthStateChanged(user => {
+      if (user) {
+        document.getElementById('navOwnerEmail').textContent = user.email || 'sspg.owner@gmail.com';
+        if (user.photoURL) {
+          document.getElementById('navOwnerPic').src = user.photoURL;
+        }
+      }
+    });
+
+    const checkInInput = document.getElementById('newGuestCheckIn');
+    if (checkInInput) checkInInput.value = new Date().toISOString().split('T')[0];
+
+    document.getElementById('btnOpenAnnModal').addEventListener('click', openAnnouncementModal);
+
+    SSPG.listenToAllRooms((rooms) => {
+      globalRooms = rooms;
+      updateUI();
+    });
+
+    SSPG.listenToAllGuests((guests) => {
+      globalGuests = guests;
+      updateUI();
+    });
+
+    SSPG.listenToAnnouncements((anns) => {
+      globalAnnouncements = anns;
+      renderAnnouncementsList();
+      document.getElementById('badgeAnnCount').textContent = anns.length;
+    });
+
+    SSPG.listenToComplaints((comps) => {
+      globalComplaints = comps;
+      renderComplaintsView();
+      document.getElementById('badgeCompCount').textContent = comps.filter(c => c.status !== 'resolved').length;
+    });
+  });
+
+  function updateUI() {
+    renderKPIs();
+    renderOccupancyView();
+    renderGuestsTable();
+  }
+
+  function renderKPIs() {
+    const occupancy = SSPG.computeOccupancy(globalRooms, globalGuests);
+    let totalBeds = 0;
+    let occupiedBeds = 0;
+    let vacantBeds = 0;
+    let pendingRent = 0;
+
+    Object.values(occupancy).forEach(room => {
+      totalBeds += room.capacity;
+      occupiedBeds += room.occupiedCount;
+      vacantBeds += room.availableBeds;
+    });
+
+    globalGuests.forEach(g => {
+      if (g.paymentStatus === 'pending') {
+        pendingRent += Number(g.totalDue || g.rent || 0);
+      }
+    });
+
+    document.getElementById('statOccupancy').textContent = `${occupiedBeds} / ${totalBeds}`;
+    document.getElementById('statVacantBeds').textContent = `${vacantBeds}`;
+    document.getElementById('statTotalResidents').textContent = `${globalGuests.length}`;
+    document.getElementById('statPendingRent').textContent = `₹${pendingRent.toLocaleString('en-IN')}`;
+    
+    document.getElementById('badgeRoomCount').textContent = Object.keys(globalRooms).length;
+    document.getElementById('badgeGuestCount').textContent = globalGuests.length;
+  }
+
+  function renderOccupancyView() {
+    const container = document.getElementById('occupancyFloorsContainer');
+    const floorFilter = document.getElementById('filterFloorOcc').value;
+    const statusFilter = document.getElementById('filterStatusOcc').value;
+
+    const occupancy = SSPG.computeOccupancy(globalRooms, globalGuests);
+
+    const floors = { "1": [], "2": [], "3": [] };
+    Object.keys(occupancy).sort().forEach(rNum => {
+      const room = occupancy[rNum];
+      if (floors[room.floor]) floors[room.floor].push(room);
+    });
+
+    let html = '';
+
+    Object.keys(floors).forEach(floorNum => {
+      if (floorFilter !== 'all' && floorFilter !== floorNum) return;
+
+      let roomList = floors[floorNum];
+
+      if (statusFilter === 'space') {
+        roomList = roomList.filter(r => r.availableBeds > 0);
+      } else if (statusFilter === 'empty') {
+        roomList = roomList.filter(r => r.isEmpty);
+      } else if (statusFilter === 'full') {
+        roomList = roomList.filter(r => r.isFull);
+      }
+
+      if (roomList.length === 0) return;
+
+      html += `
+        <div class="floor-group">
+          <div class="floor-heading">
+            <span>Floor ${floorNum}</span>
+            <span>· ${roomList.length} rooms listed</span>
+          </div>
+          <div class="rooms-grid">
+      `;
+
+      roomList.forEach(room => {
+        let occClass = 'has-space';
+        let badgeHtml = `<span class="occ-pill available">${room.availableBeds} Bed${room.availableBeds > 1 ? 's' : ''} Free</span>`;
+
+        if (room.isEmpty) {
+          occClass = 'is-empty';
+          badgeHtml = `<span class="occ-pill vacant">Vacant (All ${room.capacity} Free)</span>`;
+        } else if (room.isFull) {
+          occClass = 'is-full';
+          badgeHtml = `<span class="occ-pill full">Full (0 Free)</span>`;
+        }
+
+        let bedTokensHtml = '';
+        for (let i = 0; i < room.capacity; i++) {
+          const isOccupied = i < room.occupiedCount;
+          bedTokensHtml += `<div class="bed-token ${isOccupied ? 'occupied' : 'vacant'}" title="Bed ${i+1}: ${isOccupied ? 'Occupied' : 'Available'}"></div>`;
+        }
+
+        let residentHtml = '';
+        if (room.residents.length > 0) {
+          residentHtml = `<div class="resident-list-mini">`;
+          room.residents.forEach(res => {
+            const isPaid = res.paymentStatus === 'paid';
+            residentHtml += `
+              <div class="resident-entry">
+                <span class="resident-name">👤 ${res.name}</span>
+                <span class="resident-pay ${isPaid ? 'pay-paid' : 'pay-pending'}">${isPaid ? 'Paid' : 'Due: ₹' + (res.totalDue||res.rent)}</span>
+              </div>
+            `;
+          });
+          residentHtml += `</div>`;
+        } else {
+          residentHtml = `<div class="resident-list-mini" style="color:var(--muted);font-style:italic;">No residents yet. Room ready to assign.</div>`;
+        }
+
+        html += `
+          <div class="room-card ${occClass}">
+            <div>
+              <div class="room-top">
+                <div>
+                  <div class="room-number">Room ${room.roomNumber}</div>
+                  <div class="room-type">${room.type}</div>
+                </div>
+                ${badgeHtml}
+              </div>
+              <div class="beds-visual">${bedTokensHtml}</div>
+              ${residentHtml}
+            </div>
+            <div class="room-footer">
+              <span>Rent: ₹${room.rent.toLocaleString('en-IN')}/mo</span>
+              <span>Floor ${room.floor}</span>
+            </div>
+          </div>
+        `;
+      });
+
+      html += `</div></div>`;
+    });
+
+    if (!html) {
+      html = `<div style="text-align:center;padding:40px;color:var(--muted)">No rooms match the selected filter.</div>`;
+    }
+
+    container.innerHTML = html;
+  }
+
+  function renderGuestsTable() {
+    const tbody = document.getElementById('guestsTableBody');
+    const searchVal = document.getElementById('searchGuest').value.toLowerCase().trim();
+    const floorVal = document.getElementById('filterGuestFloor').value;
+    const paymentVal = document.getElementById('filterGuestPayment').value;
+
+    let filtered = globalGuests.filter(g => {
+      if (searchVal) {
+        const matchName = (g.name || '').toLowerCase().includes(searchVal);
+        const matchEmail = (g.email || '').toLowerCase().includes(searchVal);
+        const matchRoom = (g.room || '').toLowerCase().includes(searchVal);
+        if (!matchName && !matchEmail && !matchRoom) return false;
+      }
+      if (floorVal !== 'all' && g.floor !== floorVal) return false;
+      if (paymentVal !== 'all' && g.paymentStatus !== paymentVal) return false;
+      return true;
+    });
+
+    document.getElementById('guestCountNote').textContent = `Showing ${filtered.length} of ${globalGuests.length} guests`;
+
+    if (filtered.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:36px;color:var(--muted)">No guests found. Click 'Add Guest' to register one.</td></tr>`;
+      return;
+    }
+
+    let rows = '';
+    filtered.forEach(g => {
+      const isPaid = g.paymentStatus === 'paid';
+      const initial = (g.name || 'G').charAt(0).toUpperCase();
+      const avatarHtml = g.photoURL 
+        ? `<div class="guest-avatar"><img src="${g.photoURL}" alt="${g.name}"></div>` 
+        : `<div class="guest-avatar">${initial}</div>`;
+
+      rows += `
+        <tr>
+          <td>
+            <div class="guest-info-cell">
+              ${avatarHtml}
+              <div>
+                <div class="guest-name-text">${g.name}</div>
+                <div class="guest-contact">${g.email} · ${g.phone}</div>
+              </div>
+            </div>
+          </td>
+          <td>
+            <span style="font-weight:700;">Room ${g.room}</span>
+            <div style="font-size:12px;color:var(--muted);">Floor ${g.floor} · ${g.roomType || 'Sharing'}</div>
+          </td>
+          <td>
+            <div style="font-weight:700;color:var(--gold-soft);">₹${(g.rent || 8500).toLocaleString('en-IN')}</div>
+            <div style="font-size:11.5px;color:var(--muted);">Due: ${g.dueDate || '5th of month'}</div>
+          </td>
+          <td>
+            <div>AC: ₹${(g.acAmount || 0).toLocaleString('en-IN')} <span style="font-size:11px;color:var(--muted);">(${g.acUnits || 0}u)</span></div>
+            <div style="font-weight:700;font-size:14px;color:var(--ink);margin-top:2px;">Net: ₹${(g.totalDue || g.rent || 0).toLocaleString('en-IN')}</div>
+          </td>
+          <td>
+            <span class="badge ${isPaid ? 'paid' : 'pending'}">${isPaid ? '✓ Paid' : 'Pending'}</span>
+            ${g.lastReminderSent ? `<div style="font-size:11px;color:var(--amber);margin-top:4px;">In-app reminder sent</div>` : ''}
+          </td>
+          <td>
+            <div class="action-btns">
+              <button class="icon-action" title="Edit payment info" onclick="openPaymentModal('${g.id}')">💳</button>
+              <button class="icon-action remind" title="Send Android Push Rent Reminder" onclick="handleSendReminder('${g.id}')">🔔</button>
+              <button class="icon-action" title="Move to another room" onclick="openMoveRoomModal('${g.id}')">🔄</button>
+              <button class="icon-action danger" title="Checkout / Delete Guest" onclick="openDeleteGuestModal('${g.id}')">🗑️</button>
+            </div>
+          </td>
+        </tr>
+      `;
+    });
+
+    tbody.innerHTML = rows;
+  }
+
+  function onFloorChangeForAddGuest() {
+    const floor = document.getElementById('newGuestFloor').value;
+    const roomSelect = document.getElementById('newGuestRoom');
+    const banner = document.getElementById('capacityBanner');
+    banner.className = 'capacity-alert';
+    banner.style.display = 'none';
+
+    roomSelect.innerHTML = `<option value="" disabled selected>-- Choose Room --</option>`;
+    const occupancy = SSPG.computeOccupancy(globalRooms, globalGuests);
+
+    Object.keys(occupancy).sort().forEach(rNum => {
+      const room = occupancy[rNum];
+      if (room.floor === floor) {
+        const option = document.createElement('option');
+        option.value = rNum;
+        if (room.isFull) {
+          option.textContent = `Room ${rNum} (${room.capacity}/${room.capacity} FULL)`;
+          option.style.color = '#e05244';
+        } else {
+          option.textContent = `Room ${rNum} (${room.availableBeds} bed${room.availableBeds > 1 ? 's' : ''} available) - ${room.type}`;
+        }
+        roomSelect.appendChild(option);
+      }
+    });
+  }
+
+  function onRoomChangeForAddGuest() {
+    const rNum = document.getElementById('newGuestRoom').value;
+    const banner = document.getElementById('capacityBanner');
+    const submitBtn = document.getElementById('btnSubmitAddGuest');
+    const roomTypeInput = document.getElementById('newGuestRoomType');
+    const rentInput = document.getElementById('newGuestRent');
+
+    const occupancy = SSPG.computeOccupancy(globalRooms, globalGuests);
+    const room = occupancy[rNum];
+    if (!room) return;
+
+    roomTypeInput.value = room.type;
+    rentInput.value = room.rent;
+
+    if (room.isFull) {
+      banner.className = 'capacity-alert show-full';
+      banner.innerHTML = `⚠️ <strong>Room ${rNum} is FULL!</strong> (${room.capacity}/${room.capacity} beds occupied). Please pick another room.`;
+      submitBtn.disabled = true;
+      submitBtn.style.opacity = '0.5';
+    } else {
+      banner.className = 'capacity-alert show-avail';
+      banner.innerHTML = `✓ <strong>Room ${rNum} has ${room.availableBeds} bed space available</strong> (Capacity: ${room.capacity}).`;
+      submitBtn.disabled = false;
+      submitBtn.style.opacity = '1';
+    }
+  }
+
+  async function handleFormAddGuest(e) {
+    e.preventDefault();
+    const floor = document.getElementById('newGuestFloor').value;
+    const room = document.getElementById('newGuestRoom').value;
+    const name = document.getElementById('newGuestName').value;
+    const email = document.getElementById('newGuestEmail').value;
+    const phone = document.getElementById('newGuestPhone').value;
+    const rent = document.getElementById('newGuestRent').value;
+    const acUnits = document.getElementById('newGuestAcUnits').value;
+    const acRate = document.getElementById('newGuestAcRate').value;
+    const checkIn = document.getElementById('newGuestCheckIn').value;
+
+    try {
+      await SSPG.addGuest({
+        name, email, phone, floor, room, rent, acUnits, acRate, checkInDate: checkIn
+      });
+      showToast(`Guest ${name} (${email}) added! They can now sign in with Google.`);
+      document.getElementById('addGuestForm').reset();
+      document.getElementById('capacityBanner').style.display = 'none';
+      switchTab('guestsTab');
+    } catch (err) {
+      showToast(err.message, true);
+    }
+  }
+
+  function openPaymentModal(guestId) {
+    const guest = globalGuests.find(g => g.id === guestId);
+    if (!guest) return;
+
+    document.getElementById('payGuestId').value = guest.id;
+    document.getElementById('payStatus').value = guest.paymentStatus || 'pending';
+    document.getElementById('payRent').value = guest.rent || 8500;
+    document.getElementById('payAcUnits').value = guest.acUnits || 0;
+    document.getElementById('payAcRate').value = guest.acRate || 100;
+    document.getElementById('payOther').value = guest.otherExpense || 0;
+    document.getElementById('payOverdue').value = guest.overdue || 0;
+
+    document.getElementById('payGuestSummary').innerHTML = `
+      <strong>${guest.name}</strong> · Room ${guest.room} (Floor ${guest.floor})<br>
+      <span style="color:var(--muted)">Email: ${guest.email} · Phone: ${guest.phone}</span>
+    `;
+
+    calculatePaymentNet();
+
+    ['payRent', 'payAcUnits', 'payAcRate', 'payOther', 'payOverdue'].forEach(id => {
+      document.getElementById(id).oninput = calculatePaymentNet;
+    });
+
+    openModal('modalPayment');
+  }
+
+  function calculatePaymentNet() {
+    const rent = Number(document.getElementById('payRent').value) || 0;
+    const acUnits = Number(document.getElementById('payAcUnits').value) || 0;
+    const acRate = Number(document.getElementById('payAcRate').value) || 0;
+    const other = Number(document.getElementById('payOther').value) || 0;
+    const overdue = Number(document.getElementById('payOverdue').value) || 0;
+
+    const total = rent + (acUnits * acRate) + other + overdue;
+    document.getElementById('payNetTotalDisplay').textContent = `₹${total.toLocaleString('en-IN')}`;
+  }
+
+  async function handleSavePayment(e) {
+    e.preventDefault();
+    const guestId = document.getElementById('payGuestId').value;
+    const status = document.getElementById('payStatus').value;
+    const rent = document.getElementById('payRent').value;
+    const acUnits = document.getElementById('payAcUnits').value;
+    const acRate = document.getElementById('payAcRate').value;
+    const other = document.getElementById('payOther').value;
+    const overdue = document.getElementById('payOverdue').value;
+
+    try {
+      await SSPG.updateGuestPayment(guestId, {
+        paymentStatus: status,
+        rent,
+        acUnits,
+        acRate,
+        otherExpense: other,
+        overdue
+      });
+      closeModal('modalPayment');
+      showToast("Payment information updated successfully!");
+    } catch (err) {
+      showToast(err.message, true);
+    }
+  }
+
+  async function handleSendReminder(guestId) {
+    const guest = globalGuests.find(g => g.id === guestId);
+    if (!guest) return;
+
+    try {
+      await SSPG.sendPaymentReminder(guestId);
+      showToast(`In-app payment reminder sent to Room ${guest.room} (${guest.name})!`);
+    } catch (err) {
+      showToast(err.message, true);
+    }
+  }
+
+  function openMoveRoomModal(guestId) {
+    const guest = globalGuests.find(g => g.id === guestId);
+    if (!guest) return;
+
+    document.getElementById('moveGuestId').value = guest.id;
+    document.getElementById('moveGuestSummary').innerHTML = `
+      <strong>${guest.name}</strong> currently in <strong>Room ${guest.room}</strong> (Floor ${guest.floor})<br>
+      <span style="color:var(--muted)">Select new floor and room below.</span>
+    `;
+
+    document.getElementById('moveTargetFloor').value = guest.floor;
+    onMoveFloorChange();
+    openModal('modalMoveRoom');
+  }
+
+  function onMoveFloorChange() {
+    const floor = document.getElementById('moveTargetFloor').value;
+    const roomSelect = document.getElementById('moveTargetRoom');
+    const alertBox = document.getElementById('moveCapacityAlert');
+    alertBox.style.display = 'none';
+
+    roomSelect.innerHTML = '';
+    const occupancy = SSPG.computeOccupancy(globalRooms, globalGuests);
+
+    Object.keys(occupancy).sort().forEach(rNum => {
+      const room = occupancy[rNum];
+      if (room.floor === floor) {
+        const option = document.createElement('option');
+        option.value = rNum;
+        if (room.isFull) {
+          option.textContent = `Room ${rNum} (FULL)`;
+        } else {
+          option.textContent = `Room ${rNum} (${room.availableBeds} beds free) - ${room.type}`;
+        }
+        roomSelect.appendChild(option);
+      }
+    });
+
+    onMoveRoomChange();
+  }
+
+  function onMoveRoomChange() {
+    const rNum = document.getElementById('moveTargetRoom').value;
+    const alertBox = document.getElementById('moveCapacityAlert');
+    const confirmBtn = document.getElementById('btnConfirmMove');
+
+    const occupancy = SSPG.computeOccupancy(globalRooms, globalGuests);
+    const room = occupancy[rNum];
+    if (!room) return;
+
+    if (room.isFull) {
+      alertBox.className = 'capacity-alert show-full';
+      alertBox.innerHTML = `⚠️ Room ${rNum} is completely full! Cannot transfer here.`;
+      confirmBtn.disabled = true;
+      confirmBtn.style.opacity = '0.5';
+    } else {
+      alertBox.className = 'capacity-alert show-avail';
+      alertBox.innerHTML = `✓ Room ${rNum} has space available (${room.availableBeds} free).`;
+      confirmBtn.disabled = false;
+      confirmBtn.style.opacity = '1';
+    }
+  }
+
+  async function handleConfirmMoveRoom(e) {
+    e.preventDefault();
+    const guestId = document.getElementById('moveGuestId').value;
+    const newFloor = document.getElementById('moveTargetFloor').value;
+    const newRoom = document.getElementById('moveTargetRoom').value;
+
+    try {
+      await SSPG.moveGuestRoom(guestId, newFloor, newRoom);
+      closeModal('modalMoveRoom');
+      showToast(`Resident moved to Room ${newRoom} (Floor ${newFloor})!`);
+    } catch (err) {
+      showToast(err.message, true);
+    }
+  }
+
+  function openDeleteGuestModal(guestId) {
+    const guest = globalGuests.find(g => g.id === guestId);
+    if (!guest) return;
+
+    document.getElementById('deleteGuestId').value = guest.id;
+    document.getElementById('deleteGuestText').innerHTML = `
+      Are you sure you want to checkout <strong>${guest.name}</strong> from <strong>Room ${guest.room}</strong>?
+    `;
+    openModal('modalDeleteGuest');
+  }
+
+  async function handleExecuteDeleteGuest() {
+    const guestId = document.getElementById('deleteGuestId').value;
+    try {
+      await SSPG.deleteGuest(guestId);
+      closeModal('modalDeleteGuest');
+      showToast("Guest removed and bed freed up in room.");
+    } catch (err) {
+      showToast(err.message, true);
+    }
+  }
+
+  function openAnnouncementModal() {
+    const roomSelect = document.getElementById('annTargetRoom');
+    roomSelect.innerHTML = '';
+    Object.keys(globalRooms).sort().forEach(rNum => {
+      const opt = document.createElement('option');
+      opt.value = rNum;
+      opt.textContent = `Room ${rNum} (Floor ${globalRooms[rNum].floor})`;
+      roomSelect.appendChild(opt);
+    });
+
+    document.getElementById('annTargetType').value = 'all';
+    onAnnTargetChange();
+    openModal('modalAnnouncement');
+  }
+
+  function onAnnTargetChange() {
+    const type = document.getElementById('annTargetType').value;
+    document.getElementById('annTargetFloorGroup').style.display = type === 'floor' ? 'block' : 'none';
+    document.getElementById('annTargetRoomGroup').style.display = type === 'room' ? 'block' : 'none';
+  }
+
+  async function handleSendAnnouncement(e) {
+    e.preventDefault();
+    const targetType = document.getElementById('annTargetType').value;
+    let targetValue = 'all';
+    if (targetType === 'floor') targetValue = document.getElementById('annTargetFloor').value;
+    if (targetType === 'room') targetValue = document.getElementById('annTargetRoom').value;
+
+    const category = document.getElementById('annCategory').value;
+    const title = document.getElementById('annTitle').value;
+    const message = document.getElementById('annMessage').value;
+
+    try {
+      await SSPG.sendAnnouncement({
+        title, message, category, targetType, targetValue
+      });
+      closeModal('modalAnnouncement');
+      document.getElementById('announcementForm').reset();
+      showToast("In-app announcement published to target residents!");
+      switchTab('announcementsTab');
+    } catch (err) {
+      showToast(err.message, true);
+    }
+  }
+
+  function renderAnnouncementsList() {
+    const list = document.getElementById('announcementsList');
+    if (globalAnnouncements.length === 0) {
+      list.innerHTML = `<div style="text-align:center;padding:36px;color:var(--muted)">No announcements yet. Use the Pen icon above to publish one!</div>`;
+      return;
+    }
+
+    let html = '';
+    globalAnnouncements.forEach(a => {
+      let targetLabel = 'Whole PG';
+      if (a.targetType === 'floor') targetLabel = `Floor ${a.targetValue}`;
+      if (a.targetType === 'room') targetLabel = `Room ${a.targetValue}`;
+
+      html += `
+        <div class="ann-card">
+          <div class="ann-header">
+            <div style="display:flex;align-items:center;gap:10px;">
+              <span class="target-badge">🎯 ${targetLabel}</span>
+              <h3 class="ann-title">${a.title}</h3>
+            </div>
+            <button class="icon-action danger" title="Delete announcement" onclick="handleDeleteAnnouncement('${a.id}')">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+            </button>
+          </div>
+          <p class="ann-body">${a.message}</p>
+          <div class="ann-footer">
+            <span>Posted by ${a.author || 'Owner'}</span>
+            <span>${a.dateStr || ''}</span>
+          </div>
+        </div>
+      `;
+    });
+    list.innerHTML = html;
+  }
+
+  async function handleDeleteAnnouncement(id) {
+    if (!confirm("Delete this announcement?")) return;
+    try {
+      await SSPG.deleteAnnouncement(id);
+      showToast("Announcement removed.");
+    } catch (err) {
+      showToast(err.message, true);
+    }
+  }
+
+  async function handleSendReminder(guestId) {
+    const guest = globalGuests.find(g => g.id === guestId);
+    if (!guest) return;
+    if (!confirm(`Send Android push rent reminder to ${guest.name} (Room ${guest.room})?`)) return;
+
+    try {
+      await SSPG.sendPaymentReminder(guestId);
+      showToast(`Android push rent reminder sent to ${guest.name}!`);
+    } catch (err) {
+      showToast(err.message, true);
+    }
+  }
+
+  function renderComplaintsView() {
+    const container = document.getElementById('complaintsContainer');
+    const filterStatus = document.getElementById('filterComplaintStatus').value;
+
+    let filtered = globalComplaints;
+    if (filterStatus !== 'all') {
+      filtered = filtered.filter(c => c.status === filterStatus);
+    }
+
+    if (filtered.length === 0) {
+      container.innerHTML = `<div style="text-align:center;padding:36px;color:var(--muted)">No complaints found.</div>`;
+      return;
+    }
+
+    let html = '';
+    filtered.forEach(c => {
+      const isResolved = c.status === 'resolved';
+      const isInProg = c.status === 'in_progress';
+
+      html += `
+        <div class="complaint-card">
+          <div class="complaint-top">
+            <div class="complaint-title-sec">
+              <span class="complaint-guest">${c.guestName || 'Resident'}</span>
+              <span class="complaint-room">Room ${c.room} · Floor ${c.floor}</span>
+              <span class="complaint-cat">(${c.category})</span>
+            </div>
+            <div>
+              <span class="badge ${c.status}">${c.status.replace('_', ' ')}</span>
+            </div>
+          </div>
+          <p class="complaint-msg">${c.message}</p>
+          ${c.resolutionNotes ? `<div style="font-size:12.5px;color:var(--teal);background:var(--teal-bg);padding:8px 12px;border-radius:8px;">✓ Resolution Note: ${c.resolutionNotes}</div>` : ''}
+          <div class="complaint-actions">
+            <span style="font-size:12px;color:var(--muted)">Filed: ${c.dateStr || 'Recent'} to ${c.recipient || 'Owner'}</span>
+            <div style="display:flex;gap:8px;">
+              ${!isInProg && !isResolved ? `
+                <button class="btn-outline" style="font-size:12px;padding:5px 12px;" onclick="handleUpdateComplaint('${c.id}', 'in_progress')">
+                  Mark In Progress
+                </button>
+              ` : ''}
+              ${!isResolved ? `
+                <button class="btn" style="font-size:12px;padding:5px 14px;" onclick="handleResolveComplaintPrompt('${c.id}')">
+                  ✓ Mark Resolved
+                </button>
+              ` : `
+                <button class="btn-outline" style="font-size:12px;padding:5px 12px;" onclick="handleUpdateComplaint('${c.id}', 'open')">
+                  Re-open
+                </button>
+              `}
+            </div>
+          </div>
+        </div>
+      `;
+    });
+
+    container.innerHTML = html;
+  }
+
+  async function handleUpdateComplaint(id, status, notes = "") {
+    try {
+      await SSPG.updateComplaintStatus(id, status, notes);
+      showToast(`Complaint status updated to ${status}!`);
+    } catch (err) {
+      showToast(err.message, true);
+    }
+  }
+
+  function handleResolveComplaintPrompt(id) {
+    const notes = prompt("Enter resolution notes for the resident (optional):", "Issue inspected and resolved.");
+    if (notes !== null) {
+      handleUpdateComplaint(id, 'resolved', notes);
+    }
+  }
+</script>
+
+</body>
+</html>
