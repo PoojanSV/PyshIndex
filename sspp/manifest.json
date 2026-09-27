@@ -1,0 +1,25 @@
+{
+  "name": "Shree Shyam Boys PG",
+  "short_name": "SSPG",
+  "start_url": "/index.html",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#060d18",
+  "theme_color": "#060d18",
+  "description": "Shree Shyam Boys PG Resident & Management Portal with Real-Time Push Notifications",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/logo.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

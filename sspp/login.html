@@ -1,0 +1,303 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sign In — Shree Shyam Boys PG</title>
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#060d18">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Mukta:wght@400;500;600;700&display=swap">
+<style>
+  :root {
+    color-scheme: dark;
+    --bg: #060d18;
+    --bg-elev: #0c1b2e;
+    --card: #0f2038;
+    --line: rgba(232, 192, 102, 0.18);
+    --gold: #e8c066;
+    --gold-soft: #f4dfa0;
+    --gold-deep: #b8863b;
+    --ink: #f5f3ec;
+    --muted: #9fabc2;
+    --maroon: #e05244;
+    --teal: #2e8b7f;
+    --hero-glow: #12233c;
+    --btn-grad-1: #f4dfa0;
+    --btn-grad-2: #b8863b;
+    --btn-text: #20140a;
+  }
+  @media (prefers-color-scheme: light) {
+    :root {
+      color-scheme: light;
+      --bg: #faf6ec;
+      --bg-elev: #f1e6d2;
+      --card: #ffffff;
+      --line: rgba(168, 120, 48, 0.22);
+      --gold: #c9973f;
+      --gold-soft: #96631c;
+      --gold-deep: #7a4d17;
+      --ink: #241f18;
+      --muted: #7c7362;
+      --maroon: #a13a2a;
+      --teal: #1c7566;
+      --hero-glow: #f6e0ac;
+      --btn-grad-1: #f2d78e;
+      --btn-grad-2: #b9832f;
+      --btn-text: #241405;
+    }
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background: radial-gradient(100% 150% at 50% -20%, var(--hero-glow) 0%, var(--bg) 65%);
+    color: var(--ink);
+    font-family: 'Mukta', sans-serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+  }
+  h1, h2, h3 { font-family: 'Baloo 2', sans-serif; }
+
+  .login-card {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 20px;
+    padding: 36px 32px;
+    width: 100%;
+    max-width: 440px;
+    box-shadow: 0 24px 48px rgba(0, 0, 0, 0.45);
+    text-align: center;
+    animation: fadeIn 0.3s ease;
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .brand-logo {
+    height: 48px;
+    width: auto;
+    display: block;
+    margin: 0 auto 16px;
+  }
+  .login-title {
+    font-size: 24px;
+    margin: 0 0 6px;
+    font-weight: 700;
+    color: var(--gold-soft);
+  }
+  .login-sub {
+    font-size: 14px;
+    color: var(--muted);
+    margin: 0 0 28px;
+  }
+
+  /* Google Sign In Button */
+  .btn-google {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    width: 100%;
+    background: #ffffff;
+    color: #1f1f1f;
+    border: 1px solid #dadce0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    padding: 13px 20px;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: background-color 0.2s, box-shadow 0.2s, transform 0.1s;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+  }
+  .btn-google:hover {
+    background-color: #f8f9fa;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    transform: translateY(-1px);
+  }
+  .btn-google:active {
+    transform: translateY(0);
+  }
+  .btn-google svg {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+  }
+
+  /* Notice Box */
+  .notice-box {
+    margin-top: 24px;
+    background: var(--bg-elev);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 14px 16px;
+    font-size: 12.5px;
+    color: var(--muted);
+    text-align: left;
+    line-height: 1.55;
+  }
+  .notice-box strong {
+    color: var(--gold-soft);
+    display: block;
+    margin-bottom: 3px;
+  }
+
+  /* Alert / Error / Status Banner */
+  .alert-box {
+    display: none;
+    margin-top: 18px;
+    padding: 12px 14px;
+    border-radius: 10px;
+    font-size: 13px;
+    text-align: left;
+    line-height: 1.5;
+  }
+  .alert-box.error {
+    display: block;
+    background: rgba(224, 82, 68, 0.14);
+    border: 1px solid rgba(224, 82, 68, 0.4);
+    color: var(--maroon);
+  }
+  .alert-box.success {
+    display: block;
+    background: rgba(46, 139, 127, 0.14);
+    border: 1px solid rgba(46, 139, 127, 0.4);
+    color: var(--teal);
+  }
+
+  .spinner {
+    display: inline-block;
+    width: 18px;
+    height: 18px;
+    border: 2px solid rgba(0,0,0,0.2);
+    border-top-color: #1f1f1f;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+</style>
+</head>
+<body>
+
+<div class="login-card">
+  <img src="logo.png" alt="Shree Shyam Boys PG" class="brand-logo">
+  <h1 class="login-title">Shree Shyam Boys PG</h1>
+  <p class="login-sub">Resident &amp; Owner Secure Portal</p>
+
+  <!-- Google Sign In Button -->
+  <button class="btn-google" id="btnGoogleLogin" onclick="handleGoogleSignIn()">
+    <svg viewBox="0 0 24 24">
+      <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.8-2.4 3.67v3.05h3.88c2.27-2.09 3.66-5.17 3.66-9.16z"/>
+      <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.25v3.15C3.27 21.36 7.34 24 12 24z"/>
+      <path fill="#FBBC05" d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.13-1.55.38-2.27V6.58H1.25C.45 8.18 0 9.99 0 12s.45 3.82 1.25 5.42l4.03-3.15z"/>
+      <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.34 0 3.27 2.64 1.25 6.58l4.03 3.15c.95-2.83 3.6-4.98 6.72-4.98z"/>
+    </svg>
+    <span id="btnGoogleText">Sign In with Google</span>
+  </button>
+
+  <!-- Feedback alert -->
+  <div class="alert-box" id="loginAlert"></div>
+
+  <!-- Notice -->
+  <div class="notice-box">
+    <strong>Direct Access Authentication</strong>
+    • <strong>Owner</strong> (<code>sspg.owner@gmail.com</code>): Opens the full Management &amp; Occupancy Dashboard.<br>
+    • <strong>Guests</strong>: Sign in with the Gmail registered by the owner to access your room, rent, announcements, and complaints.<br>
+    • No manual signup needed.
+  </div>
+</div>
+
+<!-- Firebase SDKs & Client Layer -->
+<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.2/firebase-database-compat.js"></script>
+<script src="firebase-db.js"></script>
+
+<script>
+  // Check if user is already signed in
+  window.addEventListener('DOMContentLoaded', () => {
+    SSPG.onAuthStateChanged(async (user) => {
+      if (user) {
+        processUserRouting(user);
+      }
+    });
+  });
+
+  async function handleGoogleSignIn() {
+    const btn = document.getElementById('btnGoogleLogin');
+    const text = document.getElementById('btnGoogleText');
+    const alertBox = document.getElementById('loginAlert');
+    alertBox.className = 'alert-box';
+    alertBox.style.display = 'none';
+
+    btn.disabled = true;
+    text.innerHTML = '<span class="spinner"></span> Signing in...';
+
+    try {
+      const user = await SSPG.signInWithGoogle();
+      if (user) {
+        await processUserRouting(user);
+      }
+    } catch (err) {
+      btn.disabled = false;
+      text.textContent = 'Sign In with Google';
+      alertBox.className = 'alert-box error';
+      alertBox.textContent = err.message || "Failed to sign in with Google. Please try again.";
+    }
+  }
+
+  async function processUserRouting(user) {
+    const alertBox = document.getElementById('loginAlert');
+    const email = (user.email || '').toLowerCase().trim();
+
+    // 1. Check if Owner
+    if (SSPG.isOwnerEmail(email)) {
+      alertBox.className = 'alert-box success';
+      alertBox.innerHTML = `✓ Welcome Owner (<strong>${email}</strong>)! Redirecting to Management Dashboard...`;
+      setTimeout(() => {
+        window.location.href = 'owner.html';
+      }, 1000);
+      return;
+    }
+
+    // 2. Check if Registered Guest
+    const guest = await SSPG.findGuestByEmail(email);
+    if (guest) {
+      SSPG.setActiveGuestId(guest.id);
+      alertBox.className = 'alert-box success';
+      alertBox.innerHTML = `✓ Welcome back, <strong>${guest.name}</strong> (Room ${guest.room})! Redirecting to Resident Dashboard...`;
+      setTimeout(() => {
+        window.location.href = 'index.html';
+      }, 1000);
+      return;
+    }
+
+    // 3. User is neither owner nor registered guest
+    const btn = document.getElementById('btnGoogleLogin');
+    const text = document.getElementById('btnGoogleText');
+    btn.disabled = false;
+    text.textContent = 'Sign In with Google';
+
+    alertBox.className = 'alert-box error';
+    alertBox.innerHTML = `
+      <strong>Access Denied:</strong> Signed in as <em>${email}</em>.<br>
+      This Google account is not registered as a resident at Shree Shyam PG.<br>
+      Please contact the owner (<code>sspg.owner@gmail.com</code>) to assign your room.
+      <div style="margin-top:10px;">
+        <button onclick="SSPG.signOutUser()" style="background:var(--maroon);color:#fff;border:none;padding:5px 12px;border-radius:6px;font-size:12px;cursor:pointer;">
+          Sign Out / Use Another Account
+        </button>
+      </div>
+    `;
+  }
+</script>
+
+</body>
+</html>

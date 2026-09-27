@@ -1,0 +1,18 @@
+{
+  "rules": {
+    ".read": "auth != null",
+    ".write": "auth != null",
+    "liveNotifications": {
+      ".indexOn": ["createdAt"]
+    },
+    "announcements": {
+      ".indexOn": ["createdAt"]
+    },
+    "complaints": {
+      ".indexOn": ["createdAt", "guestId", "room"]
+    },
+    "pushQueue": {
+      ".indexOn": ["createdAt"]
+    }
+  }
+}
