@@ -47,6 +47,32 @@ function pgWireSignOut(elId) {
   });
 }
 
+// Fills an avatar circle with the signed-in user's real Google profile
+// photo (ctx.photo), falling back to their initial letter if there is no
+// photo or it fails to load.
+function pgSetAvatar(elId, ctx) {
+  var el = document.getElementById(elId);
+  if (!el) return;
+  var initial = (ctx.name || "?").charAt(0).toUpperCase();
+  if (ctx.photo) {
+    el.textContent = "";
+    var img = document.createElement("img");
+    img.src = ctx.photo;
+    img.alt = ctx.name || "Profile photo";
+    img.referrerPolicy = "no-referrer";
+    img.style.width = "100%";
+    img.style.height = "100%";
+    img.style.objectFit = "cover";
+    img.style.borderRadius = "50%";
+    img.onerror = function () {
+      el.textContent = initial;
+    };
+    el.appendChild(img);
+  } else {
+    el.textContent = initial;
+  }
+}
+
 // Call at the top of every protected page.
 //   role: "owner"  -> only sspg.owner@gmail.com may stay on this page
 //         "guest"  -> only a registered guest may stay on this page
