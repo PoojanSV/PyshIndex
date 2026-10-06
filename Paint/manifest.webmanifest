@@ -1,0 +1,17 @@
+{
+  "name": "Paint \u2014 Mobile",
+  "short_name": "Paint",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#ececec",
+  "theme_color": "#e7e7e7",
+  "description": "A mobile-friendly Paint app built with HTML, CSS and JavaScript.",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
