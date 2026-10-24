@@ -1,0 +1,543 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#101114">
+<title>Instant Barcode Scanner</title>
+<style>
+  :root{color-scheme:dark;--bg:#101114;--panel:#191b20;--panel2:#20232a;--line:#30343d;--text:#f4f5f7;--muted:#a3a8b3;--accent:#e1282d;--green:#70e0a0;--yellow:#f2c66d;}
+  *{box-sizing:border-box}
+  body{margin:0;background:radial-gradient(ellipse at 50% -15%,#29222a 0,transparent 43%),var(--bg);color:var(--text);font:15px/1.45 system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;min-height:100vh}
+  button,select{font:inherit}
+  .page{max-width:1050px;margin:0 auto;padding:clamp(14px,3vw,30px)}
+  header{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:23px}
+  .brand{display:flex;align-items:center;gap:12px;min-width:0}
+  .brand-mark{width:42px;height:42px;display:grid;place-items:center;border-radius:13px;background:var(--accent);font-size:22px;font-weight:900;flex:none}
+  h1{font-size:clamp(20px,3vw,27px);line-height:1.1;margin:0;letter-spacing:-.04em}
+  .subtitle{font-size:13px;color:var(--muted);margin-top:5px}
+  .status{display:flex;align-items:center;gap:8px;color:var(--muted);font-size:12px;padding:8px 11px;border:1px solid var(--line);border-radius:999px;white-space:nowrap}
+  .status-dot{width:7px;height:7px;border-radius:50%;background:#8b909b}
+  .status.live{color:var(--green);border-color:#315b43}.status.live .status-dot{background:var(--green);box-shadow:0 0 10px #70e0a077}
+  .layout{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(280px,.9fr);gap:18px;align-items:start}
+  .panel{background:rgba(25,27,32,.96);border:1px solid var(--line);border-radius:18px;overflow:hidden;min-width:0}
+  .panel-head{padding:17px 18px 13px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+  .panel-head h2{font-size:15px;margin:0;font-weight:700}
+  .eyebrow{color:var(--muted);font-size:11px;letter-spacing:.09em;text-transform:uppercase;font-weight:750}
+  .viewfinder{position:relative;margin:0 14px;border-radius:13px;overflow:hidden;background:#08090b;aspect-ratio:4/3;min-height:245px;max-height:500px;border:1px solid #353840;isolation:isolate}
+  #cameraVideo,#fallback-reader{position:absolute;inset:0;width:100%;height:100%;display:none;object-fit:cover}
+  #fallback-reader video{width:100%!important;height:100%!important;object-fit:cover!important;border:0!important}
+  #fallback-reader canvas{display:none!important}
+  #fallback-reader__scan_region{background:transparent!important}
+  #fallback-reader img{display:none!important}
+  .camera-placeholder{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:25px;color:var(--muted);gap:10px}
+  .camera-icon{width:58px;height:48px;border:2px solid #575c67;border-radius:10px;display:grid;place-items:center;font-size:24px;color:#aeb3bd}
+  .camera-placeholder strong{color:#e5e7eb;font-size:15px}
+  .camera-placeholder p{font-size:12px;max-width:285px;margin:0}
+  .aim{position:absolute;inset:26% 6%;border:2px solid #ffffffb0;border-radius:9px;pointer-events:none;z-index:3;box-shadow:0 0 0 100vmax #00000016}
+  .aim:before,.aim:after{content:"";position:absolute;left:0;right:0;height:1px;background:#e1282d;box-shadow:0 0 8px #e1282d;top:50%}
+  .aim .corner{position:absolute;width:18px;height:18px;border-color:#fff;border-style:solid}
+  .aim .tl{top:-2px;left:-2px;border-width:3px 0 0 3px;border-top-left-radius:7px}.aim .tr{top:-2px;right:-2px;border-width:3px 3px 0 0;border-top-right-radius:7px}.aim .bl{bottom:-2px;left:-2px;border-width:0 0 3px 3px;border-bottom-left-radius:7px}.aim .br{bottom:-2px;right:-2px;border-width:0 3px 3px 0;border-bottom-right-radius:7px}
+  .aim-label{position:absolute;z-index:4;bottom:11%;left:0;right:0;text-align:center;color:#fff;font-size:11px;text-shadow:0 1px 4px #000;pointer-events:none}
+  .camera-tools{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:9px;padding:14px}
+  select{width:100%;min-width:0;background:var(--panel2);border:1px solid var(--line);border-radius:10px;color:var(--text);padding:11px 12px;outline:none}
+  select:focus-visible,button:focus-visible{outline:2px solid #f16a6d;outline-offset:2px}
+  button{border:1px solid var(--line);background:var(--panel2);color:var(--text);padding:11px 14px;border-radius:10px;font-weight:700;cursor:pointer;transition:background .15s,border-color .15s;min-height:43px}
+  button:hover:not(:disabled){background:#2b2e36;border-color:#555b67}
+  button:disabled{opacity:.42;cursor:not-allowed}
+  button.primary{background:var(--accent);border-color:var(--accent);color:white}
+  button.primary:hover:not(:disabled){background:#c91f24}
+  button.stop{background:#332124;border-color:#713338;color:#ffb7b9}
+  .actions{display:flex;gap:9px;padding:0 14px 15px}
+  .actions button{flex:1}
+  .hint{margin:0 14px 14px;padding:10px 12px;border-radius:10px;background:#22252c;color:var(--muted);font-size:12px;display:flex;gap:8px;align-items:flex-start}
+  .hint strong{color:#e3e5e9}
+  .result-area{padding:0 18px 18px}
+  .latest-label{color:var(--muted);font-size:12px;margin-bottom:8px}
+  .latest-code{font:700 clamp(22px,4vw,31px)/1.25 ui-monospace,SFMono-Regular,Consolas,monospace;letter-spacing:.02em;overflow-wrap:anywhere;min-height:40px}
+  .latest-meta{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:8px}
+  .tag{font-size:11px;color:#c8cbd2;border:1px solid var(--line);padding:4px 8px;border-radius:999px}
+  .copy-btn{margin-left:auto;min-height:32px;padding:5px 10px;font-size:12px}
+  .empty-code{color:#656b76;font-size:18px;font-weight:500;letter-spacing:0}
+  .stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:0 18px 18px}
+  .stat{border:1px solid var(--line);background:#16181d;border-radius:12px;padding:12px 13px}
+  .stat strong{display:block;font-size:22px;line-height:1.2;letter-spacing:-.03em}
+  .stat span{font-size:11px;color:var(--muted)}
+  .history-head{padding:16px 18px 12px;display:flex;align-items:center;justify-content:space-between;gap:8px;border-top:1px solid var(--line)}
+  .history-head h2{font-size:14px;margin:0}
+  .history-head button{padding:6px 9px;min-height:31px;font-size:11px}
+  .history{list-style:none;padding:0 12px 12px;margin:0;max-height:350px;overflow:auto}
+  .history-empty{color:var(--muted);font-size:13px;text-align:center;padding:24px 10px}
+  .scan-row{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:8px;padding:11px 8px;border-bottom:1px solid #2b2e35}
+  .scan-row:last-child{border-bottom:0}
+  .scan-value{font:600 13px/1.4 ui-monospace,SFMono-Regular,Consolas,monospace;overflow-wrap:anywhere}
+  .scan-time{font-size:11px;color:var(--muted);margin-top:3px}
+  .row-copy{padding:6px 8px;min-height:32px;font-size:11px}
+  .message{display:none;margin:0 14px 14px;padding:10px 12px;border-radius:10px;background:#302326;border:1px solid #713338;color:#ffcccd;font-size:12px;overflow-wrap:anywhere}
+  .message.show{display:block}
+  .footer{color:#777d88;text-align:center;font-size:11px;margin:17px 0 0}
+  .footer a{color:#aeb3bd}
+  @media(max-width:760px){.layout{grid-template-columns:1fr}.viewfinder{aspect-ratio:4/3;min-height:220px}.status{font-size:0;padding:10px}.status-dot{width:8px;height:8px}.history{max-height:260px}}
+  @media(max-width:390px){.page{padding:12px}.brand-mark{width:37px;height:37px}.subtitle{font-size:11px}.panel-head{padding-left:14px;padding-right:14px}.camera-tools{grid-template-columns:1fr}.viewfinder{margin:0 10px}.actions{padding-left:10px;padding-right:10px}.result-area,.stats{padding-left:14px;padding-right:14px}}
+  @media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+<script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+</head>
+<body>
+<div class="page">
+  <header>
+    <div class="brand">
+      <div class="brand-mark" aria-hidden="true">▥</div>
+      <div><h1>Instant Barcode Scanner</h1><div class="subtitle">Fast camera scanning · No account · Runs in your browser</div></div>
+    </div>
+    <div class="status" id="status" aria-live="polite"><span class="status-dot"></span><span id="statusText">Camera stopped</span></div>
+  </header>
+
+  <main class="layout">
+    <section class="panel" aria-labelledby="cameraHeading">
+      <div class="panel-head"><h2 id="cameraHeading">Live scanner</h2><span class="eyebrow" id="engineLabel">Ready</span></div>
+      <div class="viewfinder" id="viewfinder">
+        <video id="cameraVideo" autoplay muted playsinline></video>
+        <div id="fallback-reader"></div>
+        <div class="camera-placeholder" id="placeholder">
+          <div class="camera-icon" aria-hidden="true">▣</div>
+          <strong>Your camera is ready</strong>
+          <p>Start the camera, then hold a barcode horizontally inside the frame.</p>
+        </div>
+        <div class="aim" aria-hidden="true"><i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i></div>
+        <div class="aim-label" id="aimLabel">Align barcode inside the frame</div>
+      </div>
+      <div class="camera-tools">
+        <label class="sr-only" for="cameraSelect" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)">Camera</label>
+        <select id="cameraSelect" aria-label="Choose camera"><option value="">Auto-select rear camera</option></select>
+        <button id="switchBtn" type="button" disabled title="Switch camera">Switch</button>
+      </div>
+      <div class="actions">
+        <button class="primary" id="startBtn" type="button">Start camera</button>
+        <button class="stop" id="stopBtn" type="button" disabled>Stop</button>
+        <button id="torchBtn" type="button" disabled title="Turn on camera flash">Flash off</button>
+      </div>
+      <div class="message" id="errorBox" role="alert"></div>
+      <div class="hint"><span aria-hidden="true">●</span><div><strong>For best results:</strong> use the rear camera, good lighting and a steady hand. Move the camera slightly farther away if the barcode looks blurry.</div></div>
+      <div class="result-area">
+        <div class="latest-label">LAST DETECTED BARCODE</div>
+        <div class="latest-code empty-code" id="latestCode" aria-live="polite">Waiting for a barcode…</div>
+        <div class="latest-meta"><span class="tag" id="formatTag">Format: —</span><span class="tag" id="timeTag">Time: —</span><button class="copy-btn" id="copyLatestBtn" type="button" disabled>Copy code</button></div>
+      </div>
+      <div class="stats">
+        <div class="stat"><strong id="scanCount">0</strong><span>Successful scans this session</span></div>
+        <div class="stat"><strong id="scanSpeed">—</strong><span>Decode time</span></div>
+      </div>
+    </section>
+
+    <section class="panel" aria-labelledby="historyHeading">
+      <div class="panel-head"><h2>Scan history</h2><span class="eyebrow" id="historyCount">0 items</span></div>
+      <div class="history-head" style="border-top:0;padding-top:0"><h2 id="historyHeading">Latest first</h2><button id="exportBtn" type="button" disabled>Export CSV</button></div>
+      <ul class="history" id="historyList"><li class="history-empty" id="historyEmpty">Scanned barcodes will appear here automatically.</li></ul>
+      <div class="history-head"><h2>Supported barcodes</h2></div>
+      <div style="padding:0 18px 18px;display:flex;flex-wrap:wrap;gap:7px">
+        <span class="tag">EAN-13</span><span class="tag">EAN-8</span><span class="tag">UPC-A</span><span class="tag">UPC-E</span><span class="tag">Code 128</span><span class="tag">Code 39</span><span class="tag">Code 93</span><span class="tag">ITF</span><span class="tag">Codabar</span>
+      </div>
+    </section>
+  </main>
+  <div class="footer">Camera access requires permission and a secure context (HTTPS or localhost). Camera decoding happens on this device; this page does not send scans to a server.</div>
+</div>
+<script>
+(() => {
+  'use strict';
+  const $ = (id) => document.getElementById(id);
+  const video = $('cameraVideo');
+  const fallbackReader = $('fallback-reader');
+  const placeholder = $('placeholder');
+  const cameraSelect = $('cameraSelect');
+  const startBtn = $('startBtn');
+  const stopBtn = $('stopBtn');
+  const switchBtn = $('switchBtn');
+  const torchBtn = $('torchBtn');
+  const status = $('status');
+  const statusText = $('statusText');
+  const errorBox = $('errorBox');
+  const latestCode = $('latestCode');
+  const formatTag = $('formatTag');
+  const timeTag = $('timeTag');
+  const copyLatestBtn = $('copyLatestBtn');
+  const historyList = $('historyList');
+  const historyEmpty = $('historyEmpty');
+  const exportBtn = $('exportBtn');
+
+  const LINEAR_FORMATS = ['code_128','code_39','code_93','ean_13','ean_8','upc_a','upc_e','itf','codabar'];
+  let stream = null;
+  let detector = null;
+  let fallbackScanner = null;
+  let backend = null;
+  let running = false;
+  let scanBusy = false;
+  let lastFrameAt = 0;
+  let rafId = 0;
+  let torchOn = false;
+  let scanTotal = 0;
+  let latestValue = '';
+  let history = [];
+  // A code that remains in view is counted once. It can be scanned again after it disappears for 850 ms.
+  const recentlyVisible = new Map();
+
+  function showError(message) { errorBox.textContent = message; errorBox.classList.add('show'); }
+  function clearError() { errorBox.textContent = ''; errorBox.classList.remove('show'); }
+  function setStatus(text, live=false) { statusText.textContent = text; status.classList.toggle('live', live); }
+  function setRunningUI(isRunning) {
+    startBtn.disabled = isRunning;
+    stopBtn.disabled = !isRunning;
+    switchBtn.disabled = !isRunning;
+    cameraSelect.disabled = !navigator.mediaDevices?.enumerateDevices;
+    placeholder.style.display = isRunning ? 'none' : 'flex';
+    $('engineLabel').textContent = isRunning ? (backend === 'native' ? 'Native decode' : 'Compatibility mode') : 'Ready';
+  }
+  function tellUserCameraRequirements() {
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      showError('This page cannot access the camera in this context. Open it using HTTPS (or localhost) in a modern browser, then allow camera permission.');
+      return true;
+    }
+    return false;
+  }
+  async function enumerateCameras(activeId='') {
+    if (!navigator.mediaDevices?.enumerateDevices) return [];
+    const devices = (await navigator.mediaDevices.enumerateDevices()).filter(d => d.kind === 'videoinput');
+    const oldValue = activeId || cameraSelect.value;
+    cameraSelect.innerHTML = '';
+    const auto = document.createElement('option');
+    auto.value = '';
+    auto.textContent = 'Auto-select rear camera';
+    cameraSelect.appendChild(auto);
+    devices.forEach((device, i) => {
+      const option = document.createElement('option');
+      option.value = device.deviceId;
+      option.textContent = device.label || `Camera ${i + 1}`;
+      cameraSelect.appendChild(option);
+    });
+    if (oldValue && devices.some(d => d.deviceId === oldValue)) cameraSelect.value = oldValue;
+    else if (activeId) cameraSelect.value = activeId;
+    return devices;
+  }
+  function chooseNativeFormats(supported) {
+    return LINEAR_FORMATS.filter(fmt => supported.includes(fmt));
+  }
+  async function nativeIsSuitable() {
+    if (!('BarcodeDetector' in window) || typeof window.BarcodeDetector.getSupportedFormats !== 'function') return false;
+    try {
+      const supported = await window.BarcodeDetector.getSupportedFormats();
+      const chosen = chooseNativeFormats(supported);
+      if (!chosen.length) return false;
+      detector = new window.BarcodeDetector({ formats: chosen });
+      return true;
+    } catch (e) { detector = null; return false; }
+  }
+  function cameraConstraints(deviceId) {
+    const videoConstraints = {
+      width: { ideal: 1920 }, height: { ideal: 1080 }, frameRate: { ideal: 30, max: 60 }
+    };
+    if (deviceId) videoConstraints.deviceId = { exact: deviceId };
+    else videoConstraints.facingMode = { ideal: 'environment' };
+    return { audio: false, video: videoConstraints };
+  }
+  async function startNative(deviceId='') {
+    backend = 'native';
+    $('engineLabel').textContent = 'Native decode';
+    stream = await navigator.mediaDevices.getUserMedia(cameraConstraints(deviceId));
+    video.srcObject = stream;
+    video.style.display = 'block';
+    fallbackReader.style.display = 'none';
+    await video.play();
+    const track = stream.getVideoTracks()[0];
+    const activeId = track?.getSettings?.().deviceId || deviceId;
+    await enumerateCameras(activeId);
+    updateTorchSupport();
+    running = true;
+    setRunningUI(true);
+    setStatus('Scanning live', true);
+    $('aimLabel').textContent = 'Hold barcode steady inside the frame';
+    scanBusy = false;
+    lastFrameAt = 0;
+    rafId = requestAnimationFrame(nativeScanFrame);
+  }
+  async function startFallback(deviceId='') {
+    if (typeof window.Html5Qrcode !== 'function') {
+      throw new Error('The compatibility scanner could not load. Check your internet connection and reload the page.');
+    }
+    backend = 'fallback';
+    $('engineLabel').textContent = 'Compatibility mode';
+    video.style.display = 'none';
+    fallbackReader.style.display = 'block';
+    if (!fallbackScanner) {
+      const formats = LINEAR_FORMATS.map(name => window.Html5QrcodeSupportedFormats?.[name.toUpperCase()]).filter(v => v !== undefined);
+      fallbackScanner = new window.Html5Qrcode('fallback-reader', { formatsToSupport: formats.length ? formats : undefined, verbose: false, experimentalFeatures: { useBarCodeDetectorIfSupported: false } });
+    }
+    const config = {
+      fps: 20,
+      qrbox: (width, height) => ({ width: Math.max(200, Math.floor(width * 0.90)), height: Math.max(90, Math.floor(height * 0.38)) }),
+      aspectRatio: 1.333,
+      videoConstraints: { width: { ideal: 1920 }, height: { ideal: 1080 }, frameRate: { ideal: 30, max: 60 } }
+    };
+    const camera = deviceId ? deviceId : { facingMode: 'environment' };
+    await fallbackScanner.start(camera, config, (decodedText, decodedResult) => {
+      const t0 = performance.now();
+      handleDecoded(decodedText, decodedResult?.result?.format?.formatName || 'Barcode', t0);
+    }, () => {});
+    running = true;
+    setRunningUI(true);
+    setStatus('Scanning live', true);
+    $('aimLabel').textContent = 'Hold barcode steady inside the frame';
+    const activeVideo = fallbackReader.querySelector('video');
+    if (activeVideo) { activeVideo.setAttribute('playsinline',''); activeVideo.style.objectFit = 'cover'; }
+    await enumerateCameras(deviceId);
+    updateTorchSupport();
+  }
+  async function startScanner() {
+    clearError();
+    if (tellUserCameraRequirements()) return;
+    startBtn.disabled = true;
+    setStatus('Starting camera…');
+    try {
+      const deviceId = cameraSelect.value;
+      if (await nativeIsSuitable()) {
+        try { await startNative(deviceId); }
+        catch (nativeError) {
+          await releaseNative();
+          // Fall back on decode/camera-constraint errors; permission denial is shown directly.
+          if (nativeError?.name === 'NotAllowedError' || nativeError?.name === 'PermissionDeniedError') throw nativeError;
+          await startFallback(deviceId);
+        }
+      } else {
+        await startFallback(deviceId);
+      }
+      clearError();
+    } catch (err) {
+      running = false;
+      await releaseNative();
+      if (fallbackScanner) {
+        try { if (fallbackScanner.isScanning) await fallbackScanner.stop(); } catch (_) {}
+      }
+      fallbackReader.style.display = 'none';
+      video.style.display = 'none';
+      placeholder.style.display = 'flex';
+      setRunningUI(false);
+      setStatus('Camera stopped');
+      const name = err?.name || '';
+      if (name === 'NotAllowedError' || name === 'PermissionDeniedError') {
+        showError('Camera permission was denied. Allow camera access for this site in your browser settings, then try again.');
+      } else if (name === 'NotFoundError' || name === 'DevicesNotFoundError') {
+        showError('No camera was found. Connect a webcam or open this page on a device with a camera.');
+      } else if (name === 'NotReadableError' || name === 'TrackStartError') {
+        showError('The camera is busy in another app or browser tab. Close apps using the camera and try again.');
+      } else {
+        showError(err?.message || 'Could not start the camera. Check browser permissions and try again.');
+      }
+    } finally {
+      startBtn.disabled = running;
+    }
+  }
+  async function releaseNative() {
+    if (rafId) cancelAnimationFrame(rafId);
+    rafId = 0;
+    scanBusy = false;
+    if (stream) {
+      stream.getTracks().forEach(track => track.stop());
+      stream = null;
+    }
+    video.srcObject = null;
+    torchOn = false;
+    torchBtn.textContent = 'Flash off';
+    torchBtn.disabled = true;
+  }
+  async function stopScanner() {
+    running = false;
+    if (backend === 'native') await releaseNative();
+    if (backend === 'fallback' && fallbackScanner) {
+      try { if (fallbackScanner.isScanning) await fallbackScanner.stop(); } catch (_) {}
+      try { fallbackScanner.clear(); } catch (_) {}
+      fallbackScanner = null;
+    }
+    video.style.display = 'none';
+    fallbackReader.style.display = 'none';
+    placeholder.style.display = 'flex';
+    setRunningUI(false);
+    setStatus('Camera stopped');
+    $('aimLabel').textContent = 'Align barcode inside the frame';
+    clearError();
+    backend = null;
+  }
+  async function nativeScanFrame(now) {
+    if (!running || backend !== 'native') return;
+    if (!scanBusy && video.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA && now - lastFrameAt >= 65) {
+      lastFrameAt = now;
+      scanBusy = true;
+      const startedAt = performance.now();
+      try {
+        const codes = await detector.detect(video);
+        const decodeMs = performance.now() - startedAt;
+        $('scanSpeed').textContent = `${Math.round(decodeMs)} ms`;
+        for (const code of codes) {
+          if (code.rawValue) handleDecoded(code.rawValue, prettyFormat(code.format), startedAt, true);
+        }
+      } catch (err) {
+        // A transient undecodable frame should not stop the camera loop.
+      } finally {
+        scanBusy = false;
+      }
+    }
+    if (running && backend === 'native') rafId = requestAnimationFrame(nativeScanFrame);
+  }
+  function prettyFormat(format='') {
+    return String(format).replaceAll('_','-').toUpperCase() || 'Barcode';
+  }
+  function handleDecoded(value, format='Barcode', startedAt=performance.now(), native=false) {
+    const code = String(value || '').trim();
+    if (!code) return;
+    const now = Date.now();
+    // Remove codes that have not been visible recently; this avoids logging every camera frame.
+    for (const [key, lastSeen] of recentlyVisible) if (now - lastSeen > 850) recentlyVisible.delete(key);
+    if (recentlyVisible.has(code)) { recentlyVisible.set(code, now); return; }
+    recentlyVisible.set(code, now);
+    scanTotal++;
+    latestValue = code;
+    latestCode.textContent = code;
+    latestCode.classList.remove('empty-code');
+    formatTag.textContent = `Format: ${prettyFormat(format)}`;
+    timeTag.textContent = `Time: ${new Date().toLocaleTimeString()}`;
+    copyLatestBtn.disabled = false;
+    $('scanCount').textContent = String(scanTotal);
+    $('scanSpeed').textContent = native ? `${Math.round(performance.now() - startedAt)} ms` : 'Decoded';
+    const record = { value: code, format: prettyFormat(format), time: new Date() };
+    history.unshift(record);
+    if (history.length > 500) history.length = 500;
+    renderHistory();
+    playConfirmation();
+    $('aimLabel').textContent = 'Barcode detected — ready for the next one';
+    window.setTimeout(() => { if (running) $('aimLabel').textContent = 'Hold barcode steady inside the frame'; }, 900);
+  }
+  function playConfirmation() {
+    try {
+      const Ctx = window.AudioContext || window.webkitAudioContext;
+      if (Ctx) {
+        const ctx = new Ctx();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = 'sine'; osc.frequency.value = 1050;
+        gain.gain.setValueAtTime(0.0001, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.12, ctx.currentTime + 0.008);
+        gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.095);
+        osc.connect(gain); gain.connect(ctx.destination); osc.start(); osc.stop(ctx.currentTime + 0.1);
+        osc.onended = () => ctx.close().catch(() => {});
+      }
+    } catch (_) {}
+    try { if (navigator.vibrate) navigator.vibrate(35); } catch (_) {}
+  }
+  function renderHistory() {
+    historyList.innerHTML = '';
+    $('historyCount').textContent = `${history.length} item${history.length === 1 ? '' : 's'}`;
+    exportBtn.disabled = history.length === 0;
+    if (!history.length) {
+      const li = document.createElement('li'); li.className = 'history-empty'; li.textContent = 'Scanned barcodes will appear here automatically.'; historyList.appendChild(li); return;
+    }
+    const frag = document.createDocumentFragment();
+    history.forEach((record, index) => {
+      const li = document.createElement('li'); li.className = 'scan-row';
+      const details = document.createElement('div');
+      const value = document.createElement('div'); value.className = 'scan-value'; value.textContent = record.value;
+      const meta = document.createElement('div'); meta.className = 'scan-time'; meta.textContent = `${record.format} · ${record.time.toLocaleTimeString()}`;
+      details.append(value, meta);
+      const copy = document.createElement('button'); copy.type = 'button'; copy.className = 'row-copy'; copy.textContent = 'Copy'; copy.dataset.copyIndex = String(index); copy.setAttribute('aria-label', `Copy barcode ${record.value}`);
+      li.append(details, copy); frag.appendChild(li);
+    });
+    historyList.appendChild(frag);
+  }
+  async function copyText(value) {
+    try {
+      if (navigator.clipboard?.writeText && window.isSecureContext) await navigator.clipboard.writeText(value);
+      else {
+        const area = document.createElement('textarea'); area.value = value; area.style.position='absolute'; area.style.opacity='0'; document.body.appendChild(area); area.select();
+        const ok = document.execCommand('copy'); area.remove(); if (!ok) throw new Error('Copy not available');
+      }
+      setStatus('Copied barcode', running);
+      window.setTimeout(() => setStatus(running ? 'Scanning live' : 'Camera stopped', running), 1100);
+    } catch (_) { showError('Could not copy automatically. Select and copy the barcode text instead.'); }
+  }
+  function updateTorchSupport() {
+    let track = stream?.getVideoTracks?.()[0];
+    if (!track && backend === 'fallback') {
+      const v = fallbackReader.querySelector('video');
+      const s = v?.srcObject;
+      track = s?.getVideoTracks?.()[0];
+    }
+    const caps = track?.getCapabilities?.();
+    const supported = Boolean(caps && caps.torch);
+    torchBtn.disabled = !supported;
+    torchBtn.textContent = 'Flash off';
+    torchOn = false;
+  }
+  async function toggleTorch() {
+    let track = stream?.getVideoTracks?.()[0];
+    if (!track && backend === 'fallback') {
+      const v = fallbackReader.querySelector('video'); track = v?.srcObject?.getVideoTracks?.()[0];
+    }
+    if (!track) return;
+    try {
+      torchOn = !torchOn;
+      await track.applyConstraints({ advanced: [{ torch: torchOn }] });
+      torchBtn.textContent = torchOn ? 'Flash on' : 'Flash off';
+    } catch (_) {
+      torchOn = false; torchBtn.textContent = 'Flash unavailable'; torchBtn.disabled = true;
+    }
+  }
+  async function restartSelectedCamera() {
+    const selected = cameraSelect.value;
+    await stopScanner();
+    if (selected) cameraSelect.value = selected;
+    await startScanner();
+  }
+  async function switchCamera() {
+    if (!running) return;
+    const options = Array.from(cameraSelect.options).filter(option => option.value);
+    if (options.length < 2) {
+      showError('Only one camera is available. Choose another camera if your device has more than one.');
+      return;
+    }
+    const activeTrack = stream?.getVideoTracks?.()[0] || fallbackReader.querySelector('video')?.srcObject?.getVideoTracks?.()[0];
+    const activeId = cameraSelect.value || activeTrack?.getSettings?.().deviceId || '';
+    const currentIndex = options.findIndex(option => option.value === activeId);
+    const next = options[(currentIndex + 1 + options.length) % options.length];
+    cameraSelect.value = next.value;
+    await restartSelectedCamera();
+  }
+  function exportCSV() {
+    if (!history.length) return;
+    const quote = (v) => `"${String(v).replaceAll('"','""')}"`;
+    const rows = [['Barcode','Format','Scanned at'], ...history.map(r => [r.value,r.format,r.time.toISOString()])];
+    const csv = rows.map(row => row.map(quote).join(',')).join('\r\n');
+    const blob = new Blob(['\ufeff' + csv], {type:'text/csv;charset=utf-8;'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a'); a.href = url; a.download = `barcode-scans-${new Date().toISOString().slice(0,10)}.csv`; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+  }
+
+  startBtn.addEventListener('click', startScanner);
+  stopBtn.addEventListener('click', stopScanner);
+  switchBtn.addEventListener('click', switchCamera);
+  torchBtn.addEventListener('click', toggleTorch);
+  cameraSelect.addEventListener('change', async () => { if (running) await restartSelectedCamera(); });
+  copyLatestBtn.addEventListener('click', () => copyText(latestValue));
+  historyList.addEventListener('click', (event) => {
+    const button = event.target.closest('[data-copy-index]');
+    if (!button) return;
+    const record = history[Number(button.dataset.copyIndex)]; if (record) copyText(record.value);
+  });
+  exportBtn.addEventListener('click', exportCSV);
+  window.addEventListener('pagehide', () => {
+    running = false;
+    if (rafId) cancelAnimationFrame(rafId);
+    if (stream) stream.getTracks().forEach(t => t.stop());
+    if (fallbackScanner) { try { fallbackScanner.stop(); } catch (_) {} }
+  });
+  setRunningUI(false);
+})();
+</script>
+</body>
+</html>
