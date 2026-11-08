@@ -1,0 +1,465 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Face Name Tags</title>
+<style>
+  /* Layout: one centered column. Camera stage first, register form next, saved people last. */
+  :root {
+    --bg: #f2f5f8;
+    --surface: #ffffff;
+    --ink: #131a21;
+    --muted: #56636f;
+    --line: #d8dfe6;
+    --accent: #0a66c9;
+    --accent-ink: #ffffff;
+    --ok: #17803f;
+    --warn: #9a5b00;
+    --err: #b3261e;
+    --stage: #0b0f13;
+    --font-ui: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #0f1317;
+      --surface: #171c22;
+      --ink: #e8ecef;
+      --muted: #94a0aa;
+      --line: #2a3138;
+      --accent: #4aa3ff;
+      --accent-ink: #07131f;
+      --ok: #4cc27a;
+      --warn: #f0b24a;
+      --err: #ff8a80;
+      --stage: #000000;
+      color-scheme: dark;
+    }
+  }
+
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font: 16px/1.5 var(--font-ui);
+    padding-inline: max(16px, env(safe-area-inset-left, 0px)) max(16px, env(safe-area-inset-right, 0px));
+    padding-block: 24px 40px;
+  }
+  .wrap { max-width: 720px; margin-inline: auto; display: flex; flex-direction: column; gap: 16px; }
+  h1 { margin: 0; font-size: 1.6rem; line-height: 1.2; letter-spacing: -0.01em; text-wrap: balance; }
+  h2 { margin: 0; font-size: 1rem; }
+  .lede { margin: 6px 0 0; color: var(--muted); max-width: 60ch; }
+
+  .stage-block { display: flex; flex-direction: column; gap: 12px; }
+  .stage {
+    position: relative;
+    width: min(100%, calc(70vh * var(--ratio, 1.7778)));
+    aspect-ratio: var(--ratio, 1.7778);
+    margin-inline: auto;
+    background: var(--stage);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  .stage video, .stage canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .stage video { object-fit: fill; }
+  .stage video.mirror { transform: scaleX(-1); }
+  .placeholder {
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    color: #9aa7b2; font-family: var(--font-mono); font-size: 0.85rem;
+    letter-spacing: 0.06em; text-transform: uppercase;
+  }
+
+  .row { display: flex; flex-wrap: wrap; gap: 8px; }
+  .btn {
+    font: inherit; font-weight: 600;
+    min-height: 44px; padding: 0 16px;
+    border-radius: 8px;
+    border: 1px solid var(--line);
+    background: var(--surface); color: var(--ink);
+    cursor: pointer;
+  }
+  .btn.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); }
+  .btn.small { min-height: 36px; padding: 0 12px; font-size: 0.9rem; }
+  .btn:disabled { opacity: 0.45; cursor: not-allowed; }
+  .btn:focus-visible, input:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+
+  .status {
+    min-height: 1.5em; margin: 0;
+    font-size: 0.95rem; color: var(--muted);
+  }
+  .status.ok { color: var(--ok); }
+  .status.warn { color: var(--warn); }
+  .status.error { color: var(--err); }
+
+  .panel {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 16px;
+    display: flex; flex-direction: column; gap: 12px;
+  }
+  .panel-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+  label { font-size: 0.85rem; color: var(--muted); font-family: var(--font-mono); letter-spacing: 0.04em; text-transform: uppercase; }
+  .reg { display: flex; flex-direction: column; gap: 8px; }
+  .reg-row { display: flex; flex-wrap: wrap; gap: 8px; }
+  input[type="text"] {
+    flex: 1 1 200px; min-width: 0;
+    min-height: 44px; padding: 0 12px;
+    font: inherit; color: var(--ink);
+    background: var(--bg);
+    border: 1px solid var(--line); border-radius: 8px;
+  }
+  .hint { margin: 0; font-size: 0.85rem; color: var(--muted); max-width: 62ch; }
+
+  .people { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
+  .people li {
+    display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    padding: 10px 0; border-top: 1px solid var(--line);
+  }
+  .people li:first-child { border-top: 0; }
+  .person-name { min-width: 0; overflow-wrap: anywhere; font-weight: 600; }
+  .person-meta { color: var(--muted); font-family: var(--font-mono); font-size: 0.8rem; margin-left: 8px; white-space: nowrap; }
+  .empty { color: var(--muted); font-size: 0.95rem; }
+</style>
+</head>
+<body>
+<main class="wrap">
+  <header>
+    <h1>Face Name Tags</h1>
+    <p class="lede">Register a face once. Its name appears above it whenever it shows up on camera again.</p>
+  </header>
+
+  <section class="stage-block" aria-label="Camera">
+    <div class="stage" id="stage">
+      <video id="video" playsinline muted></video>
+      <canvas id="overlay" aria-hidden="true"></canvas>
+      <div class="placeholder" id="placeholder">Camera is off</div>
+    </div>
+    <div class="row">
+      <button id="camBtn" class="btn primary" type="button" disabled>Start camera</button>
+      <button id="flipBtn" class="btn" type="button" disabled>Flip camera</button>
+    </div>
+  </section>
+
+  <p id="status" class="status" role="status" aria-live="polite"></p>
+
+  <section class="panel" aria-label="Register a face">
+    <h2>Register a face</h2>
+    <form id="regForm" class="reg">
+      <label for="nameInput">Name</label>
+      <div class="reg-row">
+        <input id="nameInput" type="text" maxlength="40" autocomplete="off" placeholder="e.g. Priya">
+        <button id="regBtn" class="btn primary" type="submit" disabled>Register face</button>
+      </div>
+      <p class="hint">Only one person should be in view. Register the same name again from another angle to improve matching.</p>
+    </form>
+  </section>
+
+  <section class="panel" aria-label="Registered people">
+    <div class="panel-head">
+      <h2>Registered <span id="count"></span></h2>
+      <button id="clearBtn" class="btn small" type="button">Remove all</button>
+    </div>
+    <ul id="people" class="people"></ul>
+    <p class="hint">Only register people who agreed to it. The page keeps a numeric fingerprint of each face in this browser, not photos, and sends nothing anywhere.</p>
+  </section>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/@vladmandic/face-api@1.7.12/dist/face-api.js"></script>
+<script>
+(() => {
+  const MODEL_URL = 'https://cdn.jsdelivr.net/npm/@vladmandic/face-api@1.7.12/model/';
+  const STORE_KEY = 'face-name-tags.v1';
+  const MATCH_DISTANCE = 0.5;   // lower = stricter
+  const MAX_SAMPLES = 8;        // fingerprints kept per person
+
+  const $ = (id) => document.getElementById(id);
+  const video = $('video'), overlay = $('overlay'), stage = $('stage'), placeholder = $('placeholder');
+  const camBtn = $('camBtn'), flipBtn = $('flipBtn'), regBtn = $('regBtn'), clearBtn = $('clearBtn');
+  const nameInput = $('nameInput'), statusEl = $('status'), peopleEl = $('people'), countEl = $('count');
+
+  let people = loadPeople();      // [{ name, descriptors: Float32Array[] }]
+  let matcher = null;
+  let stream = null;
+  let facing = 'user';
+  let mirrored = true;
+  let modelsReady = false;
+  let running = false;
+  let detectorOptions = null;
+  let clearArmed = false;
+  let clearTimer = null;
+
+  function setStatus(msg, kind) {
+    statusEl.textContent = msg;
+    statusEl.className = 'status' + (kind ? ' ' + kind : '');
+  }
+
+  function loadPeople() {
+    try {
+      const raw = localStorage.getItem(STORE_KEY);
+      if (!raw) return [];
+      return JSON.parse(raw).map((p) => ({
+        name: p.name,
+        descriptors: p.descriptors.map((d) => new Float32Array(d))
+      }));
+    } catch (e) { return []; }
+  }
+
+  function savePeople() {
+    try {
+      localStorage.setItem(STORE_KEY, JSON.stringify(
+        people.map((p) => ({ name: p.name, descriptors: p.descriptors.map((d) => Array.from(d)) }))
+      ));
+      return true;
+    } catch (e) {
+      setStatus('Could not save to this browser. Registered faces will be lost when you close the page.', 'warn');
+      return false;
+    }
+  }
+
+  function rebuildMatcher() {
+    matcher = people.length
+      ? new faceapi.FaceMatcher(
+          people.map((p) => new faceapi.LabeledFaceDescriptors(p.name, p.descriptors)),
+          MATCH_DISTANCE)
+      : null;
+  }
+
+  function renderPeople() {
+    peopleEl.textContent = '';
+    countEl.textContent = people.length ? '(' + people.length + ')' : '';
+    clearBtn.hidden = people.length === 0;
+    if (!people.length) {
+      const li = document.createElement('li');
+      li.className = 'empty';
+      li.textContent = 'No one registered yet. Start the camera, type a name and press Register face.';
+      peopleEl.appendChild(li);
+      return;
+    }
+    for (const p of people) {
+      const li = document.createElement('li');
+      const left = document.createElement('span');
+      const nm = document.createElement('span');
+      nm.className = 'person-name';
+      nm.textContent = p.name;
+      const meta = document.createElement('span');
+      meta.className = 'person-meta';
+      meta.textContent = p.descriptors.length + (p.descriptors.length === 1 ? ' sample' : ' samples');
+      left.append(nm, meta);
+      const rm = document.createElement('button');
+      rm.type = 'button';
+      rm.className = 'btn small';
+      rm.textContent = 'Remove';
+      rm.setAttribute('aria-label', 'Remove ' + p.name);
+      rm.dataset.name = p.name;
+      li.append(left, rm);
+      peopleEl.appendChild(li);
+    }
+  }
+
+  function updateControls() {
+    camBtn.disabled = !modelsReady;
+    camBtn.textContent = stream ? 'Stop camera' : 'Start camera';
+    flipBtn.disabled = !stream;
+    regBtn.disabled = !(modelsReady && stream);
+  }
+
+  function cameraMessage(err) {
+    const n = err && err.name;
+    if (n === 'NotAllowedError' || n === 'SecurityError') return 'Camera access was blocked. Allow the camera for this page in your browser settings, then press Start camera.';
+    if (n === 'NotFoundError' || n === 'OverconstrainedError') return 'No camera was found on this device.';
+    if (n === 'NotReadableError') return 'The camera is in use by another app. Close it and try again.';
+    return 'Could not start the camera. ' + ((err && err.message) || '');
+  }
+
+  async function startCamera() {
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      setStatus('The camera is not available here. Open this page over HTTPS or from localhost.', 'error');
+      return;
+    }
+    stopCamera();
+    setStatus('Starting camera…');
+    try {
+      stream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: { ideal: facing }, width: { ideal: 1280 }, height: { ideal: 720 } },
+        audio: false
+      });
+    } catch (err) {
+      stream = null;
+      setStatus(cameraMessage(err), 'error');
+      updateControls();
+      return;
+    }
+    const settings = stream.getVideoTracks()[0].getSettings();
+    mirrored = settings.facingMode ? settings.facingMode === 'user' : facing === 'user';
+    video.classList.toggle('mirror', mirrored);
+    video.srcObject = stream;
+    await new Promise((res) => {
+      if (video.readyState >= 1) res();
+      else video.addEventListener('loadedmetadata', res, { once: true });
+    });
+    try { await video.play(); } catch (e) { /* autoplay refusal is harmless here */ }
+    const w = video.videoWidth || 1280, h = video.videoHeight || 720;
+    overlay.width = w;
+    overlay.height = h;
+    stage.style.setProperty('--ratio', (w / h).toFixed(4));
+    placeholder.hidden = true;
+    running = true;
+    updateControls();
+    setStatus(people.length ? 'Watching for registered faces.' : 'Camera is on. Type a name and press Register face.', 'ok');
+    requestAnimationFrame(loop);
+  }
+
+  function stopCamera() {
+    running = false;
+    if (stream) stream.getTracks().forEach((t) => t.stop());
+    stream = null;
+    video.srcObject = null;
+    overlay.getContext('2d').clearRect(0, 0, overlay.width, overlay.height);
+    placeholder.hidden = false;
+    updateControls();
+  }
+
+  async function detect() {
+    return faceapi.detectAllFaces(video, detectorOptions).withFaceLandmarks().withFaceDescriptors();
+  }
+
+  async function loop() {
+    if (!running) return;
+    if (video.readyState >= 2) {
+      try {
+        const results = await detect();
+        if (running) draw(results);
+      } catch (e) { console.error(e); }
+    }
+    requestAnimationFrame(loop);
+  }
+
+  function draw(results) {
+    const ctx = overlay.getContext('2d');
+    const W = overlay.width, H = overlay.height;
+    ctx.clearRect(0, 0, W, H);
+    const scale = Math.max(1, W / 640);
+    for (const r of results) {
+      const b = r.detection.box;
+      const x = mirrored ? W - (b.x + b.width) : b.x;
+      let label = 'Unknown', known = false;
+      if (matcher) {
+        const m = matcher.findBestMatch(r.descriptor);
+        if (m.label !== 'unknown') { label = m.label; known = true; }
+      }
+      const color = known ? '#3ddc84' : '#ffb020';
+      ctx.lineWidth = 3 * scale;
+      ctx.strokeStyle = color;
+      ctx.strokeRect(x, b.y, b.width, b.height);
+
+      const fs = 18 * scale, pad = 8 * scale;
+      ctx.font = '600 ' + fs + 'px system-ui, sans-serif';
+      const tw = ctx.measureText(label).width;
+      const boxW = tw + pad * 2, boxH = fs + pad * 1.2;
+      const lx = Math.max(0, Math.min(x, W - boxW));
+      const ly = b.y - boxH >= 0 ? b.y - boxH : b.y;   // name sits above the face
+      ctx.fillStyle = color;
+      ctx.fillRect(lx, ly, boxW, boxH);
+      ctx.fillStyle = '#10161b';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(label, lx + pad, ly + boxH / 2);
+    }
+  }
+
+  async function registerFace() {
+    const name = nameInput.value.trim();
+    if (!name) { setStatus('Type a name first.', 'warn'); nameInput.focus(); return; }
+    if (!stream) { setStatus('Start the camera first.', 'warn'); return; }
+    regBtn.disabled = true;
+    setStatus('Looking for a face…');
+    try {
+      const faces = await detect();
+      if (faces.length === 0) { setStatus('No face found. Face the camera in good light and try again.', 'warn'); return; }
+      if (faces.length > 1) { setStatus('More than one face is in view. Only one person should be visible when registering.', 'warn'); return; }
+      let person = people.find((p) => p.name.toLowerCase() === name.toLowerCase());
+      if (!person) { person = { name, descriptors: [] }; people.push(person); }
+      person.descriptors.push(faces[0].descriptor);
+      if (person.descriptors.length > MAX_SAMPLES) person.descriptors.shift();
+      const saved = savePeople();
+      rebuildMatcher();
+      renderPeople();
+      nameInput.value = '';
+      if (saved) setStatus('Saved ' + person.name + ' (' + person.descriptors.length + (person.descriptors.length === 1 ? ' sample' : ' samples') + '). Register again from another angle to improve matching.', 'ok');
+    } catch (e) {
+      console.error(e);
+      setStatus('Something went wrong while reading the face. Try again.', 'error');
+    } finally {
+      updateControls();
+    }
+  }
+
+  function resetClear() {
+    clearArmed = false;
+    clearBtn.textContent = 'Remove all';
+    clearTimeout(clearTimer);
+  }
+
+  camBtn.addEventListener('click', () => {
+    if (stream) { stopCamera(); setStatus('Camera stopped.'); } else { startCamera(); }
+  });
+  flipBtn.addEventListener('click', () => {
+    facing = facing === 'user' ? 'environment' : 'user';
+    startCamera();
+  });
+  $('regForm').addEventListener('submit', (e) => { e.preventDefault(); registerFace(); });
+  peopleEl.addEventListener('click', (e) => {
+    const btn = e.target.closest('button[data-name]');
+    if (!btn) return;
+    const name = btn.dataset.name;
+    people = people.filter((p) => p.name !== name);
+    savePeople(); rebuildMatcher(); renderPeople();
+    setStatus('Removed ' + name + '.');
+  });
+  clearBtn.addEventListener('click', () => {
+    if (!clearArmed) {
+      clearArmed = true;
+      clearBtn.textContent = 'Tap again to confirm';
+      clearTimer = setTimeout(resetClear, 3000);
+      return;
+    }
+    resetClear();
+    people = [];
+    savePeople(); rebuildMatcher(); renderPeople();
+    setStatus('All registered faces removed.');
+  });
+
+  (async function init() {
+    renderPeople();
+    updateControls();
+    if (typeof faceapi === 'undefined') {
+      setStatus('Could not load the face recognition library. Check your internet connection and reload the page.', 'error');
+      return;
+    }
+    setStatus('Loading face models (about 7 MB)…');
+    try {
+      await Promise.all([
+        faceapi.nets.tinyFaceDetector.loadFromUri(MODEL_URL),
+        faceapi.nets.faceLandmark68Net.loadFromUri(MODEL_URL),
+        faceapi.nets.faceRecognitionNet.loadFromUri(MODEL_URL)
+      ]);
+    } catch (e) {
+      console.error(e);
+      setStatus('Could not download the face models. Check your internet connection and reload the page.', 'error');
+      return;
+    }
+    detectorOptions = new faceapi.TinyFaceDetectorOptions({ inputSize: 320, scoreThreshold: 0.5 });
+    rebuildMatcher();
+    modelsReady = true;
+    updateControls();
+    setStatus('Ready. Press Start camera.', 'ok');
+  })();
+})();
+</script>
+</body>
+</html>
